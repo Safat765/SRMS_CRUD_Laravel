@@ -16,10 +16,8 @@
                         <div class="col-md-4">
                             {{ Form::label('courseId', 'Course Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('courseId', 
-                                [
-                                    '' => 'Select user type', + $allTables['courses']->pluck('name', 'course_id')->toArray(),
-                                ], 
-                                Input::old('courseId'), [
+                                ['' => 'Select course'] + Course::lists('name', 'course_id'),
+                                Input::old('courseId', ''), [
                                     'class' => 'form-control shadow-lg',
                                     'required' => true
                                 ],
@@ -33,49 +31,26 @@
                             </span>
                             @endif
                         </div>
-                        
                         <div class="col-md-4">
-                            {{ Form::label('email', 'Email', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('email', Input::old('email'), 
+                            {{ Form::label('examTitle', 'Exam Title', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('examTitle', Input::old('examTitle'), 
                                 [
                                 'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter email',
+                                'placeholder' => 'Enter exam Title',
                                 'required' => true
                                 ]
                             )}}
-                            @if($errors->has('email'))
+                            @if($errors->has('examTitle'))
                             <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('email') }}
+                                {{ $errors->first('examTitle') }}
                             </span>
                             @endif
                         </div>
                         <div class="col-md-4">
-                            {{ Form::label('password', 'Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::password('password', 
-                                [
-                                'class' => 'form-control',
-                                'placeholder' => 'Enter password',
-                                'required' => true
-                                ]
-                            )}}
-                            @if($errors->has('password'))
-                            <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('password') }}
-                            </span>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            {{ Form::label('userType', 'User Type', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::select('userType', 
-                                [
-                                    '' => 'Select user type',
-                                    $ADMIN => 'Admin', 
-                                    $INSTRUCTOR => 'Instructor', 
-                                    $STUDENT => 'Student'
-                                ], 
-                                Input::old('userType'), [
+                            {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::select('departmentId', 
+                                ['' => 'Select Department'] + Department::lists('name', 'department_id'),
+                                Input::old('departmentId', ''), [
                                     'class' => 'form-control shadow-lg',
                                     'required' => true
                                 ],
@@ -83,41 +58,103 @@
                                     '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
                                 ]
                             )}}
-                            @if($errors->has('userType'))
+                            @if($errors->has('departmentId'))
                             <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('userType') }}
+                                {{ $errors->first('departmentId') }}
                             </span>
                             @endif
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            {{ Form::label('registrationNumber', 'Registration Number', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('registrationNumber', Input::old('registrationNumber'), 
+                            {{ Form::label('semesterId', 'Semester Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::select('semesterId', 
+                                ['' => 'Select Department'] + Semester::lists('name', 'semester_id'),
+                                Input::old('semesterId', ''), [
+                                    'class' => 'form-control shadow-lg',
+                                    'required' => true
+                                ],
                                 [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter registration number',
-                                'required' => true
-                                ]) 
-                            }}
-                            @if($errors->has('registrationNumber'))
+                                    '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
+                                ]
+                            )}}
+                            @if($errors->has('semesterId'))
                             <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('registrationNumber') }}
+                                {{ $errors->first('semesterId') }}
                             </span>
                             @endif
-                        </div>                        
+                        </div>
                         <div class="col-md-6">
-                            {{ Form::label('phoneNumber', 'Phone Number', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('phoneNumber', Input::old('phoneNumber'), 
+                            {{ Form::label('credit', 'Credit', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('credit', Input::old('credit'), 
                                 [
                                 'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter phone number',
+                                'placeholder' => 'Enter exam Title',
                                 'required' => true
                                 ]
                             )}}
-                            @if($errors->has('phoneNumber'))
+                            @if($errors->has('credit'))
                             <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('phoneNumber') }}
+                                {{ $errors->first('credit') }}
+                            </span>
+                            @endif
+                        </div>
+                    </div> 
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            {{ Form::label('examType', 'Exam Type', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::select('examType', 
+                                [
+                                    '' => 'Select Exam type',
+                                    $examType['Mid'] => 'Mid',
+                                    $examType['Quiz'] => 'Quiz',
+                                    $examType['Viva'] => 'Viva',
+                                    $examType['Final'] => 'Final'
+                                ], 
+                                Input::old('examType'), [
+                                    'class' => 'form-control shadow-lg',
+                                    'required' => true
+                                ],
+                                [
+                                    '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
+                                ]
+                            )}}
+                            @if($errors->has('examType'))
+                            <span class="text-danger small d-block mt-1">
+                                {{ $errors->first('examType') }}
+                            </span>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            {{ Form::label('marks', 'Marks', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('marks', Input::old('marks'), 
+                                [
+                                'class' => 'form-control shadow-lg',
+                                'placeholder' => 'Enter Total Marks for exam',
+                                'required' => true
+                                ]
+                            )}}
+                            @if($errors->has('marks'))
+                            <span class="text-danger small d-block mt-1">
+                                {{ $errors->first('marks') }}
+                            </span>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            {{ Form::label('instructorId', 'Instructor Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::select('instructorId', 
+                                ['' => 'Select Department'] + User::where('user_type', 2)->lists('username', 'user_id'),
+                                Input::old('instructorId', ''), [
+                                    'class' => 'form-control shadow-lg',
+                                    'required' => true
+                                ],
+                                [
+                                    '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
+                                ]
+                            )}}
+                            @if($errors->has('instructorId'))
+                            <span class="text-danger small d-block mt-1">
+                                {{ $errors->first('instructorId') }}
                             </span>
                             @endif
                         </div>

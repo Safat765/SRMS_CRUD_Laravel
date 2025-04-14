@@ -5,6 +5,7 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableTrait;
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Facades\DB;
 
 class Exam extends Eloquent implements UserInterface, RemindableInterface {
 
@@ -40,40 +41,92 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
      */
     protected $primaryKey = 'exam_id';
 
-    public function course()
-    {
-        return $this->belongsTo('Course', 'course_id');
-    }
+	public function searchName($search, $semester)
+	{
+		$exist = Semester::where('exam_title', 'LIKE', $search)
+							->where('semester', 'LIKE', $semester)->exists();
+		
+		if ($exist) {
+			return true;
+		}
 
-    public function department()
-    {
-        return $this->belongsTo('Department', 'department_id');
-    }
+		return false;
+	}
 
-    public function semester()
+    public function createExam(array $data, $createdBy)
     {
-        return $this->belongsTo('Semester', 'semester_id');
-    }
+		$exam = DB::table('exams')->insert(
+			array('course_id' => $data['courseId'], 'department_id' => $data['departmentId'], 'semester_id' => $data['semesterId'], 'exam_title' => $data['examTitle'], 'exam_type' => $data['examType'], 'credit' => $data['credit'], 'marks' => $data['marks'], 'instructor_id' => $data['instructorId'], 'created_by' => $createdBy)
+		);
 
-    public function instructor()
-    {
-        return $this->belongsTo('User', 'instructor_id');
+        // $exam = new Exam();
+        // $exam->course_id = $data['courseId'];
+        // $exam->department_id = $data['departmentId'];
+        // $exam->semester_id = $data['semesterId'];
+        // $exam->exam_title = $data['examTitle'];
+        // $exam->exam_type = $data['examType'];
+        // $exam->credit = $data['credit'];
+        // $exam->marks = $data['marks'];
+        // $exam->instructor_id = $data['instructorId'];
+		// $exam->created_by = $createdBy;
+		// $exam->save();
+		
+		return $exam;
     }
+	
+	public function filter($search)
+	{
+		$examCount = Exam::where('examTitle', 'LIKE', '%' . $search . '%')
+		->orWhere('credit', 'LIKE', '%' . $search . '%');
+		
+		$totalExams = $examCount->count();
+		$exams = $examCount->paginate(5);
+		
+		$data = compact('exams', 'totalExams');
+		return $data;
+	}
+	
+	public function showAll()
+	{
+		$examCount = Exam::all();
+		$totalExams = $examCount->count();
+		$exams = Exam::paginate(5);		
+		$data = compact('exams', 'totalExams');
 
-    public function creator()
-    {
-        return $this->belongsTo('User', 'created_by');
-    }
+		return $data;
+	}
+	
+	public function edit($id)
+	{
+		$exam = Exam::find($id);
+		return $exam;
+	}
+	
+	public function updateExam(array $data, $exam_id)
+	{		
+		$exam = $this->edit($exam_id);
+		
+		if (!$exam) {
+			return false;
+		}
+        $exam->fill($data);
+		$exam->save();
+		
+		return $exam;
+	}
+	
+	public function deleteExam($id)
+	{
+		$exam = $this->edit($id);
+		
+		if (!$exam) {
+			return false;
+		}
+		
+		$exam->delete();
+		
+		return $exam;
+	}
 
-    public function join()
-    {
-        $allTables = Exam::with(['course', 'department', 'semester', 'user', 'instructor', 'creator'])->get();
-        p($allTables);
-        foreach ($allTables as $exam) {
-           echo $exam->course_name = $exam->course->name;
-           echo $exam->department_name = $exam->department->name;
-           echo $exam->semester_name = $exam->semester->name;
-        }
-        // return $allTables;
-    }
+
 }

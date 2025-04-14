@@ -19,13 +19,6 @@ Route::get('/', 'LoginController@index');
 Route::post('/login', 'LoginController@login');
 
 Route::group(['prefix' => 'users'], function() {
-//     Route::get('/create', ['as' => 'createUser', 'uses' => 'UserController@create']);
-//     Route::post('/create', 'userController@store');
-// 	Route::get('/view', ['as' => 'userView', 'uses' => 'UserController@index']);
-	
-//     Route::get('/delete/{id}', ['as' => 'userDelete', 'uses' => 'UserController@destroy']);
-//     Route::get('/edit/{id}', ['as' => 'userEdit', 'uses' => 'UserController@edit']);
-//     Route::post('/update/{id}', ['as' => 'userUpdate', 'uses' => 'UserController@update']);
     Route::get('/status/{id}', ['as' => 'userStatus', 'uses' => 'UserController@status']);
 });
 
