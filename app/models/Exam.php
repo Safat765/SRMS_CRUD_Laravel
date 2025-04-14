@@ -8,75 +8,72 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\DB;
 
 class Exam extends Eloquent implements UserInterface, RemindableInterface {
-
-    use UserTrait, RemindableTrait;
-
-    const EXAM_TYPE_MID = 1;
-    const EXAM_TYPE_QUIZ = 2;
-    const EXAM_TYPE_VIVA = 3;
-    const EXAM_TYPE_FINAL = 4;
-
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = 'exams';
-    protected $fillable = [
-        'course_id', 
-        'department_id',
-        'semester_id',
-        'exam_title',
-        'exam_type',
-        'credit',
-        'marks',
-        'instructor_id',
-        'created_by'
-    ];
-
-    /**
-     * The primary key for the model.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'exam_id';
-
-	public function searchName($search, $semester)
-	{
-		$exist = Semester::where('exam_title', 'LIKE', $search)
-							->where('semester', 'LIKE', $semester)->exists();
+	
+	use UserTrait, RemindableTrait;
+	
+	const EXAM_TYPE_MID = 1;
+	const EXAM_TYPE_QUIZ = 2;
+	const EXAM_TYPE_VIVA = 3;
+	const EXAM_TYPE_FINAL = 4;
+	
+	/**
+	* The database table used by the model.
+	*
+	* @var string
+	*/
+	protected $table = 'exams';
+	protected $fillable = [
+		'course_id', 
+		'department_id',
+		'semester_id',
+		'exam_title',
+		'exam_type',
+		'credit',
+		'marks',
+		'instructor_id',
+		'created_by'
+	];
+	
+	/**
+	* The primary key for the model.
+	*
+	* @var string
+	*/
+	protected $primaryKey = 'exam_id';
+	
+	public function searchName($courseId, $departmentID, $semesterID, $examType) {
+		$exist = Exam::where('exam_type', 'LIKE', $examType)
+		->where('course_id', 'LIKE', $courseId)
+		->where('department_id', 'LIKE', $departmentID)
+		->where('semester_id', 'LIKE', $semesterID)->exists();
 		
-		if ($exist) {
-			return true;
-		}
-
-		return false;
+		return $exist;
 	}
-
-    public function createExam(array $data, $createdBy)
-    {
+	
+	public function createExam(array $data, $createdBy)
+	{
 		$exam = DB::table('exams')->insert(
 			array('course_id' => $data['courseId'], 'department_id' => $data['departmentId'], 'semester_id' => $data['semesterId'], 'exam_title' => $data['examTitle'], 'exam_type' => $data['examType'], 'credit' => $data['credit'], 'marks' => $data['marks'], 'instructor_id' => $data['instructorId'], 'created_by' => $createdBy)
 		);
-
-        // $exam = new Exam();
-        // $exam->course_id = $data['courseId'];
-        // $exam->department_id = $data['departmentId'];
-        // $exam->semester_id = $data['semesterId'];
-        // $exam->exam_title = $data['examTitle'];
-        // $exam->exam_type = $data['examType'];
-        // $exam->credit = $data['credit'];
-        // $exam->marks = $data['marks'];
-        // $exam->instructor_id = $data['instructorId'];
+		
+		// $exam = new Exam();
+		// $exam->course_id = $data['courseId'];
+		// $exam->department_id = $data['departmentId'];
+		// $exam->semester_id = $data['semesterId'];
+		// $exam->exam_title = $data['examTitle'];
+		// $exam->exam_type = $data['examType'];
+		// $exam->credit = $data['credit'];
+		// $exam->marks = $data['marks'];
+		// $exam->instructor_id = $data['instructorId'];
 		// $exam->created_by = $createdBy;
 		// $exam->save();
 		
 		return $exam;
-    }
+	}
 	
 	public function filter($search)
 	{
-		$examCount = Exam::where('examTitle', 'LIKE', '%' . $search . '%')
+		$examCount = Exam::where('exam_title', 'LIKE', '%' . $search . '%')
 		->orWhere('credit', 'LIKE', '%' . $search . '%');
 		
 		$totalExams = $examCount->count();
@@ -92,7 +89,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 		$totalExams = $examCount->count();
 		$exams = Exam::paginate(5);		
 		$data = compact('exams', 'totalExams');
-
+		
 		return $data;
 	}
 	
@@ -109,7 +106,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 		if (!$exam) {
 			return false;
 		}
-        $exam->fill($data);
+		$exam->fill($data);
 		$exam->save();
 		
 		return $exam;
@@ -127,6 +124,29 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 		
 		return $exam;
 	}
+	
+	public function joinTables()
+	{
+		$results = DB::table('exams')
+		->join('courses', 'exams.course_id', '=', 'courses.course_id')
+		->join('departments', 'exams.department_id', '=', 'departments.department_id')
+		->join('semesters', 'exams.semester_id', '=', 'semesters.semester_id')
+		->join('users', 'exams.instructor_id', '=', 'users.user_id') // Fixed: should match users PK
+		->select(
+			'users.user_id as instructor_id',
+			'users.username',
+			'departments.department_id',
+			'departments.name as department_name',
+			'semesters.semester_id',
+			'semesters.name as semester_name',
+			'courses.course_id',
+			'courses.name as course_name',
+			'exams.exam_title',
+			'exams.exam_type',
+			'exams.credit',
+			'exams.marks'
+			)->get();
 
-
+		return $results;
+	}
 }

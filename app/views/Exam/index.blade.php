@@ -3,7 +3,7 @@
 <title>Exam View</title>
 @section('main')
 <div class="table-responsive">
-    <!-- <div class="form-group d-flex justify-content-between align-items-start"> -->
+    <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
             <div class="p-1">            
                 <div class="d-flex justify-content-start mb-3">
@@ -21,7 +21,7 @@
             </div>
         </div>
         
-        <!-- <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
+        <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
             {{ Form::open([URL::route('exams.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
@@ -50,20 +50,61 @@
                 <th scope="col">Exam Title</th>                
                 <th scope="col">Department</th>
                 <th scope="col">Semester</th>
-                <th scope="col">Credit</th>
                 <th scope="col">Exam Type</th>
+                <th scope="col">Credit</th>
                 <th scope="col">Marks</th>
                 <th scope="col">Assigned Instructor</th>
                 <th scope="col">Action</th>
             </tr>
-        </thead> -->
-        <!-- <tbody>
+        </thead>
+        <tbody>
             @foreach ($exams as $exam)
             <tr>
-                <td scope="row">{{$exam->course_id}}</td>
+            <td scope="row">
+                @foreach ($results as $row)
+                    @if ($exam->course_id == $row->course_id)
+                        {{ $row->course_name }}
+                        @break
+                    @endif
+                @endforeach
+            </td>
                 <td scope="row">{{$exam->exam_title}}</td>
-                <td>
-                    <div class="text-center">
+                <td scope="row">
+                    @foreach ($results as $row)
+                        @if ($exam->department_id == $row->department_id)
+                            {{$row->department_name}}
+                        @endif
+                    @endforeach
+                </td>
+                <td scope="row">
+                    @foreach ($results as $row)
+                        @if ($exam->semester_id == $row->semester_id)
+                            {{$row->semester_name}}
+                        @endif
+                    @endforeach
+                </td>
+                <td scope="row">
+                    @if($exam->exam_type == 1)
+                        Mid
+                    @elseif($exam->exam_type == 2)
+                        Quiz
+                    @elseif($exam->exam_type == 3)
+                        Viva
+                    @else
+                        Final Term
+                    @endif
+                </td>
+                <td scope="row">{{$exam->credit}}</td>
+                <td scope="row">{{$exam->marks}}</td>
+                <td scope="row">
+                    @foreach ($results as $row)
+                        @if ($exam->instructor_id == $row->instructor_id)
+                            {{$row->username}}
+                        @endif
+                    @endforeach
+                </td>
+                <td class="d-flex justify-content-center gap-2">
+                    <div class="d-flex gap-2" style="display: inline-block;">
                         <div>
                             {{ Form::open(['url' => 'exams/' .$exam->exam_id.'/edit', 'method' => 'get']) }}    
                                 <div class="text-center">
@@ -79,8 +120,7 @@
                             <div class="text-center">
                                 {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
                                     'class' => 'btn btn-danger btn-sm',
-                                    'type' => 'submit',
-                                    'disabled' => 'disabled'
+                                    'type' => 'submit'
                                 ])}}
                             </div>
                             {{ Form::close() }}
@@ -89,12 +129,12 @@
                 </td>
             </tr>
             @endforeach
-        </tbody> -->
-    <!-- </table> -->
+        </tbody>
+    </table>
     
-    <!-- <div class="text-center">
+    <div class="text-center">
         {{ $exams->links() }}
-    </div> -->
+    </div>
 </div>
 
 @endsection

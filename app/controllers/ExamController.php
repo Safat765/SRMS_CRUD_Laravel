@@ -17,29 +17,24 @@ class ExamController extends \BaseController {
 	*/
 	public function index()
 	{
-		echo "Hello";
-		// $exam = new Exam();
-		// $search = Input::get('search');
-
-		$examCount = Exam::all();
-		$totalExams = $examCount->count();
-		$exams = $examCount->paginate(5);
+		$exam = new Exam();
+		$search = Input::get('search');		
+		$results = $exam->joinTables();
 		
-		// if ($search != '') {
-		// 	$data = $exam->filter($search);
+		if ($search != '') {
+			$data = $exam->filter($search);
 			
-		// 	$totalExams = $data['totalExams'];
-		// 	$exams = $data['exams'];
-		// } else {
-		// 	$data = $exam->showAll();
-		// 	$totalExams = $data['totalExams'];
-		// 	$exams = $data['exams'];
-		// }
-		echo p($totalExams);
+			$totalExams = $data['totalExams'];
+			$exams = $data['exams'];
+		} else {
+			$data = $exam->showAll();
+			$totalExams = $data['totalExams'];
+			$exams = $data['exams'];
+		}
 
-		// $data = compact('exams', 'totalExams', 'search');
+		$data = compact('exams', 'totalExams', 'search', 'results');
 
-		// return View::make('User.index')->with($data);
+		return View::make('Exam.index')->with($data);
 	}
 	
 	
@@ -91,28 +86,25 @@ class ExamController extends \BaseController {
 			return Redirect::back()
 			->withErrors($validator);
 		}
+		$exam = new Exam();
 		$data = Input::all();
 		$createdBy = 11;
-		$exam = new Exam();
-		$exist = $exam->searchName($data['examTitle'], $data['semesterId']);
-		
-
-		echo $exist;
+		$exist = $exam->searchName($data['courseId'], $data['departmentId'], $data['semesterId'], $data['examType']);
 
 		if ($exist) {
 			Session::flash('message', 'Exam already exists');
-			return Redirect::back();
-		}
-		$exist = $exam->createExam($data, $createdBy);
-
-		echo $exist;
-		
-		if ($exist) {
-			Session::flash('success', 'Exam created successfully');
-			return Redirect::back();
+			return Redirect::to('exams.create');
 		} else {
-			Session::flash('message', 'Failed to create exam');
-			return Redirect::back();
+			$create = $exam->createExam($data, $createdBy);
+			
+			if ($create) {
+				$exam = new Exam();
+				Session::flash('success', 'Exam created successfully');
+				return Redirect::to('exams');
+			} else {
+				Session::flash('message', 'Failed to create exam');
+				return Redirect::back();
+			}
 		}
 	}
 	
@@ -137,7 +129,16 @@ class ExamController extends \BaseController {
 	*/
 	public function edit($id)
 	{
-		//
+		$exam = new Exam();
+		$pageName = "Edit Exam";		
+		$url = url('/exams/'.$id);
+		$exams = $exam->edit($id);
+		if (empty($exams) || $exams->count() == 0) {
+			Session::flash('message', 'Exam not found');
+			return Redirect::back();
+		}
+		$data = compact('exams', 'url', 'pageName');
+		return View::make('Exam/update')->with($data);
 	}
 	
 	
@@ -148,8 +149,45 @@ class ExamController extends \BaseController {
 	* @return Response
 	*/
 	public function update($id)
-	{
-		//
+	{	
+		p(Input::all());
+		// $exam = new Exam();
+		// $exams = $exam->edit($id);
+		// echo $exam->edit($id);
+		
+		// if (!$exams) {
+		// 	Session::flash('message', 'Exam not found');
+		// 	return Redirect::back();
+		// }		
+		// $validator = Validator::make(Input::aLL(), [
+		// 	'courseId' => 'required',
+		// 	'examTitle' => 'required|min:3|max:100',
+		// 	'departmentId' => 'required',
+		// 	'semesterId' => 'required',
+		// 	'examType' => 'required|in:1,2,3,4',
+		// 	'credit' => 'required|numeric',
+		// 	'marks' => 'required|numeric',
+		// 	'instructorId' => 'required'
+		// ], [
+		// 	'required' => 'The :attribute field is required.',
+		// 	'numeric' => 'The :attribute must be a number.',
+		// 	'in' => 'Please select a valid :attribute.'
+		// ]);
+		
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }
+		
+		// p(Input::all());
+		// $update = $exam->updateExam(Input::all(), $id);
+		// if ($update) {
+		// 	Session::flash('success', 'Exam updated successfully');
+		// 	return Redirect::to('exams');
+		// } else {
+		// 	Session::flash('message', 'Failed to update exam');
+		// 	return Redirect::back();
+		// }
 	}
 	
 	
