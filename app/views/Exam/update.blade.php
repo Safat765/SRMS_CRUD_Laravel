@@ -11,7 +11,7 @@
                     <h4 class="text-center fw-bold text-info">{{ $pageName }}</h4>
                 </div>
                 <div class="card-body bg-light">
-                    {{ Form::open(['url' => $url, 'method' => 'post', 'novalidate' => true]) }}
+                    {{ Form::open(['url' => $url, 'method' => 'patch', 'novalidate' => true]) }}
                     <div class="row mb-3">
                         <div class="col-md-4">
                             {{ Form::label('courseId', 'Course Name', ['class' => 'form-label']) }}
@@ -34,7 +34,7 @@
                         </div>
                         <div class="col-md-4">
                             {{ Form::label('examTitle', 'Exam Title', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('examTitle', isset($exams->credit) ? $exams->credit : null,
+                            {{ Form::text('examTitle', isset($exams->exam_title) ? $exams->exam_title : null,
                                 [
                                 'class' => 'form-control shadow-lg',
                                 'placeholder' => 'Enter exam Title',

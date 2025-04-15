@@ -100,14 +100,29 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	}
 	
 	public function updateExam(array $data, $exam_id)
-	{		
-		$exam = $this->edit($exam_id);
+	{
+		// Find the existing exam
+		$exist = $this->edit($exam_id);
+		echo $exist;
 		
-		if (!$exam) {
+		if (!$exist) {
 			return false;
 		}
-		$exam->fill($data);
-		$exam->save();
+
+		p($data);
+		
+		// Update the existing exam's properties
+		$exam = DB::table('exams')
+			->where('exam_id', $exam_id)
+				->update([
+					'course_id' => $data['courseId'],
+					'department_id' => $data['departmentId'],
+					'semester_id' => $data['semesterId'],
+					'exam_title' => $data['examTitle'],
+					'credit' => $data['credit'],
+					'marks' => $data['marks'],
+					'instructor_id' => $data['instructorId']
+        ]);
 		
 		return $exam;
 	}
@@ -141,6 +156,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 			'semesters.name as semester_name',
 			'courses.course_id',
 			'courses.name as course_name',
+			'exams.exam_id',
 			'exams.exam_title',
 			'exams.exam_type',
 			'exams.credit',

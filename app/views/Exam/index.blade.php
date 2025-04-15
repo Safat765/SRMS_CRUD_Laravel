@@ -58,31 +58,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($exams as $exam)
+            @foreach ($results as $exam)
             <tr>
-            <td scope="row">
-                @foreach ($results as $row)
-                    @if ($exam->course_id == $row->course_id)
-                        {{ $row->course_name }}
-                        @break
-                    @endif
-                @endforeach
-            </td>
+                <td scope="row">{{ $exam->course_name }}</td>
                 <td scope="row">{{$exam->exam_title}}</td>
-                <td scope="row">
-                    @foreach ($results as $row)
-                        @if ($exam->department_id == $row->department_id)
-                            {{$row->department_name}}
-                        @endif
-                    @endforeach
-                </td>
-                <td scope="row">
-                    @foreach ($results as $row)
-                        @if ($exam->semester_id == $row->semester_id)
-                            {{$row->semester_name}}
-                        @endif
-                    @endforeach
-                </td>
+                <td scope="row">{{$exam->department_name}}</td>
+                <td scope="row">{{$exam->semester_name}}</td>
                 <td scope="row">
                     @if($exam->exam_type == 1)
                         Mid
@@ -96,13 +77,7 @@
                 </td>
                 <td scope="row">{{$exam->credit}}</td>
                 <td scope="row">{{$exam->marks}}</td>
-                <td scope="row">
-                    @foreach ($results as $row)
-                        @if ($exam->instructor_id == $row->instructor_id)
-                            {{$row->username}}
-                        @endif
-                    @endforeach
-                </td>
+                <td scope="row">{{$exam->username}}</td>
                 <td class="d-flex justify-content-center gap-2">
                     <div class="d-flex gap-2" style="display: inline-block;">
                         <div>

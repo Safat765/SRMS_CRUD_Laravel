@@ -93,7 +93,7 @@ class ExamController extends \BaseController {
 
 		if ($exist) {
 			Session::flash('message', 'Exam already exists');
-			return Redirect::to('exams.create');
+			return Redirect::to('exams/create');
 		} else {
 			$create = $exam->createExam($data, $createdBy);
 			
@@ -133,11 +133,12 @@ class ExamController extends \BaseController {
 		$pageName = "Edit Exam";		
 		$url = url('/exams/'.$id);
 		$exams = $exam->edit($id);
+		$data = compact('exams', 'url', 'pageName');
+
 		if (empty($exams) || $exams->count() == 0) {
 			Session::flash('message', 'Exam not found');
 			return Redirect::back();
 		}
-		$data = compact('exams', 'url', 'pageName');
 		return View::make('Exam/update')->with($data);
 	}
 	
@@ -149,45 +150,43 @@ class ExamController extends \BaseController {
 	* @return Response
 	*/
 	public function update($id)
-	{	
-		p(Input::all());
-		// $exam = new Exam();
-		// $exams = $exam->edit($id);
-		// echo $exam->edit($id);
+	{
+		$exam = new Exam();
+		$exams = $exam->edit($id);
 		
-		// if (!$exams) {
-		// 	Session::flash('message', 'Exam not found');
-		// 	return Redirect::back();
-		// }		
-		// $validator = Validator::make(Input::aLL(), [
-		// 	'courseId' => 'required',
-		// 	'examTitle' => 'required|min:3|max:100',
-		// 	'departmentId' => 'required',
-		// 	'semesterId' => 'required',
-		// 	'examType' => 'required|in:1,2,3,4',
-		// 	'credit' => 'required|numeric',
-		// 	'marks' => 'required|numeric',
-		// 	'instructorId' => 'required'
-		// ], [
-		// 	'required' => 'The :attribute field is required.',
-		// 	'numeric' => 'The :attribute must be a number.',
-		// 	'in' => 'Please select a valid :attribute.'
-		// ]);
+		if (!$exams) {
+			Session::flash('message', 'Exam not found');
+			return Redirect::back();
+		}		
+		$validator = Validator::make(Input::aLL(), [
+			'courseId' => 'required',
+			'examTitle' => 'required|min:3|max:100',
+			'departmentId' => 'required',
+			'semesterId' => 'required',
+			'credit' => 'required|numeric',
+			'marks' => 'required|numeric',
+			'instructorId' => 'required'
+		], 
+		[
+			'required' => 'The :attribute field is required.',
+			'numeric' => 'The :attribute must be a number.',
+			'in' => 'Please select a valid :attribute.'
+		]);
 		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }
-		
-		// p(Input::all());
-		// $update = $exam->updateExam(Input::all(), $id);
-		// if ($update) {
-		// 	Session::flash('success', 'Exam updated successfully');
-		// 	return Redirect::to('exams');
-		// } else {
-		// 	Session::flash('message', 'Failed to update exam');
-		// 	return Redirect::back();
-		// }
+		if ($validator->fails()) {
+			Session::flash('message', 'Fill up the criteria');
+			return Redirect::back()
+			->withErrors($validator);
+		}
+		$update = $exam->updateExam(Input::all(), $id);
+
+		if ($update) {
+			Session::flash('success', 'Exam updated successfully');
+			return Redirect::to('exams');
+		} else {
+			Session::flash('message', 'Failed to update exam');
+			return Redirect::back();
+		}
 	}
 	
 	
@@ -199,7 +198,22 @@ class ExamController extends \BaseController {
 	*/
 	public function destroy($id)
 	{
-		//
+		$exam = new Exam();
+		$exam = $exam->edit($id);
+		
+		if (!$exam) {
+			Session::flash('message', 'Exam not found');
+			return Redirect::back();
+		}
+		$delete = $exam->deleteExam($id);
+		
+		if (!$delete) {
+			Session::flash('message', 'Failed to delete Exam');
+			return Redirect::back();
+		} else{
+			Session::flash('success', 'Exam deleted successfully');
+			return Redirect::to('exams');
+		}
 	}
 	
 	
