@@ -9,10 +9,7 @@
                 <div class="card shadow-lg" style="background-color: rgb(206, 244, 244);">
                     <div class="card-body p-4">
                         <h3 class="text-center mb-4">Login</h3>                        
-                        {{ Form::open(['url' => '/login', 'method' => 'post', 'novalidate' => true]) }}
-
-                            {{-- {{ Form::token() }} --}}
-                            
+                        {{ Form::open(['url' => 'login', 'method' => 'post', 'novalidate' => true]) }}                            
                             <div class="mb-3">
                                 {{ Form::text('username', null, [
                                     'class' => 'form-control',

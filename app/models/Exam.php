@@ -53,7 +53,17 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	public function createExam(array $data, $createdBy)
 	{
 		$exam = DB::table('exams')->insert(
-			array('course_id' => $data['courseId'], 'department_id' => $data['departmentId'], 'semester_id' => $data['semesterId'], 'exam_title' => $data['examTitle'], 'exam_type' => $data['examType'], 'credit' => $data['credit'], 'marks' => $data['marks'], 'instructor_id' => $data['instructorId'], 'created_by' => $createdBy)
+			array(
+				'course_id' => $data['courseId'], 
+				'department_id' => $data['departmentId'], 
+				'semester_id' => $data['semesterId'], 
+				'exam_title' => $data['examTitle'], 
+				'exam_type' => $data['examType'], 
+				'credit' => $data['credit'], 
+				'marks' => $data['marks'], 
+				'instructor_id' => $data['instructorId'], 
+				'created_by' => $createdBy
+			)
 		);
 		
 		// $exam = new Exam();

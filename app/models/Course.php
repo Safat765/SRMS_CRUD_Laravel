@@ -59,7 +59,7 @@ class Course extends Eloquent implements UserInterface, RemindableInterface {
 		
 		$course->name = $data['name'];
         $course->credit = $data['credit'];
-		$course->created_by = 11;
+		$course->created_by = 1;
 		$course->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
 		$course->updated_at = "";
 		$course->save();

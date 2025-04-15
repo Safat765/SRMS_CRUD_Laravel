@@ -52,7 +52,7 @@ class Department extends Eloquent implements UserInterface, RemindableInterface 
 		$department = new Department();
 		
 		$department->name = $name;
-		$department->created_by = 11;
+		$department->created_by = 1;
 		$department->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
 		$department->updated_at = "";
 		$department->save();

@@ -7,6 +7,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class User extends Eloquent implements UserInterface, RemindableInterface {
@@ -36,7 +37,12 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		'registration_number', 
 		'phone_number',
 		'created_at', 
-		'updated_at'
+		'updated_at',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'session',
+        'department_id'
 	];
 	
 	const USER_TYPE_ADMIN = 1;
@@ -51,17 +57,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		$this->attributes['password'] = Hash::make($value);
 	}
 	
-	public function createUser($username, $email, $password, $user_type, $status, $registration_number, $phone_number)
+	public function createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber)
 	{
 		$user = new User();
 		
 		$user->username = $username;
 		$user->email = $email;
 		$user->password = $password;
-		$user->user_type = $user_type;
+		$user->user_type = $userType;
 		$user->status = $status;
-		$user->registration_number = $registration_number;
-		$user->phone_number = $phone_number;
+		$user->registration_number = $registrationNumber;
+		$user->phone_number = $phoneNumber;
 		$user->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
 		$user->updated_at = "";
 		
@@ -147,4 +153,36 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		
 		return $user;
 	}
+
+	public function getUserId($username)
+	{
+		$user = User::where('username', $username)->first();
+		
+		if (!$user) {
+			return false;
+		}
+		
+		return $user->user_id;
+	}
+
+	public function createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $userId)
+    {
+        // $profile = $firstName .'---'. $middleName .'---'. $lastName .'---'. $session .'---'. $departmentId .'---'. $userID;
+
+        // echo $profile;
+        $insert = DB::table('profiles')->insertGetId(array(
+            'user_id' => $userId, 
+            'first_name' => $firstName, 
+            'middle_name' => $middleName,  
+            'last_name' => $lastName, 
+            'registration_number' => $registrationNumber, 
+            'session' => $session, 
+            'department_id' => $departmentId,
+            'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
+            'updated_at' => ''
+            )
+		);
+
+        return $insert;
+    }
 }

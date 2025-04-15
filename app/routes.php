@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Session;
 |
 */
 
-Route::get('/', 'LoginController@index');
-Route::post('/login', 'LoginController@login');
+// Route::get('/', 'LoginController@index');
+Route::resource('/login', 'LoginController');
 
 Route::group(['prefix' => 'users'], function() {
     Route::get('/status/{id}', ['as' => 'userStatus', 'uses' => 'UserController@status']);
@@ -30,6 +30,21 @@ Route::group(['prefix' => 'courses'], function() {
         Route::get('/status/{id}', ['as' => 'courseStatus', 'uses' => 'CourseController@status']);
 });
 Route::resource('/exams', 'ExamController');
-Route::resource('/marks', 'CourseController');
-Route::resource('/results', 'CourseController');
-Route::resource('/profiles', 'CourseController');
+// Route::resource('/marks', 'CourseController');
+// Route::resource('/results', 'CourseController');
+Route::resource('/profiles', 'ProfileController');
+Route::group(['prefix' => 'profiles'], function() {
+        Route::get('/profiles/change-password', 'ProfileController@changePassword');
+});
+
+Route::get('/session', function(){
+    $all = Session::all();
+    p($all);
+});
+
+Route::get('/logout', function(){
+    Session::flush();
+    // return Redirect::to('/session');
+	Session::flash('success', 'Logout Successful');
+    return Redirect::to('login/create');
+});

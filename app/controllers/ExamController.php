@@ -88,7 +88,7 @@ class ExamController extends \BaseController {
 		}
 		$exam = new Exam();
 		$data = Input::all();
-		$createdBy = 11;
+		$createdBy = 1;
 		$exist = $exam->searchName($data['courseId'], $data['departmentId'], $data['semesterId'], $data['examType']);
 
 		if ($exist) {

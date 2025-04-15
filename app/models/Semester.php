@@ -50,7 +50,7 @@ class Semester extends Eloquent implements UserInterface, RemindableInterface {
 		$semester = new Semester();
 		
 		$semester->name = $name;
-		$semester->created_by = 11;
+		$semester->created_by = 1;
 		$semester->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
 		$semester->updated_at = "";
 		$semester->save();

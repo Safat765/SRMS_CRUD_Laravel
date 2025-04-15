@@ -63,8 +63,8 @@ class MakeSelfController extends Command {
 	{
 		return '<?php
 		
-class {{class}} extends BaseController {
-				
+class {{class}} extends BaseController
+{				
 	public function index()
 	{
 		// Show all items
@@ -106,8 +106,8 @@ class {{class}} extends BaseController {
 	{
 		return '<?php
 		
-class {{class}} extends BaseController {
-				
+class {{class}} extends BaseController
+{				
 	// Add your methods here
 }';
 	}

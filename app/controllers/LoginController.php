@@ -1,22 +1,77 @@
 <?php
 
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 		
 class LoginController extends BaseController {
 				
 	public function index()
 	{
-		return View::make('login');
+		return View::make('dashboard');
 	}
 				
 	public function create()
 	{
-		// Show create form
+		return View::make('login');
 	}
 				
 	public function store()
 	{
 		// Handle form submission
+		$validator = Validator::make(Input::all(), [
+			'username' => 'required',
+			'password' => 'required|min:4'
+		]);		
+		
+		if ($validator->fails()) {
+			return Redirect::back()
+			->withErrors($validator)
+			->withInput(Input::except('password'));
+		}
+		
+		// p(Input::all());
+		
+		$username = Input::get('username');
+		$password = Input::get('password');
+		
+		// echo Input::get('username');
+		// echo "<br>";
+		// echo Input::get('password');
+		// echo "<br>";
+		$user = User::where('username', $username)->first();
+		
+		if (!password_verify($password, $user->password)) {
+			Session::flash('message', 'Incorrect Password');
+			return Redirect::to('login/create');
+		}
+		$password = $user->password;		
+		$userExists = User::where('username', $username)
+							->where('password', $password)->exists();
+		
+		if ($userExists) {
+
+			if ($user) {				
+				Session::put('username', $user->username);
+				Session::put('user_id', $user->user_id);
+				Session::put('email', $user->email);
+				Session::put('registration_number', $user->registration_number);
+				Session::put('phone_number', $user->phone_number);
+				Session::put('password', $user->password);
+				Session::put('user_type', $user->user_type);
+				Session::put('status', $user->status);
+				Session::flash('success', 'Login Successful');
+
+				return View::make('dashboard');
+			} else {
+				echo "User not found";
+			}
+		} else {
+			Session::flash('message', 'Invalid Login');
+			return Redirect::to('login/create');
+		}
 	}
 				
 	public function show($id)

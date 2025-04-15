@@ -52,15 +52,21 @@ class UserController extends \BaseController
 			'password' => 'required|min:4',
 			'userType' => 'required|in:1,2,3',
 			'registrationNumber' => 'required|min:3',
-			'phoneNumber' => 'required|numeric|digits_between:10,15'
+			'phoneNumber' => 'required|numeric|digits_between:10,15',
+			'departmentId'=> 'required',
+			'firstName'=> 'required|string|min:3|max:30',
+			'middleName' => 'sometimes|string|max:50',
+			'lastName' => 'required|string|max:50'
 		], [
 			'required' => 'The :attribute field is required.',
 			'unique' => 'This :attribute is already taken.',
 			'min' => 'The :attribute must be at least :min characters.',
-			'in' => 'Please select a valid :attribute.'
+			'in' => 'Please select a valid :attribute.',
+    		'sometimes' => 'The :attribute must be a string when provided.'
 		]);
 		
 		if ($validator->fails()) {
+			Session::flash('message', "validation fail");
 			return Redirect::back()
 			->withErrors($validator)
 			->withInput(Input::except('password'));
@@ -70,14 +76,29 @@ class UserController extends \BaseController
 		$username = Input::get('username');
 		$email = Input::get('email');
 		$password = Input::get('password');
-		$user_type = Input::get('userType');
+		$userType = Input::get('userType');
 		$status = User::STATUS_ACTIVE;
-		$registration_number = Input::get('registrationNumber');
-		$phone_number = Input::get('phoneNumber');
-		
-		$user->createUser($username, $email, $password, $user_type, $status, $registration_number, $phone_number);
+		$registrationNumber = Input::get('registrationNumber');
+		$phoneNumber = Input::get('phoneNumber');
+		$firstName = Input::get('firstName');
+		$middleName = Input::get('middleName');
+		$lastName = Input::get('lastName');
+		if ($userType == 3) {
+			$session = Input::get('session');
+		} else {
+			$session = '';
+		}
+		$departmentId = Input::get('departmentId');
+		$user = $user->createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber);
 
 		if ($user) {
+			$userId = $user->getUserId($username);
+			$profile = $user->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $userId);
+			
+			if (!$profile) {
+				Session::flash('message', 'Failed to create profile');
+				return Redirect::back();
+			}
 			Session::flash('success', 'User created successfully');
 			return Redirect::to('users');
 		} else {

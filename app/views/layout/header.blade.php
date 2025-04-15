@@ -11,10 +11,16 @@
     <link rel="stylesheet" href="/css/pagination.css">
 </head>
 <body>
-    <div>
-        <nav class="navbar navbar-expand-lg container-fluid py-2 pb-2" style="background-color: rgb(56, 56, 56);">
+    <div>        
+        <?php
+            use Illuminate\Support\Facades\Session;
+            
+            $value = Session::get('user_id');
+            if (isset($value)) {
+        ?>
+        <nav class="navbar navbar-expand-lg container-fluid py-3 pb-3" style="background-color: rgb(56, 56, 56);">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" href="{{url('/')}}"><b>Navbar</b></a>
+                <a class="navbar-brand text-white" href="{{URL::route('login.index')}}"><b>Navbar</b></a>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="nav nav-pills">
                         {{-- <li class="nav-item">
@@ -70,26 +76,28 @@
                                 <li><a class="dropdown-item py-0" href="{{URL::route('exams.create')}}" style="font-size: 13px;">Create</a></li>
                             </ul>
                         </li>
-
-
-                        <li class="nav-item dropdown position-fixed end-0 top-0 me-3 mt-2">
+                        <li class="nav-item dropdown" style="padding-left: 860px; padding-top: 1px;">
                             <a class="btn btn-dark dropdown-toggle me-2"  style="font-size: 16px;" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
                                 <i class="las la-user"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item py-0" href="{{URL::route('courses.index')}}" style="font-size: 13px;"><i class="las la-edit" style="font-size: 24px;"></i> Edit profile</a></li>
+                                <li><a class="dropdown-item py-0" href="#" style="font-size: 13px;"><i class="las la-edit" style="font-size: 24px;"></i> Edit profile</a></li>
                                 <hr>
-                                <li><a class="dropdown-item py-0" href="{{URL::route('courses.create')}}" style="font-size: 13px;"><i class="las la-exchange-alt" style="font-size: 24px;"></i> Change Password</a></li>
+                                <li><a class="dropdown-item py-0" href="{{ URL::route('profiles.create') }}" style="font-size: 13px;"><i class="las la-exchange-alt" style="font-size: 24px;"></i> Change Password</a></li>
                                 <hr>
-                                <li class="text-center"><a class="dropdown-item py-0" href="{{URL::route('courses.create')}}"><button class="btn btn-danger" style="font-size: 13px;"><i class="las la-sign-out-alt" style="font-size: 24px;"></i></button></a></li>
+                                <li class="text-center"><a class="dropdown-item py-0" href="{{ url('/logout') }}"><button class="btn btn-danger" style="font-size: 13px;"><i class="las la-sign-out-alt" style="font-size: 24px;"></i></button></a></li>
                             </ul>
                         </li>
-                        {{-- <li class="nav-item">
-                            <a class="nav-link active text-white" href="{{url('/destroy-session')}}">Logout</a>
-                        </li> --}}
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
+    <?php
+        } else {
+    ?>
+    <h1 class="container-fluid text-center p-3" style="background-color: darkgrey;">Welcome To SRMS</h1>
+    <?php
+        }
+    ?>
     
