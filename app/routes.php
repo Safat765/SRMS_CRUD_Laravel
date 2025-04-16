@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Session;
 |
 */
 
-// Route::get('/', 'LoginController@index');
+Route::get('/', 'LoginController@create');
 Route::resource('/login', 'LoginController');
 
 Route::group(['prefix' => 'users'], function() {
@@ -34,7 +34,9 @@ Route::resource('/exams', 'ExamController');
 // Route::resource('/results', 'CourseController');
 Route::resource('/profiles', 'ProfileController');
 Route::group(['prefix' => 'profiles'], function() {
-        Route::get('/profiles/change-password', 'ProfileController@changePassword');
+        Route::get('/change-password', 'ProfileController@changePassword');
+        Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
+        // Route::get('/index', 'ProfileController@editProfile');
 });
 
 Route::get('/session', function(){

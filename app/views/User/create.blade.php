@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             {{ Form::label('userType', 'User Type', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('userType', 
                                 [
@@ -84,7 +84,7 @@
                             </span>
                             @endif
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             {{ Form::label('session', 'Session', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> (Only for students)</span>
                             {{ Form::text('session', Input::old('session'), 
                                 [
@@ -96,6 +96,22 @@
                             @if($errors->has('session'))
                             <span class="text-danger small d-block mt-1">
                                 {{ $errors->first('session') }}
+                            </span>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::select('semesterId', 
+                                ['' => 'Select Semester'] + Semester::lists('name', 'semester_id'),
+                                Input::old('semesterId', ''), [
+                                    'class' => 'form-control shadow-lg',
+                                    'required' => true
+                                ]
+                                
+                            )}}
+                            @if($errors->has('semesterId'))
+                            <span class="text-danger small d-block mt-1">
+                                {{ $errors->first('semesterId') }}
                             </span>
                             @endif
                         </div>

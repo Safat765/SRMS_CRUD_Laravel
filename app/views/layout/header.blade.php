@@ -81,7 +81,7 @@
                                 <i class="las la-user"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item py-0" href="#" style="font-size: 13px;"><i class="las la-edit" style="font-size: 24px;"></i> Edit profile</a></li>
+                                <li><a class="dropdown-item py-0" href="{{ URL::route('editProfile') }}" style="font-size: 13px;"><i class="las la-edit" style="font-size: 24px;"></i> Edit profile</a></li>
                                 <hr>
                                 <li><a class="dropdown-item py-0" href="{{ URL::route('profiles.create') }}" style="font-size: 13px;"><i class="las la-exchange-alt" style="font-size: 24px;"></i> Change Password</a></li>
                                 <hr>

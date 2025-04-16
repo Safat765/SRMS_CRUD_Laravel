@@ -62,15 +62,20 @@ class LoginController extends BaseController {
 				Session::put('password', $user->password);
 				Session::put('user_type', $user->user_type);
 				Session::put('status', $user->status);
+
 				Session::flash('success', 'Login Successful');
 
 				return View::make('dashboard');
+				die();
 			} else {
-				echo "User not found";
+				Session::flash('message', 'User not found');
+				return Redirect::to('login/create');
+				die();
 			}
 		} else {
 			Session::flash('message', 'Invalid Login');
 			return Redirect::to('login/create');
+			die();
 		}
 	}
 				

@@ -15,27 +15,27 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             {{ Form::label('oldPassword', 'Previous Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('oldPassword', null, 
+                            {{ Form::text('oldPassword', Input::old('oldPassword'), 
                                 [
                                 'class' => 'form-control shadow-lg',
                                 'placeholder' => 'Enter Previous Password',
                                 'required' => true
-                                ], Input::old('oldPassword')
+                                ]
                             )}}
                             @if($errors->has('oldPassword'))
                             <span class="text-danger small d-block mt-1">
                                 {{ $errors->first('oldPassword') }}
                             </span>
                             @endif
-                        </div>                        
+                        </div>
                         <div class="col-md-6">
                             {{ Form::label('newPassword', 'New Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('newPassword', null, 
+                            {{ Form::text('newPassword', Input::old('newPassword'), 
                                 [
                                 'class' => 'form-control shadow-lg',
                                 'placeholder' => 'Enter New Password',
                                 'required' => true
-                                ], Input::old('newPassword')
+                                ]
                             )}}
                             @if($errors->has('newPassword'))
                             <span class="text-danger small d-block mt-1">

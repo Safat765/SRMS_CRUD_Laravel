@@ -165,11 +165,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $user->user_id;
 	}
 
-	public function createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $userId)
+	public function createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId)
     {
-        // $profile = $firstName .'---'. $middleName .'---'. $lastName .'---'. $session .'---'. $departmentId .'---'. $userID;
-
-        // echo $profile;
         $insert = DB::table('profiles')->insertGetId(array(
             'user_id' => $userId, 
             'first_name' => $firstName, 
@@ -178,6 +175,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
             'registration_number' => $registrationNumber, 
             'session' => $session, 
             'department_id' => $departmentId,
+            'semester_id' => $semesterId,
             'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
             'updated_at' => ''
             )

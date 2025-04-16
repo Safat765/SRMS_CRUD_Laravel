@@ -85,15 +85,17 @@ class UserController extends \BaseController
 		$lastName = Input::get('lastName');
 		if ($userType == 3) {
 			$session = Input::get('session');
+			$semesterId = Input::get('semesterId');
 		} else {
-			$session = '';
+			$session = null;
+			$semesterId = null;
 		}
 		$departmentId = Input::get('departmentId');
 		$user = $user->createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber);
 
 		if ($user) {
 			$userId = $user->getUserId($username);
-			$profile = $user->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $userId);
+			$profile = $user->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId);
 			
 			if (!$profile) {
 				Session::flash('message', 'Failed to create profile');
