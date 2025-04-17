@@ -58,7 +58,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($exams as $exam)
+            @foreach ($results as $exam)
             <tr>
                 <td scope="row">{{ $exam->course_name }}</td>
                 <td scope="row">{{$exam->exam_title}}</td>

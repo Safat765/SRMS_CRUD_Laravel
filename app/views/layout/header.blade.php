@@ -76,7 +76,17 @@
                                 <li><a class="dropdown-item py-0" href="{{URL::route('exams.create')}}" style="font-size: 13px;">Create</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown" style="padding-left: 860px; padding-top: 1px;">
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-dark dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
+                                Marks
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-start dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item py-0" href="{{URL::route('marks.index')}}" style="font-size: 13px;">View List</a></li>
+                                <hr>
+                                <li><a class="dropdown-item py-0" href="{{URL::route('exams.create')}}" style="font-size: 13px;">Create</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown" style="padding-left: 790px; padding-top: 1px;">
                             <a class="btn btn-dark dropdown-toggle me-2"  style="font-size: 16px;" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
                                 <i class="las la-user"></i>
                             </a>

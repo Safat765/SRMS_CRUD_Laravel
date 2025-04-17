@@ -38,6 +38,10 @@ Route::group(['prefix' => 'profiles'], function() {
         Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
         // Route::get('/index', 'ProfileController@editProfile');
 });
+Route::resource('/marks', 'MarkController');
+Route::group(['prefix'=> 'marks'], function() {
+    Route::post('/students', 'MarkController@students');
+});
 
 Route::get('/session', function(){
     $all = Session::all();
