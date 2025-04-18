@@ -41,6 +41,8 @@ Route::group(['prefix' => 'profiles'], function() {
 Route::resource('/marks', 'MarkController');
 Route::group(['prefix'=> 'marks'], function() {
     Route::post('/students', 'MarkController@students');
+    Route::post('/add', 'MarkController@addMark');
+    Route::post('/go', 'MarkController@createMark');
 });
 
 Route::get('/session', function(){
