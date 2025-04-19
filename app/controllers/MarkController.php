@@ -68,7 +68,7 @@ class MarkController extends BaseController
 		p($exist);
 
 		if ($exist) {
-			Session::flash('message', 'Marks already assigned for this student - '. $data['username']);
+			Session::flash('message', 'Marks already assigned for this student - "'. $data['username'].'" for the course of "'. $data['courseName'].'"');
 			return Redirect::to('marks');
 			die();
 		}
@@ -76,7 +76,7 @@ class MarkController extends BaseController
 		// p($result);
 
 		if ($result) {
-			Session::flash('success', 'Marks added successfully for - '. $data['username']);
+			Session::flash('success', 'Marks added successfully for - "'. $data['username'].'" for the course of "'. $data['courseName'].'"');
 		} else {
 			Session::flash('message', 'Marks not added');
 		}

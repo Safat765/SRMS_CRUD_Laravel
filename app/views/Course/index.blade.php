@@ -68,7 +68,7 @@
                     </a>
                     @endif
                 </td>
-                <td>
+                <td class="d-flex justify-content-center gap-2">
                     <div class="d-flex gap-2" style="display: inline-block;">
                         @if($courses->status == 0) 
                             {{ Form::open(['url' => 'courses/' .$courses->course_id.'/edit', 'method' => 'get']) }}

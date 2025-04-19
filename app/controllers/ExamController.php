@@ -26,13 +26,14 @@ class ExamController extends \BaseController {
 			
 			$totalExams = $data['totalExams'];
 			$exams = $data['exams'];
-		} else {
-			$data = $exam->showAll();
-			$totalExams = $data['totalExams'];
-			$exams = $data['exams'];
+		} else {		
+			$results = $exam->joinTables();
+			// $data = $exam->showAll();
+			$totalExams = $results['totalExams'];
+			$exams = $results['results'];
 		}
 
-		$data = compact('exams', 'totalExams', 'search', 'results');
+		$data = compact('exams', 'totalExams', 'search');
 
 		return View::make('Exam.index')->with($data);
 	}

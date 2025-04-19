@@ -83,11 +83,35 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	
 	public function filter($search)
 	{
-		$examCount = Exam::where('exam_title', 'LIKE', '%' . $search . '%')
-		->orWhere('credit', 'LIKE', '%' . $search . '%');
-		
-		$totalExams = $examCount->count();
-		$exams = $examCount->paginate(5);
+		// echo $search;
+
+		$exams = DB::table('exams')
+		->join('courses', 'exams.course_id', '=', 'courses.course_id')
+		->join('departments', 'exams.department_id', '=', 'departments.department_id')
+		->join('semesters', 'exams.semester_id', '=', 'semesters.semester_id')
+		->join('users', 'exams.instructor_id', '=', 'users.user_id') // Fixed: should match users PK
+		->select(
+			'users.user_id as instructor_id',
+			'users.username',
+			'departments.department_id',
+			'departments.name as department_name',
+			'semesters.semester_id',
+			'semesters.name as semester_name',
+			'courses.course_id',
+			'courses.name as course_name',
+			'exams.exam_id',
+			'exams.exam_title',
+			'exams.exam_type',
+			'exams.credit',
+			'exams.marks'
+			) 
+			->where('exams.exam_title', 'LIKE', $search)
+			->orWhere('exams.credit', 'LIKE', $search)
+			->get();
+		// p($exams);
+		$totalExams = count($exams);
+		// echo $totalExams;
+		// $exams = Exam::paginate(5);
 		
 		$data = compact('exams', 'totalExams');
 		return $data;
@@ -172,7 +196,13 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 			'exams.credit',
 			'exams.marks'
 			)->get();
+		
+		
+		$totalExams = count($results);
+		// echo $totalExams;
+		
+		$data = compact('results', 'totalExams');
 
-		return $results;
+		return $data;
 	}
 }

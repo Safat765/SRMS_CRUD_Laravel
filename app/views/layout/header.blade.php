@@ -25,7 +25,8 @@
                     <ul class="nav nav-pills">
                         {{-- <li class="nav-item">
                             <a class="nav-link text-white" href="{{url('/')}}">Home</a>
-                        </li> --}}
+                        </li> --}}                        
+                        @if (Session::get('user_type') == 1)
                         <li class="nav-item dropdown">
                             <a class="btn btn-dark dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
                                 User
@@ -76,6 +77,8 @@
                                 <li><a class="dropdown-item py-0" href="{{URL::route('exams.create')}}" style="font-size: 13px;">Create</a></li>
                             </ul>
                         </li>
+                        @endif
+                        @if (Session::get('user_type') == 2)
                         <li class="nav-item dropdown">
                             <a class="btn btn-dark dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
                                 Marks
@@ -83,12 +86,23 @@
                             <ul class="dropdown-menu dropdown-menu-start dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                                 <li><a class="dropdown-item py-0" href="{{URL::route('marks.index')}}" style="font-size: 13px;">View List</a></li>
                                 <hr>
-                                <li><a class="dropdown-item py-0" href="{{URL::route('exams.create')}}" style="font-size: 13px;">Create</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item dropdown" style="padding-left: 790px; padding-top: 1px;">
+                        @endif
+                        @if (Session::get('user_type') == 3)
+                            <li class="nav-item dropdown">
+                                <a class="btn btn-dark dropdown-toggle me-2" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
+                                    Result
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-start dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
+                                    <li><a class="dropdown-item py-0" href="{{URL::route('results.index')}}" style="font-size: 13px;">View</a></li>
+                                    <hr>
+                                </ul>
+                            </li>
+                        @endif
+                        <li class="nav-item dropdown" style="padding-left: 600px; padding-top: 1px;">
                             <a class="btn btn-dark dropdown-toggle me-2"  style="font-size: 16px;" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 14px;">
-                                <i class="las la-user"></i>
+                                <i class="las la-user">{{ " ".Session::get('username') }}</i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                                 <li><a class="dropdown-item py-0" href="{{ URL::route('editProfile') }}" style="font-size: 13px;"><i class="las la-edit" style="font-size: 24px;"></i> Edit profile</a></li>

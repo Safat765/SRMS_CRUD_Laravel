@@ -113,7 +113,8 @@ class Mark extends Eloquent implements UserInterface, RemindableInterface {
                         'courses.course_id'
                     )
             ->where('exams.instructor_id', $instructorId)
-            ->groupBy('exams.semester_id')
+            ->groupBy('exams.course_id')
+            ->orderBy('exams.semester_id', 'asc')
             ->get();
             
         return $result;

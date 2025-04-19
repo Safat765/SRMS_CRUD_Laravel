@@ -44,6 +44,7 @@ Route::group(['prefix'=> 'marks'], function() {
     Route::post('/add', 'MarkController@addMark');
     Route::post('/go', 'MarkController@createMark');
 });
+Route::resource('/results', 'ResultController');
 
 Route::get('/session', function(){
     $all = Session::all();
