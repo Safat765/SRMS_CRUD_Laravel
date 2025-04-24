@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Response;
 
 class UserController extends \BaseController
 {	
@@ -24,8 +25,14 @@ class UserController extends \BaseController
 			$totalUsers = $data['totalUsers'];
 			$users = $data['users'];
 		}
+		$ADMIN = User::USER_TYPE_ADMIN;
+		$INSTRUCTOR = User::USER_TYPE_INSTRUCTOR;
+		$STUDENT = User::USER_TYPE_STUDENT;
+		$ACTIVE = User::STATUS_ACTIVE;
+		$INACTIVE = User::STATUS_INACTIVE;
+		$info = ['Admin' => $ADMIN, 'Instructor' => $INSTRUCTOR, 'Student' => $STUDENT, 'Active' => $ACTIVE, 'Inactive' => $INACTIVE];
 
-		$data = compact('users', 'totalUsers', 'search');
+		$data = compact('users', 'totalUsers', 'search', 'info');
 
 		return View::make('User.index')->with($data);
 	}
@@ -47,29 +54,33 @@ class UserController extends \BaseController
 	public function store()
 	{
 		$validator = Validator::make(Input::all(), [
-			'username' => 'required|min:3|max:20',
-			'email' => 'required|email',
+			'username' => 'required|min:3|max:20|unique:users',
+			'email' => 'required|email|unique:users',
 			'password' => 'required|min:4',
 			'userType' => 'required|in:1,2,3',
-			'registrationNumber' => 'required|min:3',
-			'phoneNumber' => 'required|numeric|digits_between:10,15',
-			'departmentId'=> 'required',
-			'firstName'=> 'required|string|min:3|max:30',
-			'middleName' => 'sometimes|string|max:50',
-			'lastName' => 'required|string|max:50'
+			'registrationNumber' => 'required|min:3|unique:users,registration_number',
+			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
+			'departmentId'=> 'required'
 		], [
 			'required' => 'The :attribute field is required.',
 			'unique' => 'This :attribute is already taken.',
+			'regex' => 'Please enter a valid phone number.',
 			'min' => 'The :attribute must be at least :min characters.',
 			'in' => 'Please select a valid :attribute.',
     		'sometimes' => 'The :attribute must be a string when provided.'
 		]);
 		
+		// if ($validator->fails()) {
+		// 	Session::flash('message', "validation fail");
+		// 	return Redirect::back()
+		// 	->withErrors($validator)
+		// 	->withInput(Input::except('password'));
+		// }
+
 		if ($validator->fails()) {
-			Session::flash('message', "validation fail");
-			return Redirect::back()
-			->withErrors($validator)
-			->withInput(Input::except('password'));
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
 		$user = new User();
 		
@@ -80,9 +91,9 @@ class UserController extends \BaseController
 		$status = User::STATUS_ACTIVE;
 		$registrationNumber = Input::get('registrationNumber');
 		$phoneNumber = Input::get('phoneNumber');
-		$firstName = Input::get('firstName');
-		$middleName = Input::get('middleName');
-		$lastName = Input::get('lastName');
+		$firstName = null;
+		$middleName = null;
+		$lastName = null;
 		if ($userType == 3) {
 			$session = Input::get('session');
 			$semesterId = Input::get('semesterId');
@@ -99,13 +110,20 @@ class UserController extends \BaseController
 			
 			if (!$profile) {
 				Session::flash('message', 'Failed to create profile');
-				return Redirect::back();
+				return Response::json([
+					'status' => 'fail',
+					'message' => 'Failed to create profile'
+				], 500);
 			}
-			Session::flash('success', 'User created successfully');
-			return Redirect::to('users');
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		} else {
 			Session::flash('message', 'Failed to create user');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'fail',
+				'message' => 'Failed to create user'
+			], 500);
 		}
 	}
 	
@@ -140,25 +158,40 @@ class UserController extends \BaseController
 		
 		
 		$validator = Validator::make(Input::all(), [
-			'userType' => 'required|in:1,2,3',
-			'status' => 'required|in:0,1',
-			'phoneNumber' => 'required|numeric|digits_between:10,15'
+			'username' => 'required|min:3|max:20|unique:users',
+			'email' => 'required|email|unique:users',
+			'password' => 'required|min:4',
+			'registrationNumber' => 'required|min:3|unique:users,registration_number',
+			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
+			'departmentId'=> 'required'
 		], [
 			'required' => 'The :attribute field is required.',
+			'unique' => 'This :attribute is already taken.',
+			'regex' => 'Please enter a valid phone number.',
 			'min' => 'The :attribute must be at least :min characters.',
-			'in' => 'Please select a valid :attribute.'
+			'in' => 'Please select a valid :attribute.',
+    		'sometimes' => 'The :attribute must be a string when provided.'
 		]);
 		
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }	
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
 		
 		$update = $user->updateUser(Input::all(), $id);
 		
 		if ($update) {
 			Session::flash('success', 'User updated successfully');
-			return Redirect::to('users');
+			// return Redirect::to('users');
+			return Response::json([
+				'status' => 'success',
+			]);
 		} else {
 			Session::flash('message', 'Failed to update user');
 			return Redirect::back();
@@ -181,7 +214,9 @@ class UserController extends \BaseController
 			return Redirect::back();
 		} else{
 			Session::flash('success', 'User deleted successfully');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		}		
 	}
 	

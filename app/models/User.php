@@ -92,7 +92,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		$userCount = User::all();
 		$totalUsers = $userCount->count();
-		$users = User::paginate(5);		
+		$users = User::orderBy('user_id', 'desc')->paginate(5);		
 		$data = compact('users', 'totalUsers');
 
 		return $data;

@@ -2,9 +2,12 @@
 @push("title")
 <title>Course View</title>
 @section('main')
-<div class="table-responsive">
+<div class="table-responsive courseIndex">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
+            <div class="p-1">
+                <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal"  class="btn btn-success m-2">Create</a>
+            </div>
             <div class="p-1">            
                 <div class="d-flex justify-content-start mb-3">
                     <a href="{{url('/courses/create')}}" class="btn btn-primary m-2">
@@ -55,24 +58,24 @@
         <tbody>
             @foreach ($course as $courses)
             <tr @if($courses->status == 0) class="disabled-row" style="opacity: 0.3;" @endif>
-                <td scope="row">{{$courses->name}}</td>
-                <td scope="row">{{$courses->credit}}</td>
-                <td scope="row">
+                <td scope="row" class="p-3">{{$courses->name}}</td>
+                <td scope="row" class="p-3">{{$courses->credit}}</td>
+                <td scope="row" class="p-3">
                     @if ($courses->status == $ACTIVE)
-                    <a href="/courses/status/{{$courses->course_id}}">
-                        <span class="badge bg-success">Active</span>
+                    <a href="" data-id="{{ $courses->course_id }}">
+                        <span class="badge bg-success" id="statusBtn" data-id="{{ $courses->course_id }}">
+                            Active
+                        </span>
                     </a>
                     @else
-                    <a href="/courses/status/{{$courses->course_id}}">
-                        <span class="badge bg-danger">Inactive</span>
+                    <a href="" data-id="{{ $courses->course_id }}">
+                        <span class="badge bg-danger" id="statusBtn" data-id="{{ $courses->course_id }}">Inactive</span>
                     </a>
                     @endif
                 </td>
-                <td class="d-flex justify-content-center gap-2">
+                <td class="d-flex justify-content-center gap-2 p-3">
                     <div class="d-flex gap-2" style="display: inline-block;">
-                        @if($courses->status == 0) 
-                            {{ Form::open(['url' => 'courses/' .$courses->course_id.'/edit', 'method' => 'get']) }}
-                            
+                        @if($courses->status == 0)                             
                             <div class="text-center">
                                 {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
                                     'class' => 'btn btn-success btn-sm',
@@ -80,22 +83,22 @@
                                     'disabled' => 'disabled'
                                 ])}}
                             </div>
-                            {{ Form::close() }}
                         @else
-                            {{ Form::open(['url' => 'courses/' .$courses->course_id.'/edit', 'method' => 'get']) }}
-                            
                             <div class="text-center">
                                 {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                    'class' => 'btn btn-success btn-sm',
-                                    'type' => 'submit'
+                                    'class' => 'btn btn-success btn-sm btnEdit',
+                                    'type' => 'submit',
+                                    'id' => 'btnEdit',
+                                    'data-bs-toggle' => 'modal',
+                                    'data-bs-target' => '#updateModal',
+                                    'data-id' => $courses->course_id,
+                                    'data-name' => $courses->name,
+                                    'data-credit' => $courses->credit
                                 ])}}
                             </div>
-                            {{ Form::close() }}
                         @endif
                         
-                        @if($courses->status == 0) 
-                            {{ Form::open(['url' => 'courses/' .$courses->course_id, 'method' => 'delete']) }}
-                            
+                        @if($courses->status == 0)
                             <div class="text-center">
                                 {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
                                     'class' => 'btn btn-danger btn-sm',
@@ -103,16 +106,15 @@
                                     'disabled' => 'disabled'
                                 ])}}
                             </div>
-                            {{ Form::close() }}
                         @else
-                            {{ Form::open(['url' => 'courses/' .$courses->course_id, 'method' => 'delete']) }}                            
-                            <div class="text-center">
+                           <div class="text-center">
                                 {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
                                     'class' => 'btn btn-danger btn-sm',
+                                    'id' => 'courseDelete',
+                                    'data-id' => $courses->course_id,
                                     'type' => 'submit'
                                 ])}}
                             </div>
-                            {{ Form::close() }}
                         @endif
                     </div>
                 </td>
@@ -121,9 +123,70 @@
         </tbody>
     </table>
     
-    {{-- <div class="text-center">
+    <div class="text-center">
         {{ $course->links() }}
-    </div> --}}
+    </div>
 </div>
 
+@include('Course.createModal')
+@include('Course.updateModal')
+
 @endsection
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+        $(document).on('click', '#courseDelete', function() {
+            let courseId = $(this).data('id');
+
+            console.log(courseId);
+            $.ajax({
+                url : `/courses/${courseId}`,
+                type : 'delete',
+                data : {id : courseId},
+                success : function (response)
+                {
+                    if (response.status === 'success') {
+                        $('.courseIndex').load(location.href + ' .courseIndex')
+                    }
+                },
+                error :function (err)
+                {
+                    if (err.status === 'error') {
+                        console.log(err.status);
+                    }
+                }
+            });
+        });
+        $(document).on('click', '#statusBtn', function(e) {
+            e.preventDefault();
+            let courseId = $(this).data('id');
+
+            let status = $("#statusBtn").text().trim();
+            console.log(courseId, status);
+            $.ajax({
+                url : `/courses/status/${courseId}`,
+                type : 'get',
+                data : {id : courseId},
+                success : function (response)
+                {
+                    if (response.status === 'success') {
+                        $('.courseIndex').load(location.href + ' .courseIndex')
+                    }
+                },
+                error :function (err)
+                {
+                    if (err.status === 'error') {
+                        console.log(err.status);
+                    }
+                }
+            });
+        });
+        
+    });
+</script>

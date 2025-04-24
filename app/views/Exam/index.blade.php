@@ -46,8 +46,8 @@
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
             <tr>
-                <th scope="col">Course</th>
-                <th scope="col">Exam Title</th>                
+                <th scope="col">Exam Title</th> 
+                <th scope="col">Course</th>               
                 <th scope="col">Department</th>
                 <th scope="col">Semester</th>
                 <th scope="col">Exam Type</th>
@@ -60,8 +60,8 @@
         <tbody>
             @foreach ($exams as $exam)
             <tr>
-                <td scope="row">{{ $exam->course_name }}</td>
                 <td scope="row">{{$exam->exam_title}}</td>
+                <td scope="row">{{ $exam->course_name }}</td>
                 <td scope="row">{{$exam->department_name}}</td>
                 <td scope="row">{{$exam->semester_name}}</td>
                 <td scope="row">

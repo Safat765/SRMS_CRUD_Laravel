@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Response;
 
 class CourseController extends \BaseController
 {
@@ -68,22 +69,51 @@ class CourseController extends \BaseController
 			'min' => 'The Course must be at least :min characters.',
 			'numeric' => 'The Course must be a number.'	
 		]);
-		
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
 		$course = new Course();
 		$exist = $course->createCourse(Input::all());
 		
 		if ($exist) {
 			Session::flash('success', 'Course created successfully');
-			return Redirect::to('courses');
+			// return Redirect::to('courses');
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		} else {
 			Session::flash('message', 'Course already exist');
 			return Redirect::back();
 		}
 	}
+
+// 	public function store()
+// {
+// 		$validator = Validator::make(Input::all(), [
+// 			'name' => 'required|min:2',
+// 			'credit' => 'required|numeric'
+// 		], [
+// 			'required' => 'The Course field is required.',
+// 			'min' => 'The Course must be at least :min characters.',
+// 			'numeric' => 'The Course must be a number.'	
+// 		]);
+
+//     if ($validator->fails()) {
+//         return Response::json([
+//             'errors' => $validator->errors()
+//         ], 422);
+//     }
+
+//     // Save course logic
+//     Course::create($input);
+
+//     return Response::json([
+//         'message' => 'Course created successfully'
+//     ], 200);
+// }
 
 
 	/**
@@ -128,6 +158,8 @@ class CourseController extends \BaseController
 	 */
 	public function update($id)
 	{
+		$name = Input::get('name');
+
 		$course = new Course();
 		$course = $course->edit($id);
 		
@@ -137,19 +169,20 @@ class CourseController extends \BaseController
 		}
 		
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3',
+			'name' => 'required|min:1|unique:courses',
 			'credit' => 'required|numeric'
 		], [
 			'required' => 'The Course field is required.',
 			'min' => 'The Course must be at least :min characters.',
 			'numeric' => 'The Course must be a number.'	
 		]);
-		
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
-		$name = Input::get('name');
+		
 		$exist = $course->searchName($name);
 
 		if ($exist) {
@@ -160,7 +193,10 @@ class CourseController extends \BaseController
 		
 		if ($update) {
 			Session::flash('success', 'Course updated successfully');
-			return Redirect::to('courses');
+			// return Redirect::to('courses');
+			return Response::json([
+				'status' => 'success',
+			]);
 		} else {
 			Session::flash('message', 'Failed to update course');
 			return Redirect::back();
@@ -187,10 +223,14 @@ class CourseController extends \BaseController
 		
 		if (!$delete) {
 			Session::flash('message', 'Failed to delete course');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		} else{
 			Session::flash('success', 'Course deleted successfully');
-			return Redirect::to('courses');
+			return Response::json([
+				'status' => 'success',
+			]);
 		}
 	}
 	
@@ -201,15 +241,21 @@ class CourseController extends \BaseController
 		
 		if (!$course) {
 			Session::flash('message', 'User not found');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		}
 		$status = $course->statusUpdate($id);
 		
 		if (!$status) {
 			Session::flash('message', 'Failed to update user status');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		} else {
-			return Redirect::back();
+			return Response::json([
+				'status' => 'success',
+			]);
 		}
 	}
 }

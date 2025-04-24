@@ -92,10 +92,10 @@ class ProfileController extends BaseController
 			'firstName'=> 'required|string|min:3|max:30',
 			'middleName' => 'sometimes|string|max:50',
 			'lastName' => 'required|string|max:50',
-			'registrationNumber' => 'required|min:3',
+			'registrationNumber' => 'required|min:3|unique:profiles,registration_number',
 			'departmentId'=> 'required',
 			'session'=> 'sometimes|min:3',
-			'semesterId'=> 'sometimes',
+			'semesterId'=> 'sometimes'
 		], [
 			'required' => 'The :attribute field is required.',
 			'unique' => 'This :attribute is already taken.',

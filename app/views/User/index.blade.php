@@ -2,14 +2,19 @@
 @push("title")
 <title>User View</title>
 @section('main')
-<div class="table-responsive">
+<div class="table-responsive userIndex">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
-            <div class="p-1">            
+            <!-- <div class="p-1">
                 <div class="d-flex justify-content-start mb-3">
                     <a href="{{url('/users/create')}}" class="btn btn-primary m-2">
                         Create User
                     </a>
+                </div>
+            </div> -->
+            <div class="p-1">
+                <div class="d-flex justify-content-start mt-2 mb-3">
+                    <button class="btn btn-success" id="createUser">Create User</button>
                 </div>
             </div>
             <div class="p-1">                       
@@ -19,8 +24,7 @@
                     </a>
                 </div>
             </div>
-        </div>
-        
+        </div>        
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
             {{ Form::open([URL::route('users.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
@@ -40,6 +44,9 @@
             {{ Form::close() }}
         </div>     
     </div>
+    <div id="createForm" style="display: none;">
+        @include('User.slideCreate', ['info' => $info])
+    </div>
     <div class="bg-warning  text-black text-center mx-5">
         <h5>Total User : {{ $totalUsers }}</h5>
     </div>
@@ -58,14 +65,14 @@
         <tbody>
             @foreach ($users as $user)
             <tr @if($user->status == 0) class="disabled-row" style="opacity: 0.3;" @endif>
-                <td scope="row">{{$user->username}}</td>
-                <td scope="row">{{$user->email}}</td>
-                <td scope="row"> 
+                <td scope="row" class="p-3">{{$user->username}}</td>
+                <td scope="row" class="p-3">{{$user->email}}</td>
+                <td scope="row" class="p-3"> 
                     {{ $user->user_type == 1 ? 'Admin' : ($user->user_type == 2 ? 'Instructor' : 'Student') }}</td>
                 </td>
-                <td scope="row">{{$user->registration_number}}</td>
-                <td scope="row">{{$user->phone_number}}</td>
-                <td scope="row">
+                <td scope="row" class="p-3">{{$user->registration_number}}</td>
+                <td scope="row" class="p-3">{{$user->phone_number}}</td>
+                <td scope="row" class="p-3">
                     @if ($user->status == 1)
                     <a href="/users/status/{{$user->user_id}}">
                         <span class="badge bg-success">Active</span>
@@ -76,52 +83,32 @@
                     </a>
                     @endif
                 </td>
-                <td>
+                <td class="p-3">
                     <div class="d-flex gap-2" style="display: inline-block;">
-                        @if($user->status == 0) 
-                            {{ Form::open(['url' => 'users/' .$user->user_id.'/edit', 'method' => 'get']) }}
-                            
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                    'class' => 'btn btn-success btn-sm',
-                                    'type' => 'submit',
-                                    'disabled' => 'disabled'
-                                ])}}
-                            </div>
-                            {{ Form::close() }}
-                        @else
-                            {{ Form::open(['url' => 'users/' .$user->user_id.'/edit', 'method' => 'get']) }}
-                            
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                    'class' => 'btn btn-success btn-sm',
-                                    'type' => 'submit'
-                                ])}}
-                            </div>
-                            {{ Form::close() }}
-                        @endif
-                        
-                        @if($user->status == 0) 
-                            {{ Form::open(['url' => 'users/' .$user->user_id, 'method' => 'delete']) }}
-                            
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
-                                    'class' => 'btn btn-danger btn-sm',
-                                    'type' => 'submit',
-                                    'disabled' => 'disabled'
-                                ])}}
-                            </div>
-                            {{ Form::close() }}
-                        @else
-                            {{ Form::open(['url' => 'users/' .$user->user_id, 'method' => 'delete']) }}                            
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
-                                    'class' => 'btn btn-danger btn-sm',
-                                    'type' => 'submit'
-                                ])}}
-                            </div>
-                            {{ Form::close() }}
-                        @endif
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
+                                'class' => 'btn btn-success btn-sm btnEdit',
+                                'type' => 'submit',
+                                'id' => 'btnEdit',
+                                'data-bs-toggle' => 'modal',
+                                'data-bs-target' => '#updateModal',
+                                'data-id' => $user->user_id,
+                                'data-username' => $user->username,
+                                'data-email' => $user->email,
+                                'data-user_type' => $user->user_type,
+                                'data-registration_number' => $user->registration_number,
+                                'data-phone_number' => $user->phone_number,
+                            ])}}
+                        </div>                            
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
+                                'class' => 'btn btn-danger btn-sm',
+                                'id' => 'deleteBtn',
+                                'data-id' => $user->user_id,
+                                'data-username' => $user->username,
+                                'type' => 'button'
+                            ])}}
+                        </div>
                     </div>
                 </td>
             </tr>
@@ -132,6 +119,49 @@
     <div class="text-center">
         {{ $users->links() }}
     </div>
+
+    @include('User.updateModal', ['info' => $info])
 </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on("click", "#deleteBtn", function(e) {
+                e.preventDefault();
+                let userId = $(this).data('id');
+                let username = $(this).data('username');
+                let row = $(this).closest("tr");
+                
+                if (confirm("Are you sure you want to delete '" + username + "' ?")) {
+                    $.ajax({
+                        url: `/users/${userId}`,
+                        type: 'delete',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                $('.userIndex').load(location.href + ' .userIndex')
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error(xhr.responseText);
+                            alert("Error deleting user. Please try again.");
+                            $('.userIndex').load(location.href + ' .userIndex')
+                        }
+                    });
+                } else {
+                    console.log("Cenceled deleting '"+ username +"'");
+                }
+
+            });
+            $(document).on("click", "#createUser", function(e) {
+                e.preventDefault();
+                $("#createForm").load('slideCreate.blade.php', function() {
+                    $(this).slideToggle(500);
+                });
+            });
+        })
+    </script>
 
 @endsection

@@ -44,7 +44,7 @@ class DepartmentController extends BaseController
 	public function store()
 	{
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3'
+			'name' => 'required|min:3|unique:departments'
 		], [
 			'required' => 'The Department field is required.',
 			'min' => 'The Department must be at least :min characters.'
@@ -100,7 +100,7 @@ class DepartmentController extends BaseController
 		}
 		
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3'
+			'name' => 'required|min:3|unique:departments'
 		], [
 			'required' => 'The Department field is required.',
 			'min' => 'The Department must be at least :min characters.'

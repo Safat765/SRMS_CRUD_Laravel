@@ -42,7 +42,7 @@ class SemesterController extends BaseController {
 	public function store()
 	{
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3'
+			'name' => 'required|min:3|unique:semesters'
 		], [
 			'required' => 'The Semester field is required.',
 			'min' => 'The Semester must be at least :min characters.'
@@ -96,7 +96,7 @@ class SemesterController extends BaseController {
 		}
 		
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3'
+			'name' => 'required|min:3|unique:semesters'
 		], [
 			'required' => 'The Semester field is required.',
 			'min' => 'The Semester must be at least :min characters.'
