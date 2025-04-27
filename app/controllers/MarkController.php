@@ -255,4 +255,9 @@ class MarkController extends BaseController
 		return Redirect::to('marks');
 		die();
 	}
+
+	public function studentList()
+	{
+		return View::make('Mark/courseWiseStudent');
+	}
 }

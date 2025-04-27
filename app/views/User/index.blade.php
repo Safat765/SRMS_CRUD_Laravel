@@ -91,7 +91,7 @@
                                 'type' => 'submit',
                                 'id' => 'btnEdit',
                                 'data-bs-toggle' => 'modal',
-                                'data-bs-target' => '#updateModal',
+                                'data-bs-target' => '#updateUserModal',
                                 'data-id' => $user->user_id,
                                 'data-username' => $user->username,
                                 'data-email' => $user->email,
@@ -99,7 +99,7 @@
                                 'data-registration_number' => $user->registration_number,
                                 'data-phone_number' => $user->phone_number,
                             ])}}
-                        </div>                            
+                        </div>
                         <div class="text-center">
                             {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
                                 'class' => 'btn btn-danger btn-sm',

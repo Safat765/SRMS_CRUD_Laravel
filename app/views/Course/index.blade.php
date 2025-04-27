@@ -75,47 +75,26 @@
                 </td>
                 <td class="d-flex justify-content-center gap-2 p-3">
                     <div class="d-flex gap-2" style="display: inline-block;">
-                        @if($courses->status == 0)                             
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                    'class' => 'btn btn-success btn-sm',
-                                    'type' => 'submit',
-                                    'disabled' => 'disabled'
-                                ])}}
-                            </div>
-                        @else
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                    'class' => 'btn btn-success btn-sm btnEdit',
-                                    'type' => 'submit',
-                                    'id' => 'btnEdit',
-                                    'data-bs-toggle' => 'modal',
-                                    'data-bs-target' => '#updateModal',
-                                    'data-id' => $courses->course_id,
-                                    'data-name' => $courses->name,
-                                    'data-credit' => $courses->credit
-                                ])}}
-                            </div>
-                        @endif
-                        
-                        @if($courses->status == 0)
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
-                                    'class' => 'btn btn-danger btn-sm',
-                                    'type' => 'submit',
-                                    'disabled' => 'disabled'
-                                ])}}
-                            </div>
-                        @else
-                           <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
-                                    'class' => 'btn btn-danger btn-sm',
-                                    'id' => 'courseDelete',
-                                    'data-id' => $courses->course_id,
-                                    'type' => 'submit'
-                                ])}}
-                            </div>
-                        @endif
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
+                                'class' => 'btn btn-success btn-sm btnEdit',
+                                'type' => 'submit',
+                                'id' => 'btnEdit',
+                                'data-bs-toggle' => 'modal',
+                                'data-bs-target' => '#updateModal',
+                                'data-id' => $courses->course_id,
+                                'data-name' => $courses->name,
+                                'data-credit' => $courses->credit
+                            ])}}
+                        </div>
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
+                                'class' => 'btn btn-danger btn-sm',
+                                'id' => 'courseDelete',
+                                'data-id' => $courses->course_id,
+                                'type' => 'submit'
+                            ])}}
+                        </div>
                     </div>
                 </td>
             </tr>

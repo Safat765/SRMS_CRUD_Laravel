@@ -158,12 +158,10 @@ class UserController extends \BaseController
 		
 		
 		$validator = Validator::make(Input::all(), [
-			'username' => 'required|min:3|max:20|unique:users',
-			'email' => 'required|email|unique:users',
-			'password' => 'required|min:4',
-			'registrationNumber' => 'required|min:3|unique:users,registration_number',
-			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
-			'departmentId'=> 'required'
+			'username' => 'required|min:3|max:20|unique:users,username,'.$id.',user_id',
+			'email' => 'required|email|unique:users,email,'.$id.',user_id',
+			'registrationNumber' => 'required|min:3|unique:users,registration_number,'.$id.',user_id',
+			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/']
 		], [
 			'required' => 'The :attribute field is required.',
 			'unique' => 'This :attribute is already taken.',

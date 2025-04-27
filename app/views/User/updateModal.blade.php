@@ -1,4 +1,4 @@
-<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
     {{ Form::open(['url' => '/users', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
         <div class="modal-dialog">
             <div class="modal-content">
@@ -120,7 +120,7 @@
             let registrationNumber = $('.registrationNumber').val();
             let phoneNumber = $('.phoneNumber').val();
 
-            console.log(userId, username, email, userType, registrationNumber, phoneNumber);
+            // console.log(userId, username, email, userType, registrationNumber, phoneNumber);
             $.ajax({
                 url : `/users/${userId}`,
                 type : 'PUT',
@@ -128,7 +128,8 @@
                 success : function (response)
                 {
                     if (response.status === 'success') {
-                        $("#updateModal").modal('hide');
+                        $('.userIndex').load(location.href + ' .userIndex')
+                        $("#updateUserModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
                         $('.courseIndex').load(location.href + ' .courseIndex')
                     }

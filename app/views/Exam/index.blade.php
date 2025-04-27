@@ -2,14 +2,19 @@
 @push("title")
 <title>Exam View</title>
 @section('main')
-<div class="table-responsive">
+<div class="table-responsive examUpdate" id="examUpdate">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
-            <div class="p-1">            
+            <!-- <div class="p-1">            
                 <div class="d-flex justify-content-start mb-3">
                     <a href="{{url('/exams/create')}}" class="btn btn-primary m-2">
                         Create exam
                     </a>
+                </div>
+            </div> -->
+            <div class="p-1">
+                <div class="d-flex justify-content-start mt-2 mb-3">
+                    <button class="btn btn-success" id="createExam">Create Exam</button>
                 </div>
             </div>
             <div class="p-1">                       
@@ -40,6 +45,9 @@
             {{ Form::close() }}
         </div>     
     </div>
+    <div id="createForm" style="display: none;">
+        @include('Exam.slideCreate', ['examType' => $examType])
+    </div>
     <div class="bg-warning  text-black text-center mx-5">
         <h5>Total Exam : {{ $totalExams }}</h5>
     </div>
@@ -60,11 +68,11 @@
         <tbody>
             @foreach ($exams as $exam)
             <tr>
-                <td scope="row">{{$exam->exam_title}}</td>
-                <td scope="row">{{ $exam->course_name }}</td>
-                <td scope="row">{{$exam->department_name}}</td>
-                <td scope="row">{{$exam->semester_name}}</td>
-                <td scope="row">
+                <td scope="row" class="p-3">{{$exam->exam_title}}</td>
+                <td scope="row" class="p-3">{{ $exam->course_name }}</td>
+                <td scope="row" class="p-3">{{$exam->department_name}}</td>
+                <td scope="row" class="p-3">{{$exam->semester_name}}</td>
+                <td scope="row" class="p-3">
                     @if($exam->exam_type == 1)
                         Mid
                     @elseif($exam->exam_type == 2)
@@ -75,30 +83,36 @@
                         Final Term
                     @endif
                 </td>
-                <td scope="row">{{$exam->credit}}</td>
-                <td scope="row">{{$exam->marks}}</td>
-                <td scope="row">{{$exam->username}}</td>
-                <td class="d-flex justify-content-center gap-2">
+                <td scope="row" class="p-3">{{$exam->credit}}</td>
+                <td scope="row" class="p-3">{{$exam->marks}}</td>
+                <td scope="row" class="p-3">{{$exam->username}}</td>
+                <td class="d-flex justify-content-center gap-2 p-3">
                     <div class="d-flex gap-2" style="display: inline-block;">
-                        <div>
-                            {{ Form::open(['url' => 'exams/' .$exam->exam_id.'/edit', 'method' => 'get']) }}    
-                                <div class="text-center">
-                                    {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                        'class' => 'btn btn-success btn-sm',
-                                        'type' => 'submit'
-                                    ])}}
-                                </div>
-                            {{ Form::close() }}
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
+                                'class' => 'btn btn-success btn-sm btnEdit',
+                                'type' => 'submit',
+                                'id' => 'btnEdit',
+                                'data-bs-toggle' => 'modal',
+                                'data-bs-target' => '#updateExamModal',
+                                'data-id' => $exam->exam_id,
+                                'data-exam_title' => $exam->exam_title,
+                                'data-course_id' => $exam->course_id,
+                                'data-department_id' => $exam->department_id,
+                                'data-semester_id' => $exam->semester_id,
+                                'data-credit' => $exam->credit,
+                                'data-exam_type' => $exam->exam_type,
+                                'data-marks' => $exam->marks,
+                                'data-instructor_id' => $exam->instructor_id,
+                            ])}}
                         </div>
-                        <div>
-                            {{ Form::open(['url' => 'exams/' .$exam->exam_id, 'method' => 'delete']) }}                            
-                            <div class="text-center">
-                                {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
-                                    'class' => 'btn btn-danger btn-sm',
-                                    'type' => 'submit'
-                                ])}}
-                            </div>
-                            {{ Form::close() }}
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
+                                'class' => 'btn btn-danger btn-sm',
+                                'id' => 'deleteBtn',
+                                'data-id' => $exam->exam_id,
+                                'type' => 'button'
+                            ])}}
                         </div>
                     </div>
                 </td>
@@ -107,6 +121,45 @@
         </tbody>
     </table>
     
+    @include('Exam.updateModal', ['examType' => $examType])
 </div>
 
 @endsection
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on("click", "#deleteBtn", function(e) {
+            e.preventDefault();
+            let id = $(this).data('id');
+
+            if (confirm("Are you sure you want to delete?")) {
+                $.ajax({
+                    url: `/exams/${id}`,
+                    type: 'delete',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            $('.examUpdate').load(location.href + ' .examUpdate')
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error(xhr.responseText);
+                        alert("Error deleting exam. Please try again.");
+                        $('.examUpdate').load(location.href + ' .examUpdate')
+                    }
+                });
+            } else {
+                console.log("Cenceled deleting.");
+            }
+        });
+        $(document).on("click", "#createExam", function(e) {
+            e.preventDefault();
+            $("#createForm").load('slideCreate', function() {
+                $(this).slideToggle(500);
+            });
+        });
+    })
+</script>

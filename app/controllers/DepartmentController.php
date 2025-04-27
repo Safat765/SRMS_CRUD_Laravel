@@ -1,12 +1,12 @@
 <?php
 
-// use App\Models\Department;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Response;
 
 
 class DepartmentController extends BaseController
@@ -18,7 +18,6 @@ class DepartmentController extends BaseController
 		
 		if ($search != '') {
 			$data = $department->filter($search);
-			
 			$totalDepartment = $data['totalDepartment'];
 			$department = $data['department'];
 		} else {
@@ -50,9 +49,15 @@ class DepartmentController extends BaseController
 			'min' => 'The Department must be at least :min characters.'
 		]);
 		
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
 		$name = Input::get('name');
 		$department = new Department();
@@ -60,7 +65,10 @@ class DepartmentController extends BaseController
 		
 		if ($exist) {
 			Session::flash('success', 'Department created successfully');
-			return Redirect::to('departments');
+			// return Redirect::to('departments');
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		} else {
 			Session::flash('message', 'Department already exist');
 			return Redirect::back();
@@ -100,15 +108,21 @@ class DepartmentController extends BaseController
 		}
 		
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:departments'
+			'name' => 'required|min:3|unique:departments,name,'.$id.',department_id',
 		], [
 			'required' => 'The Department field is required.',
 			'min' => 'The Department must be at least :min characters.'
 		]);
 		
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
 		$name = Input::get('name');
 		$exist = $department->searchName($name);
@@ -121,7 +135,9 @@ class DepartmentController extends BaseController
 		
 		if ($update) {
 			Session::flash('success', 'Department updated successfully');
-			return Redirect::to('departments');
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		} else {
 			Session::flash('message', 'Failed to update department');
 			return Redirect::back();
@@ -141,10 +157,16 @@ class DepartmentController extends BaseController
 		
 		if (!$delete) {
 			Session::flash('message', 'Failed to delete department');
-			return Redirect::back();
+			// return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		} else{
 			Session::flash('success', 'Department deleted successfully');
-			return Redirect::to('departments');
+			// return Redirect::to('departments');
+			return Response::json([
+				'status' => 'success',
+			]);
 		}
 	}
 }

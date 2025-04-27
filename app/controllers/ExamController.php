@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 
 class ExamController extends \BaseController {
 	
@@ -32,8 +33,14 @@ class ExamController extends \BaseController {
 			$totalExams = $results['totalExams'];
 			$exams = $results['results'];
 		}
+		$examType = [
+			"Mid" => Exam::EXAM_TYPE_MID,
+			"Quiz" => Exam::EXAM_TYPE_QUIZ,
+			"Viva" => Exam::EXAM_TYPE_VIVA,
+			"Final" => Exam::EXAM_TYPE_FINAL
+		];
 
-		$data = compact('exams', 'totalExams', 'search');
+		$data = compact('exams', 'totalExams', 'search', 'examType');
 
 		return View::make('Exam.index')->with($data);
 	}
@@ -83,9 +90,15 @@ class ExamController extends \BaseController {
 			'in' => 'Please select a valid :attribute.'
 		]);
 		
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
 		$exam = new Exam();
 		$data = Input::all();
@@ -101,7 +114,10 @@ class ExamController extends \BaseController {
 			if ($create) {
 				$exam = new Exam();
 				Session::flash('success', 'Exam created successfully');
-				return Redirect::to('exams');
+				// return Redirect::to('exams');
+				return Response::json([
+					'status' => 'success',
+				], 200);
 			} else {
 				Session::flash('message', 'Failed to create exam');
 				return Redirect::back();
@@ -151,44 +167,54 @@ class ExamController extends \BaseController {
 	* @return Response
 	*/
 	public function update($id)
-	{
-		$exam = new Exam();
-		$exams = $exam->edit($id);
-		
-		if (!$exams) {
-			Session::flash('message', 'Exam not found');
-			return Redirect::back();
-		}		
-		$validator = Validator::make(Input::aLL(), [
-			'courseId' => 'required',
-			'examTitle' => 'required|min:3|max:100',
-			'departmentId' => 'required',
-			'semesterId' => 'required',
-			'credit' => 'required|numeric',
-			'marks' => 'required|numeric',
-			'instructorId' => 'required'
-		], 
-		[
-			'required' => 'The :attribute field is required.',
-			'numeric' => 'The :attribute must be a number.',
-			'in' => 'Please select a valid :attribute.'
-		]);
-		
-		if ($validator->fails()) {
-			Session::flash('message', 'Fill up the criteria');
-			return Redirect::back()
-			->withErrors($validator);
-		}
-		$update = $exam->updateExam(Input::all(), $id);
+{
+    $exam = new Exam();
+    $exams = $exam->edit($id);
 
-		if ($update) {
-			Session::flash('success', 'Exam updated successfully');
-			return Redirect::to('exams');
-		} else {
-			Session::flash('message', 'Failed to update exam');
-			return Redirect::back();
-		}
-	}
+    if (!$exams) {
+        return Response::json([
+            'status' => 'error',
+            'message' => 'Exam not found'
+        ], 404);
+    }
+
+    $validator = Validator::make(Input::all(), [
+        'courseId' => 'required',
+        'examTitle' => 'required|min:3|max:100',
+        'departmentId' => 'required',
+        'semesterId' => 'required',
+        'credit' => 'required|numeric',
+        'examType' => 'required|in:1,2,3,4',
+        'marks' => 'required|numeric',
+        'instructorId' => 'required'
+    ],
+    [
+        'required' => 'The :attribute field is required.',
+        'numeric' => 'The :attribute must be a number.',
+        'in' => 'Please select a valid :attribute.'
+    ]);
+
+    if ($validator->fails()) {
+        return Response::json([
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $update = $exam->updateExam(Input::all(), $id);
+
+    if ($update) {
+        return Response::json([
+            'status' => 'success',
+            'message' => 'Exam updated successfully'
+        ], 200);
+    } else {
+        return Response::json([
+            'status' => 'error',
+            'message' => 'Failed to update exam'
+        ], 500);
+    }
+}
+
 	
 	
 	/**
@@ -213,7 +239,10 @@ class ExamController extends \BaseController {
 			return Redirect::back();
 		} else{
 			Session::flash('success', 'Exam deleted successfully');
-			return Redirect::to('exams');
+			// return Redirect::to('exams');
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		}
 	}
 	

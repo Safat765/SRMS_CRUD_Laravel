@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Response;
 		
 class SemesterController extends BaseController {
 				
@@ -42,23 +43,32 @@ class SemesterController extends BaseController {
 	public function store()
 	{
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:semesters'
+			'name' => 'required|min:3|unique:semesters,name'
 		], [
 			'required' => 'The Semester field is required.',
 			'min' => 'The Semester must be at least :min characters.'
 		]);
 		
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }
+
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
-		$name = Input::get('name');
+		$name = Input::get('semesterName');
 		$semester = new Semester();
 		$exist = $semester->createSemester($name);
 		
 		if ($exist) {
 			Session::flash('success', 'Semester created successfully');
-			return Redirect::to('semesters');
+			// return Redirect::to('semesters');
+			return Response::json([
+				'status' => 'success',
+			], 200);
 		} else {
 			Session::flash('message', 'Semester already exist');
 			return Redirect::back();
@@ -96,28 +106,37 @@ class SemesterController extends BaseController {
 		}
 		
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:semesters'
+			'name' => 'required|min:3|unique:semesters,name,'.$id.',semester_id',
 		], [
 			'required' => 'The Semester field is required.',
 			'min' => 'The Semester must be at least :min characters.'
 		]);
 		
-		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator);
-		}
-		$name = Input::get('name');
-		$exist = $semester->searchName($name);
+		// if ($validator->fails()) {
+		// 	return Redirect::back()
+		// 	->withErrors($validator);
+		// }
 
-		if ($exist) {
-			Session::flash('message', $name.' Semester already exist');
-			return Redirect::back();
+		if ($validator->fails()) {
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
 		}
+		// $name = Input::get('name');
+		// $exist = $semester->searchName($name);
+
+		// if ($exist) {
+		// 	Session::flash('message', $name.' Semester already exist');
+		// 	return Redirect::back();
+		// }
 		$update = $semester->updateSemester(Input::all(), $id);
 		
 		if ($update) {
 			Session::flash('success', 'Semester updated successfully');
-			return Redirect::to('semesters');
+			// return Redirect::to('semesters');
+			return Response::json([
+				'status' => 'success',
+			]);
 		} else {
 			Session::flash('message', 'Failed to update Semester');
 			return Redirect::back();
@@ -137,10 +156,16 @@ class SemesterController extends BaseController {
 		
 		if (!$delete) {
 			Session::flash('message', 'Failed to delete Semester');
-			return Redirect::back();
+			// return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		} else{
 			Session::flash('success', 'Semester deleted successfully');
-			return Redirect::to('semesters');
+			// return Redirect::to('semesters');
+			return Response::json([
+				'status' => 'success',
+			]);
 		}
 	}
 }
