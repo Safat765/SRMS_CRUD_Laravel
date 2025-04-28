@@ -192,4 +192,42 @@ class Mark extends Eloquent implements UserInterface, RemindableInterface {
         }
         return $results;
     }
+
+    public function viewMarks($instructorId)
+    {
+        $result = DB::table('exams')
+                ->leftJoin('courses', 'exams.course_id', '=', 'courses.course_id')
+                ->join('departments', 'exams.department_id', '=', 'departments.department_id')
+                ->join('profiles', 'exams.semester_id', '=', 'profiles.semester_id')
+                ->join('users', 'users.user_id', '=', 'profiles.user_id')
+                ->join('semesters', 'exams.semester_id', '=', 'semesters.semester_id')
+                ->leftJoin('marks', function($join) {
+                    $join->on('marks.exam_id', '=', 'exams.exam_id')
+                        ->on('marks.student_id', '=', 'profiles.user_id');
+                })
+                ->select(
+                    'exams.exam_id',
+                    'exams.marks as exam_marks', // exam marks (total marks maybe)
+                    'exams.exam_title',
+                    'profiles.user_id',
+                    'courses.course_id',
+                    'courses.name as course_name',
+                    'users.username',
+                    'users.registration_number',
+                    'users.email',
+                    'users.user_id',
+                    'departments.name as department_name',
+                    'semesters.name as semester_name',
+                    'semesters.semester_id',
+                    'marks.marks as obtained_marks', // student's marks
+                    'marks.gpa'
+                )
+                ->where('exams.instructor_id', $instructorId)
+                ->orderBy('courses.course_id')
+                ->get();
+
+        return $result;
+    }
+
+
 }

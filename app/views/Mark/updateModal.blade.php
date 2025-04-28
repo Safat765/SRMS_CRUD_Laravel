@@ -1,0 +1,134 @@
+<div class="modal fade" id="updateMarksModal" tabindex="-1" aria-labelledby="updateModalLabel">
+    <form id="updateMarksForm">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateModalLabel">Add Marks</h5>
+                    <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="errorMsgContainer">
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ Form::hidden('marksId', null, ['id' => 'updateMarksId']) }}
+                            {{ Form::hidden('totalMarks', null, ['id' => 'updateTotalMarks']) }}
+                            {{ Form::hidden('username', null, ['id' => 'updateUsername']) }}
+                            {{ Form::hidden('semesterId', null, ['id' => 'updateSemesterId']) }}
+                            {{ Form::hidden('courseId', null, ['id' => 'updateCourseId']) }}
+                            {{ Form::hidden('examId', null, ['id' => 'updateExamId']) }}
+                            {{ Form::hidden('studentId', null, ['id' => 'updateStudentId']) }}
+                            
+                            {{ Form::label('givenMark', 'Mark', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('givenMark', '', 
+                                [
+                                'class' => 'form-control shadow-lg',
+                                'id' => 'updateGivenMark',
+                                'required' => true
+                                ], Input::old('givenMark')
+                            )}}
+                        </div>
+                        <div class="col-md-6">
+                            {{ Form::label('courseName', 'Course', ['class' => 'form-label']) }}
+                            <span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('courseName', null,
+                                [
+                                'class' => 'form-control shadow-lg fw-bold',
+                                'id' => 'updateCourseName',
+                                'required' => true,
+                                'readonly' => true
+                                ]
+                            )}}
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ Form::label('semesterName', 'Semester', ['class' => 'form-label']) }}
+                            <span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('semesterName', null,
+                                [
+                                'class' => 'form-control shadow-lg fw-bold',
+                                'id' => 'updateSemesterName',
+                                'required' => true,
+                                'readonly' => true
+                                ]
+                            )}}
+                            <br>
+                        </div>
+                        <div class="col-md-6">
+                            {{ Form::label('examTitle', 'Exam Title', ['class' => 'form-label']) }}
+                            <span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::text('examTitle', null,
+                                [
+                                'class' => 'form-control shadow-lg fw-bold',
+                                'id' => 'updateExamTitle',
+                                'required' => true,
+                                'readonly' => true
+                                ]
+                            )}}
+                            <br>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="updataMarks">Update</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '#updataMarks', function(e) {
+            e.preventDefault();
+            let totalMarks = $('#updateTotalMarks').val();
+            let givenMark = $('#updateGivenMark').val();
+            let marksId = $('#updateMarksId').val();
+            let username = $('#updateUsername').val();
+            let courseName = $('#updateCourseName').val();
+            let examId = $('#updateExamId').val();
+
+            // let formdata = $('#updateMarksForm').serialize();
+            // console.log(marksId);
+            $.ajax({
+                url: `/marks/${marksId}`,
+                method: 'PUT', // Specify the HTTP method
+                data: {
+                    totalMarks: totalMarks,
+                    givenMark: givenMark,
+                    username : username,
+                    courseName : courseName,
+                    examId : examId
+                },
+                success: function(response) {
+                    // Handle success
+                    if (response.status === 'success') {
+                        $('#studentList').load(location.href + ' #studentList')
+                        $('#marksIndex').load(location.href + ' #marksIndex')
+                        $("#updateMarksModal").modal('hide');
+                        $("#updateMarksModal").trigger("reset");
+                    }
+                },                
+                error: function(response) {
+                    try {
+                        if (response.responseJSON.status === 'error') { // notice: use response.responseJSON
+                            alert(response.responseJSON.message);
+                        }
+                    } catch (e) {
+                        alert("An unexpected error occurred.");
+                    }
+                }
+            });
+        });
+        $(document).on('click', '.close', function(e) {
+            e.preventDefault();
+            $("#updateMarksModal").trigger("reset");
+            $('.errorMsgContainer').text("");
+        });
+    });
+</script>

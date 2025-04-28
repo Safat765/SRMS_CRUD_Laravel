@@ -107,7 +107,7 @@
         <div class="collapse ps-4 w-100" id="marksMenu">
             <a href="{{ URL::route('marks.index') }}" class="btn btn-outline-secondary fs-6 mb-3">Assigned Course</a>
             <hr>
-            <a href="{{url('marks/instructor/students')}}" class="btn btn-outline-secondary fs-6 mb-3">View marks</a>
+            <a href="{{url('marks/all/students')}}" class="btn btn-outline-secondary fs-6 mb-3">View marks</a>
         </div>
         @endif
         @if (Session::get('user_type') == 3)

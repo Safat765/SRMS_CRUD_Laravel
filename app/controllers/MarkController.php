@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
 
 class MarkController extends BaseController
 {				
@@ -34,24 +36,36 @@ class MarkController extends BaseController
 				
 	public function createMark()
 	{
-		// p(Input::all());
+		// Get all the input data
 		$data = Input::all();
 		$totalMarks = Input::get('totalMarks');
 		$givenMarks = Input::get('givenMark');
 
-		if ($totalMarks < $givenMarks) {
-			Session::flash('message', "Total marks must me within the range of 0 to $totalMarks");
-			return Redirect::to('marks');
-		} elseif ($givenMarks < 0) {
-			Session::flash('message', "Total marks must me within the range of 0 to $totalMarks");
-			return Redirect::to('marks');
-		} elseif (empty($givenMarks)) {
-			Session::flash('message', "Enter the Marks first");
-			return Redirect::to('marks');
+		// Check if the given marks are empty
+		if (empty($givenMarks)) {
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Enter the Marks first'
+			], 400);
 		}
-		$percentage = ($givenMarks / $totalMarks) * 100;
-		// echo "<br>". $percentage;
 
+		// Validate that the given marks are not greater than the total marks
+		if ($totalMarks < $givenMarks) {
+			return Response::json([
+				'status' => 'error',
+				'message' => "Total marks must be within the range of 0 to $totalMarks"
+			], 400);
+		} elseif ($givenMarks < 0) {
+			return Response::json([
+				'status' => 'error',
+				'message' => "Marks cannot be negative"
+			], 400);
+		}
+
+		// Calculate the percentage
+		$percentage = ($givenMarks / $totalMarks) * 100;
+
+		// GPA calculation based on percentage
 		if ($percentage >= 90) $gpa = 4.00;
 		elseif ($percentage >= 85) $gpa = 3.75;
 		elseif ($percentage >= 80) $gpa = 3.50;
@@ -62,28 +76,33 @@ class MarkController extends BaseController
 		elseif ($percentage >= 50) $gpa = 2.25;
 		else $gpa = 0.00;
 
-		// echo "<br>". $gpa;
+		// Check if marks already exist for the student and exam
 		$mark = new Mark();
 		$exist = $mark->existOrNot($data['studentId'], $data['examId']);
-		p($exist);
 
 		if ($exist) {
-			Session::flash('message', 'Marks already assigned for this student - "'. $data['username'].'" for the course of "'. $data['courseName'].'"');
-			return Redirect::to('marks');
-			die();
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Marks already assigned for this student.'
+			], 400);
 		}
+
+		// Create the marks record
 		$result = $mark->createMarks($data, $gpa);
-		// p($result);
 
 		if ($result) {
-			Session::flash('success', 'Marks added successfully for - "'. $data['username'].'" for the course of "'. $data['courseName'].'"');
+			return Response::json([
+				'status' => 'success',
+				'message' => 'Marks added successfully for student - "'. $data['username'].'" for the course of "'. $data['courseName'].'"'
+			], 200);
 		} else {
-			Session::flash('message', 'Marks not added');
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Marks not added'
+			], 500);
 		}
-
-		return Redirect::to('marks');
-		die();
 	}
+
 				
 	public function store()
 	{
@@ -157,46 +176,54 @@ class MarkController extends BaseController
 				
 	public function edit($studentId)
 	{
-		// echo "edit --".$studentId;
 		$records = Input::all();
-		// p($records);
-		// Show edit form
+		$examId = Input::get('examId');
+        
+        if (empty($examId)) {
+            return Response::json([
+                'status' => 'error',
+                'message' => 'Exam ID is required'
+            ], 400);
+        }
 		$mark = new Mark();
 		$records = $mark->editMarks($studentId, $records['examId']);
-		// p($records);
-		// echo "<br>";
-		$pageName = "Edit Marks";
 
 		if ($records) {
-			$data = compact('records', 'pageName');
-			return View::make('Mark/update')->with($data);
+			return Response::json([
+				'status' => 'success',
+				'records' => $records
+			], 200); 
 		} else {
-			Session::flash('message', 'Student not added');
-			return Redirect::to('marks');
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Student not found'
+			], 404);
 		}
 	}
 				
 	public function update($id)
 	{
-		// Handle update
-		echo "update --".$id;
 		$records = Input::all();
-		p($records);
 		$totalMarks = $records['totalMarks'];
 		$givenMarks = $records['givenMark'];
 
 		if ($totalMarks < $givenMarks) {
-			Session::flash('message', "Total marks must me within the range of 0 to $totalMarks");
-			return Redirect::to('marks');
+			return Response::json([
+				'status'=> 'error',
+				'message'=> "Total marks must me within the range of 0 to $totalMarks"
+			]);
 		} elseif ($givenMarks < 0) {
-			Session::flash('message', "Total marks must me within the range of 0 to $totalMarks");
-			return Redirect::to('marks');
+			return Response::json([
+				'status'=> 'error',
+				'message'=> "Total marks must me within the range of 0 to $totalMarks"
+			]);
 		} elseif (empty($givenMarks)) {
-			Session::flash('message', "Enter the Marks first");
-			return Redirect::to('marks');
+			return Response::json([
+				'status'=> 'error',
+				'message'=> "Enter the Marks first"
+			]);
 		}
 		$percentage = ($givenMarks / $totalMarks) * 100;
-		// echo "<br>". $percentage;
 
 		if ($percentage >= 90) $gpa = 4.00;
 		elseif ($percentage >= 85) $gpa = 3.75;
@@ -210,24 +237,28 @@ class MarkController extends BaseController
 		
 		$mark = new Mark();
 		$exist = $mark->marksExistOrNot($id);
-		// p($exist);
 
 		if (!$exist) {
-			Session::flash('message', 'Marks not assigned for this student. Assign the marks first');
-			return Redirect::to('marks');
-			die();
+			return Response::json([
+				'status'=> 'error',
+				'message'=> 'Marks not assigned for this student. Assign the marks first'
+			]);
 		}
 		$result = $mark->updateMarks($id, $givenMarks, $gpa);
-		p($result);
 
 		if ($result) {
 			Session::flash('success', 'Marks Updated successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
+			return Response::json([
+				'status'=> 'success',
+				'message'=> 'Marks Updated successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\""
+			]);
 		} else {
 			Session::flash('message', 'Failes to update marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
+			return Response::json([
+				'status'=> 'error',
+				'message'=> 'Failes to update marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\""
+			]);
 		}
-
-		return Redirect::to('marks');
-		die();
 	}
 				
 	public function destroy($id)
@@ -252,12 +283,17 @@ class MarkController extends BaseController
 		} else {
 			Session::flash('message', 'Failes to Delete marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
 		}
-		return Redirect::to('marks');
+		return Redirect::to('marks/all/students');
 		die();
 	}
 
 	public function studentList()
 	{
-		return View::make('Mark/courseWiseStudent');
+		$marks = new Mark();
+		$results = $marks->viewMarks(Session::get("user_id"));
+		// p($results);
+		return View::make('Mark/courseWiseStudent')->with([
+			'results'=> $results
+		]);
 	}
 }

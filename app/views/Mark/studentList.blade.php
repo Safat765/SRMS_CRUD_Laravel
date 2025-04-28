@@ -4,7 +4,7 @@
 <title>Student List</title>
 @section('main')
 
-<div class="table-responsive pt-5">
+<div class="table-responsive pt-5" id="studentList">
     <div class="bg-warning text-black text-center mx-5">
         <h5>Total Students : {{ $totalStudent }}</h5>
     </div>
@@ -63,7 +63,7 @@
                                 </div>
 
                                 {{-- Edit --}}
-                                {{ Form::open(['url' => '/marks/'.$result->user_id.'/edit', 'method' => 'get']) }}
+                                <!-- {{ Form::open(['url' => '/marks/'.$result->user_id.'/edit', 'method' => 'get']) }}
                                     {{ Form::hidden('examId', $result->exam_id) }}
                                     <div class="text-center">
                                         {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
@@ -71,7 +71,16 @@
                                             'type' => 'submit'
                                         ])}}
                                     </div>
-                                {{ Form::close() }}
+                                {{ Form::close() }} -->
+                                <div class="text-center">
+                                    {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
+                                        'class' => 'btn btn-warning btn-sm',
+                                        'type' => 'submit',
+                                        'id' => 'marksUpdate',
+                                        'data-studentid' => $result->user_id,
+                                        'data-examid' => $result->exam_id,
+                                    ])}}
+                                </div>
 
                                 {{-- Delete --}}
                                 {{ Form::open(['url' => '/marks/'.$result->user_id, 'method' => 'delete']) }}
@@ -93,25 +102,25 @@
                                         'disabled' => 'disabled'
                                     ]) }}
                                 </div>
-                                
-                                {{ Form::open(['url' => '/marks/add', 'method' => 'post']) }}
-                                    {{ Form::hidden('studentId', $result->user_id) }}
-                                    {{ Form::hidden('username', $result->username) }}
-                                    {{ Form::hidden('courseId', $result->course_id) }}
-                                    {{ Form::hidden('courseName', $result->course_name) }}
-                                    {{ Form::hidden('departmentName', $result->department_name) }}
-                                    {{ Form::hidden('examId', $result->exam_id) }}
-                                    {{ Form::hidden('examTitle', $result->exam_title) }}
-                                    {{ Form::hidden('semesterId', $result->semester_id) }}
-                                    {{ Form::hidden('semesterName', $result->semester_name) }}
-                                    {{ Form::hidden('marks', $result->marks) }}
-                                    <div class="text-center">
-                                        {{ Form::button(HTML::decode('<i class="las la-plus"></i>'), [
-                                            'class' => 'btn btn-success btn-sm',
-                                            'type' => 'submit'
-                                        ])}}
-                                    </div>
-                                {{ Form::close() }}
+                                <div class="text-center">
+                                    {{ Form::button(HTML::decode('<i class="las la-plus"></i>'), [
+                                        'class' => 'btn btn-success btn-sm',
+                                        'type' => 'submit',
+                                        'id' => 'marksCreate',
+                                        'data-bs-toggle' => 'modal',
+                                        'data-bs-target' => '#updateUserModal',
+                                        'data-studentid' => $result->user_id,
+                                        'data-username' => $result->username,
+                                        'data-courseid' => $result->course_id,
+                                        'data-cname' => $result->course_name,
+                                        'data-depName' => $result->department_name,
+                                        'data-examid' => $result->exam_id,
+                                        'data-etitle' => $result->exam_title,
+                                        'data-semesterid' => $result->semester_id,
+                                        'data-semname' => $result->semester_name,
+                                        'data-marks' => $result->marks,
+                                    ])}}
+                                </div>
                                 <div class="text-center">
                                     {{ Form::button('<i class="las la-edit"></i>', [
                                         'class' => 'btn btn-warning btn-sm',
@@ -133,4 +142,51 @@
     </table>
 </div>
 <br><hr><hr><br><br>
+@include('Mark.createModal')
+@include('Mark.updateModal')
 @endsection
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '#marksUpdate', function() {
+            let userId = $(this).data('studentid');
+            let examId = $(this).data('examid');
+            
+            $.ajax({
+                url : `/marks/${userId}/edit`,
+                method: 'GET',
+                data: {examId : examId},
+                
+                success:function(response)
+                {
+                    if (response.status == 'success') {
+                        console.log('Data fetched successfully:', response.records);
+                        let data = response.records[0];
+                        // console.log(data);
+                        
+                        $('#updateTotalMarks').val(data.total_marks);
+                        $('#updateUsername').val(data.username);
+                        $('#updateStudentId').val(data.user_id);
+                        $('#updateExamTitle').val(data.exam_title);
+                        $('#updateExamId').val(data.exam_id);
+                        $('#updateSemesterName').val(data.semester_name);
+                        $('#updateSemesterId').val(data.semester_id);
+                        $('#updateCourseName').val(data.course_name);
+                        $('#updateCourseId').val(data.course_id);
+                        $('#updateGivenMark').val(data.given_marks);
+                        $('#updateMarksId').val(data.mark_id);
+
+                        $('#updateMarksModal').modal('show');
+                    }
+                },
+                error:function(xhr)
+                {
+                    console.log(xhr.responseText);
+                    alert('Something went wrong while fetching student marks!');
+                }
+            });
+        });
+    });
+</script>
