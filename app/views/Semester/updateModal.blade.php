@@ -67,6 +67,13 @@
                         $('.semesterUpdate').load(location.href + ' .semesterUpdate')
                         $("#updateSemesterModal").modal('hide');
                         $("#semesterUpdate").trigger("reset");
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Your work has been saved",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

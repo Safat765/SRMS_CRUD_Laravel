@@ -86,6 +86,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -120,6 +121,16 @@
             let registrationNumber = $('.registrationNumber').val();
             let phoneNumber = $('.phoneNumber').val();
 
+            if (!userId && !username && !email && !userType && !registrationNumber && !phoneNumber) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup all the field first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             // console.log(userId, username, email, userType, registrationNumber, phoneNumber);
             $.ajax({
                 url : `/users/${userId}`,
@@ -131,7 +142,12 @@
                         $('.userIndex').load(location.href + ' .userIndex')
                         $("#updateUserModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
-                        $('.courseIndex').load(location.href + ' .courseIndex')
+                        $('.courseIndex').load(location.href + ' .courseIndex');
+                        Swal.fire({
+                            title: "User updated successfully!",
+                            icon: "success",
+                            draggable: true
+                        });
                     }
                 },
                 error :function (err)

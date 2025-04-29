@@ -149,7 +149,7 @@ class ExamController extends \BaseController {
 		$exam = new Exam();
 		$pageName = "Edit Exam";		
 		$url = url('/exams/'.$id);
-		$exams = $exam->edit($id);
+		$exams = $exam->ediFind($id);
 		$data = compact('exams', 'url', 'pageName');
 
 		if (empty($exams) || $exams->count() == 0) {
@@ -167,53 +167,53 @@ class ExamController extends \BaseController {
 	* @return Response
 	*/
 	public function update($id)
-{
-    $exam = new Exam();
-    $exams = $exam->edit($id);
+	{
+		$exam = new Exam();
+		$examFind = $exam->ediFind($id);
 
-    if (!$exams) {
-        return Response::json([
-            'status' => 'error',
-            'message' => 'Exam not found'
-        ], 404);
-    }
+		if (!$examFind) {
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Exam not found'
+			], 404);
+		}
 
-    $validator = Validator::make(Input::all(), [
-        'courseId' => 'required',
-        'examTitle' => 'required|min:3|max:100',
-        'departmentId' => 'required',
-        'semesterId' => 'required',
-        'credit' => 'required|numeric',
-        'examType' => 'required|in:1,2,3,4',
-        'marks' => 'required|numeric',
-        'instructorId' => 'required'
-    ],
-    [
-        'required' => 'The :attribute field is required.',
-        'numeric' => 'The :attribute must be a number.',
-        'in' => 'Please select a valid :attribute.'
-    ]);
+		$validator = Validator::make(Input::all(), [
+			'courseId' => 'required',
+			'examTitle' => 'required|min:3|max:100',
+			'departmentId' => 'required',
+			'semesterId' => 'required',
+			'credit' => 'required|numeric',
+			'examType' => 'required|in:1,2,3,4',
+			'marks' => 'required|numeric',
+			'instructorId' => 'required'
+		],
+		[
+			'required' => 'The :attribute field is required.',
+			'numeric' => 'The :attribute must be a number.',
+			'in' => 'Please select a valid :attribute.'
+		]);
 
-    if ($validator->fails()) {
-        return Response::json([
-            'errors' => $validator->errors()
-        ], 422);
-    }
+		if ($validator->fails()) {
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
+		}
 
-    $update = $exam->updateExam(Input::all(), $id);
+		$update = $exam->updateExam(Input::all(), $id);
 
-    if ($update) {
-        return Response::json([
-            'status' => 'success',
-            'message' => 'Exam updated successfully'
-        ], 200);
-    } else {
-        return Response::json([
-            'status' => 'error',
-            'message' => 'Failed to update exam'
-        ], 500);
-    }
-}
+		if ($update) {
+			return Response::json([
+				'status' => 'success',
+				'message' => 'Exam updated successfully'
+			], 200);
+		} else {
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Failed to update exam'
+			], 500);
+		}
+	}
 
 	
 	
@@ -226,7 +226,7 @@ class ExamController extends \BaseController {
 	public function destroy($id)
 	{
 		$exam = new Exam();
-		$exam = $exam->edit($id);
+		$exam = $exam->ediFind($id);
 		
 		if (!$exam) {
 			Session::flash('message', 'Exam not found');

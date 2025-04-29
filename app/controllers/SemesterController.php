@@ -48,18 +48,13 @@ class SemesterController extends BaseController {
 			'required' => 'The Semester field is required.',
 			'min' => 'The Semester must be at least :min characters.'
 		]);
-		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$name = Input::get('semesterName');
+		$name = Input::get('name');
 		$semester = new Semester();
 		$exist = $semester->createSemester($name);
 		
@@ -68,10 +63,14 @@ class SemesterController extends BaseController {
 			// return Redirect::to('semesters');
 			return Response::json([
 				'status' => 'success',
+				'message'=> 'Semester created successfully'
 			], 200);
 		} else {
 			Session::flash('message', 'Semester already exist');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+				'message'=> 'Semester already exist'
+			], 403);
 		}
 	}
 				

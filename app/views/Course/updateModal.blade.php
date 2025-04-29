@@ -46,6 +46,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -62,7 +63,7 @@
             $('.name').val(name1);
             $('.credit').val(credit1);
 
-            console.log(courseId, name1, credit1);
+            // console.log(courseId, name1, credit1);
         });
 
         $(document).on('click', '.updateCourse', function(e) {
@@ -71,7 +72,17 @@
             let name1 = $('#name1').val();
             let credit1 = $('#credit1').val();
 
-            console.log(id, name1, credit1);
+            // console.log(id, name1, credit1);
+            if (!id && !name1 && !credit1) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url : `/courses/${id}`,
                 type : 'PUT',
@@ -81,7 +92,14 @@
                     if (response.status === 'success') {
                         $("#updateModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
-                        $('.courseIndex').load(location.href + ' .courseIndex')
+                        $('.courseIndex').load(location.href + ' .courseIndex');                        
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "User created successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

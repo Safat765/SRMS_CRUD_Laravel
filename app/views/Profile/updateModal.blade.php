@@ -1,9 +1,9 @@
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     {{ Form::open(['url' => '/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseCreate']) }}
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Create Course</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Create Profile</h5>
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -11,41 +11,46 @@
 
                     </div>
                     <div class="row mb-3">
+                            {{ Form::hidden('userId', Session::get('user_id'), ['id' => 'updateUserId']) }}
                             <div class="col-md-6">
-                                {{ Form::label('name', 'Course name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                                {{ Form::text('name', Input::old('name'), 
+                                {{ Form::label('firstName', 'First name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::text('firstName', null, 
                                     [
                                     'class' => 'form-control shadow-lg name',
-                                    'placeholder' => 'Enter Course name',
+                                    'placeholder' => 'Enter First name',
+                                    'id' => 'updateFirstName',
                                     'required' => true
                                     ]
                                 )}}
-                                @if($errors->has('name'))
-                                <span class="text-danger small d-block mt-1">
-                                    {{ $errors->first('name') }}
-                                </span>
-                                @endif
-                            </div>                        
+                            </div>
                             <div class="col-md-6">
-                                {{ Form::label('credit', 'Credit', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                                {{ Form::text('credit', Input::old('credit'), 
+                                {{ Form::label('middleName', 'Middle name', ['class' => 'form-label']) }}
+                                {{ Form::text('middleName', null, 
                                     [
-                                    'class' => 'form-control shadow-lg credit',
-                                    'placeholder' => 'Enter Credit',
+                                    'class' => 'form-control shadow-lg name',
+                                    'placeholder' => 'Enter Middle name',
+                                    'id' => 'updateMiddleName',
                                     'required' => true
                                     ]
                                 )}}
-                                @if($errors->has('email'))
-                                <span class="text-danger small d-block mt-1">
-                                    {{ $errors->first('credit') }}
-                                </span>
-                                @endif
+                                <br>
+                            </div>
+                            <div class="col-md-6">
+                                {{ Form::label('lastName', 'Last name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::text('lastName', null, 
+                                    [
+                                    'class' => 'form-control shadow-lg name',
+                                    'placeholder' => 'Enter Last name',
+                                    'id' => 'updateLastName',
+                                    'required' => true
+                                    ]
+                                )}}
                             </div>
                         </div>
                     </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary addCourse">Create</button>
+                    <button type="button" class="btn btn-primary" id="updateProfile">Update</button>
                 </div>
             </div>
         </div>
@@ -61,12 +66,14 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
-        $(document).on('click', '.addCourse', function(e) {
+        $(document).on('click', '#updateProfile', function(e) {
             e.preventDefault();
-            let name = $('.name').val();
-            let credit = $('.credit').val();
+            let firstName = $('#updateFirstName').val();
+            let middleName = $('#updateMiddleName').val();
+            let lastName = $('#updateLastName').val();
+            let userId = $('#updateUserId').val();
 
-            if (!name && !credit) {
+            if (!firstName && !middleName && !lastName) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
@@ -76,20 +83,21 @@
             }
             $('.errorMsgContainer').html("");
 
+            console.log(firstName, middleName, lastName);
             $.ajax({
-                url : "{{ URL::route('courses.store') }}",
-                type : 'post',
-                data : {name : name, credit : credit},
+                url : `/profiles/add/${userId}`,
+                type : 'get',
+                data : {firstName : firstName, middleName : middleName, lastName : lastName},
                 success : function (response)
                 {
                     if (response.status === 'success') {
-                        $("#exampleModal").modal('hide');
-                        $("#courseCreate").trigger("reset");
-                        $('.courseIndex').load(location.href + ' .courseIndex')
+                        $("#updateProfileModal").modal('hide');
+                        $("#updateProfileModal").trigger("reset");
+                        $('#editProfileForm').load(location.href + ' #editProfileForm');
                         Swal.fire({
                             position: "top-end",
                             icon: "success",
-                            title: "User created successfully",
+                            title: "User Updated successfully",
                             showConfirmButton: false,
                             timer: 1500
                         });
@@ -106,7 +114,7 @@
         });
         $(document).on('click', '.close', function(e) {
             e.preventDefault();
-            $("#exampleModal").trigger("reset");
+            $('#editProfileForm').load(location.href + ' #editProfileForm');
             $('.errorMsgContainer').text("");
         });
     });

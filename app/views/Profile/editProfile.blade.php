@@ -2,7 +2,7 @@
 @push("title")
     <title>Semester View</title>
 @section('main')
-<div class="table-responsive pt-5">
+<div class="table-responsive pt-5" id="editProfileForm">
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
             <tr>
@@ -27,15 +27,19 @@
         </thead>
         <tbody>
             <?php
-                $value = Session::get('user_type');
-                if ($value != 3) {
                     $colValue = 6;
-                    if (empty($user)) {
+                    if (empty($user->first_name) && empty($user->last_name)) {
                     
             ?>
-                    <td scope="row" colspan={{ $colValue }}><h3>Profile has not created yet</h3></tr>
+                <td scope="row" colspan={{ $colValue }}><h3>Add name first</h3>
+                    {{ Form::button('Add Profile', [
+                        'class' => 'btn btn-success btn-sm',
+                        'id' => 'addProfile',
+                        'data-id' => Session::get('user_id'),
+                        'type' => 'button'
+                    ])}}
+                </td>
             <?php
-                    }
                 } else {
             ?>
 
@@ -49,7 +53,7 @@
                         if ($value == 3) {
                     ?>                        
                             <td scope="row">{{$user->session}}</td>
-                            <td scope="row">{{$user->semester_name}}</td>
+                            <td scope="row">{{isset($user->semester_name) ? $user->semester_name : null }}</td>
                     <?php
                         }
                     ?>
@@ -65,15 +69,24 @@
                                     ])}}
                                 </div>
                             {{ Form::close() }}
-                            {{ Form::open(['url' => 'profiles/' .$user->profile_id.'/edit', 'method' => 'get']) }}
+                                <div class="text-center">
+                                    {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
+                                        'class' => 'btn btn-success btn-sm',
+                                        'id' => 'editProfile',
+                                        'data-user_id' => $user->user_id,
+                                        'type' => 'submit'
+                                    ])}}
+                                </div>
+                            <!-- {{ Form::open(['url' => 'profiles/' .$user->profile_id.'/edit', 'method' => 'get']) }}
                                 
                                 <div class="text-center">
                                     {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
                                         'class' => 'btn btn-success btn-sm',
+                                        'id' => 'editProfile',
                                         'type' => 'submit'
                                     ])}}
                                 </div>
-                            {{ Form::close() }}
+                            {{ Form::close() }} -->
                         </div>
                     </td>
                 </tr>
@@ -83,5 +96,64 @@
         </tbody>
     </table>
 </div>
-
+@include('Profile.addNameModal')
+@include('Profile.updateModal')
 @endsection
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>    
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(document).on('click', '#editProfile', function(e) {
+            e.preventDefault();
+            let profileId = $(this).data('user_id');
+            console.log(profileId);
+
+            $.ajax({
+                url: `/profiles/${profileId}/edit`,
+                type: 'get',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        console.log(response.records);
+                        let data = response.records;
+                        $('#updateFirstName').val(data.first_name);
+                        $('#updateMiddleName').val(data.middle_name);
+                        $('#updateLastName').val(data.last_name);
+                        $('#updateProfileModal').modal('show');
+                    }
+                },
+                error: function(response) {
+                    if (response.status === 'error') {
+                        console.log('error');
+                    }
+                }
+            });
+        });
+        
+        $(document).on('click', '#addProfile', function(e) {
+            e.preventDefault();
+            let userId = $(this).data('id');
+            console.log('Hello! User id is : '+userId);
+
+            $.ajax({
+                url: `/profiles/search/${userId}`,
+                type: 'get',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        $('#createProfileModal').modal('show');
+                    }
+                },
+                error: function(response) {
+                    if (response.status === 'error') {
+                        console.log('error');
+                    }
+                }
+            });
+        });
+    });
+</script>

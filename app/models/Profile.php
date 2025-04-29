@@ -78,15 +78,29 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
     public function joinProfile($userID)
     {
         $result = DB::table('profiles')
-            ->where('profiles.user_id', $userID)
-            ->join('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
             ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
             ->select(
-                    'profiles.*', 
+                    'profiles.*',
+                    'departments.department_id', 
+                    'departments.name as department_name')                    
+            ->where('profiles.user_id', $userID)
+            ->first();
+        
+        return $result;
+    }
+    public function joinProfileWithSemester($userID)
+    {
+        $result = DB::table('profiles')
+        ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
+
+            ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
+            ->select(
+                    'profiles.*',
                     'semesters.name as semester_name', 
                     'semesters.semester_id', 
                     'departments.department_id', 
-                    'departments.name as department_name')
+                    'departments.name as department_name')                    
+            ->where('profiles.user_id', $userID)
             ->first();
         
         return $result;
@@ -123,6 +137,43 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
                     'semester_id' => $data['semesterId'],
                     'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
         ]);
+
+        return $update;
+    }
+    public function existProfile($userID)
+    {
+        $result = DB::table('profiles')
+            ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
+            ->select(
+                    'profiles.*', 
+                    'profiles.user_id as profile_user_id', 
+                    'departments.department_id', 
+                    'departments.name as department_name')                    
+            ->where('profiles.user_id', $userID)
+            ->first();
+        
+        return $result;
+    }
+
+    
+    public function addName(array $data)
+    {
+        $update = DB::table('profiles')
+                ->where('user_id', $data['userId'])                
+                ->update([
+                    'first_name' => $data['firstName'],
+                    'middle_name' => $data['middleName'],
+                    'last_name' => $data['lastName'],
+                    'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
+        ]);
+
+        return $update;
+    }
+    public function edit($id)
+    {
+        $update = DB::table('profiles')
+                ->where('user_id', $id)
+                ->select('profiles.*');
 
         return $update;
     }

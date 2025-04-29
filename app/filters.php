@@ -1,5 +1,14 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Input;
+
 /*
 |--------------------------------------------------------------------------
 | Application & Route Filters
@@ -12,8 +21,17 @@
 */
 
 App::before(function($request)
-{
-	//
+{ 
+	$publicRoutes = ['login', 'login/create'];
+
+    // Get the current path (e.g., /profile, /login)
+    $path = $request->path();
+
+    // Check if the user is logged in and if the route requires authentication
+    if (!in_array($path, $publicRoutes) && !Session::has('user_id')) {
+        // Redirect to login page if the user is not logged in and the route is protected
+        return Redirect::to('login/create')->with('message', 'You need to log in first.');
+    }
 });
 
 

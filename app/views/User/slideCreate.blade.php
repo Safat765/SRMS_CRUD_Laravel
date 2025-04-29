@@ -144,6 +144,7 @@
 <br><hr><br>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>    
     $(document).ready(function() {
         $.ajaxSetup({
@@ -183,6 +184,16 @@
             var phoneNumber = $("#phoneNumber").val();
             var departmentId = $("#departmentId").val();
             // console.log(values);
+            if (!username && !email && !password && !userType && !session && !semesterId && !registrationNumber && !phoneNumber && !departmentId) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url: "{{ route('users.store') }}",
                 type: 'POST',
@@ -194,8 +205,15 @@
                         $('.userForm').load(location.href + ' .userForm', function() {
                             $(this).slideUp();
                         });
-                        $('.table').load(location.href + ' .table');
+                        $('#userIndex').load(location.href + ' #userIndex');
                         $('.errorMsgContainer').text("");
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "User created successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

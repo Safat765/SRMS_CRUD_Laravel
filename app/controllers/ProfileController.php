@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
+
 
 class ProfileController extends BaseController
 {				
@@ -75,15 +78,26 @@ class ProfileController extends BaseController
 		return View::make("Profile/update")->with($data);
 	}
 				
-	public function edit($id)
+	public function edit($userID)
 	{
-		$title = "Edit Profile";
-		$pageName = "Edit Profile";
-		$url = '/profiles/'.$id;
 		$profile = new Profile();
-		$user = $profile->joinProfile(Session::get('user_id'));
-		$data = compact('title', 'pageName', 'user', 'url');
-		return View::make("Profile/update")->with($data);
+		if (Session::get("user_type") == 3) {
+			$user = $profile->joinProfileWithSemester($userID);
+		}
+		$user = $profile->joinProfile($userID);
+
+		if ($user) {
+			return Response::json([
+				'status' => 'success',
+				'records' => $user
+			], 200);
+		} else {
+			return Response::json([
+				'status' => 'error'
+			], 404);
+		}
+		// $data = compact('title', 'pageName', 'user', 'url');
+		// return View::make("Profile/update")->with($data);
 	}
 				
 	public function update($id)
@@ -160,11 +174,85 @@ class ProfileController extends BaseController
 	{
 		// $title = "Edit Profile";
 		$profile = new Profile();
-		$user = $profile->joinProfile(Session::get('user_id'));
-		
+		// $user = $profile->joinProfile(Session::get('user_id'));
+		$user = $profile->existProfile(Session::get('user_id'));
+		// echo Session::get('user_id');
+		// p($user);
 		$data = compact('title', 'user');
 
 		return View::make("Profile/editProfile")->with($data);
-		// return View::make("Profile/editProfile");
+	}
+
+	public function searchProfile($userID)
+	{
+		if ($userID == "") {
+			return Response::json([
+				"status"=> "error",
+				"message"=> "Registration Number not found"
+			], 404);
+		}
+
+		$profile = new Profile();
+		$exist = $profile->checkProfile($userID);
+
+		if ($exist) {			
+			return Response::json([
+				"status"=> "success"
+			],200);
+		} else {
+			return Response::json([
+				"status"=> "error",
+				"message"=> "Profile Already exist"
+			],404);
+		}
+	}
+
+	public function addNameProfile($id)
+	{
+		if ($id == "") {
+			return Response::json([
+				"status"=> "error",
+				"message"=> "user Id not found"
+			], 404);
+		}
+
+		$validator = Validator::make(Input::all(), [
+			'firstName'=> 'required|string|min:3|max:30',
+			'middleName' => 'sometimes|string|max:50',
+			'lastName' => 'required|string|max:50'
+		], [
+			'required' => 'The :attribute field is required.',
+			'min' => 'The :attribute must be at least :min characters.',
+    		'sometimes' => 'The :attribute must be a string when provided.'
+		]);
+
+		if ($validator->fails()) {
+			return Response::json([
+				'errors' => $validator->errors()
+			], 422);
+		}
+		$profile = new Profile();
+
+		$firstName = Input::get('firstName');
+		$middleName = Input::get('middleName');
+		$lastName = Input::get('lastName');
+		$data = [
+			'userId'=> $id,
+			'firstName'=> $firstName,
+			'middleName'=> $middleName,
+			'lastName'=> $lastName
+		];
+		$update = $profile->addName($data);
+
+		if ($update) {
+			return Response::json([
+				'status' => 'success',
+			], 200);
+		} else {
+			return Response::json([
+				'status' => 'fail',
+				'message' => 'Failed to create user'
+			], 500);
+		}
 	}
 }

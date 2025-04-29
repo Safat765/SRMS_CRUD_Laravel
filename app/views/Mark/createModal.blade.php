@@ -110,7 +110,7 @@
             $('#courseId').val(courseId);
             $('#givenMark').attr('placeholder', 'Enter mark out of ' + totalMarks);
 
-            console.log(totalMarks, username, courseName, semesterName, examTitle);
+            // console.log(totalMarks, username, courseName, semesterName, examTitle);
         });
 
         $(document).on('click', '.updateUser', function(e) {
@@ -126,7 +126,16 @@
             let semesterId = $('#semesterId').val();
             let courseId = $('#courseId').val();
 
-            console.log(totalMarks, username, courseName, semesterName, examTitle, givenMark, studentId, examId, semesterId, courseId);
+            if (!totalMarks && !username && !courseName && !semesterName && !examTitle && !givenMark && !studentId && !examId && !semesterId && !courseId) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url : `/marks/go`,
                 type : 'post',
@@ -138,6 +147,11 @@
                         $('#studentList').load(location.href + ' #studentList')
                         $("#updateUserModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
+                        Swal.fire({
+                            title: "Marks added successfully!",
+                            icon: "success",
+                            draggable: true
+                        });
                     }
                 },                
                 error: function(xhr, status, error) {

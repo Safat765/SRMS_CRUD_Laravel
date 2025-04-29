@@ -93,7 +93,15 @@
             let courseName = $('#updateCourseName').val();
             let examId = $('#updateExamId').val();
 
-            // let formdata = $('#updateMarksForm').serialize();
+            if (!totalMarks && !courseName && !givenMark && !examId && !marksId && !username) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
             // console.log(marksId);
             $.ajax({
                 url: `/marks/${marksId}`,
@@ -112,6 +120,11 @@
                         $('#marksIndex').load(location.href + ' #marksIndex')
                         $("#updateMarksModal").modal('hide');
                         $("#updateMarksModal").trigger("reset");
+                        Swal.fire({
+                            title: "Marks updated successfully!",
+                            icon: "success",
+                            draggable: true
+                        });
                     }
                 },                
                 error: function(response) {

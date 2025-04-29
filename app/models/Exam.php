@@ -127,7 +127,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 		return $data;
 	}
 	
-	public function edit($id)
+	public function ediFind($id)
 	{
 		$exam = Exam::find($id);
 		return $exam;
@@ -136,7 +136,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	public function updateExam(array $data, $exam_id)
 	{
 		// Find the existing exam
-		$exist = $this->edit($data['examId']);
+		$exist = $this->ediFind($data['examId']);
 		echo $exist;
 		
 		if (!$exist) {
@@ -164,7 +164,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	
 	public function deleteExam($id)
 	{
-		$exam = $this->edit($id);
+		$exam = $this->ediFind($id);
 		
 		if (!$exam) {
 			return false;

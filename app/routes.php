@@ -36,6 +36,8 @@ Route::resource('/profiles', 'ProfileController');
 Route::group(['prefix' => 'profiles'], function() {
         Route::get('/change-password', 'ProfileController@changePassword');
         Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
+        Route::get('/search/{id}', 'ProfileController@searchProfile');
+        Route::get('/add/{id}', 'ProfileController@addNameProfile');
         // Route::get('/index', 'ProfileController@editProfile');
 });
 Route::resource('/marks', 'MarkController');

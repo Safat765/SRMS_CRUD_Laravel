@@ -2,7 +2,7 @@
 @push("title")
 <title>User View</title>
 @section('main')
-<div class="table-responsive userIndex">
+<div class="table-responsive userIndex" id="userIndex">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
             <!-- <div class="p-1">

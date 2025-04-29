@@ -132,7 +132,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary updateUser">Update</button>
+                    <button type="submit" class="btn btn-primary" id="updateExam">Update</button>
                 </div>
             </div>
         </div>
@@ -171,7 +171,7 @@
             console.log(examId, courseId, examTitle, departmentId, semesterId, credit, examType, marks, instructorId);
         });
 
-        $(document).on('click', '.updateUser', function(e) {
+        $(document).on('click', '#updateExam', function(e) {
             e.preventDefault();
             console.log($('#formExam').serialize())
             let examId = $('#examId').val();
@@ -190,35 +190,30 @@
             // console.log(examId, courseId, examTitle, departmentId, semesterId, credit, examType, marks, instructorId);
             $.ajax({
                 url : `/exams/${examId}`,
-                type : 'PUT',
+                type : 'put',
                 // data : {id : examId, courseId : courseId, examTitle : examTitle, departmentId : departmentId, semesterId : semesterId, credit : credit, examType : examType, marks : marks, instructorId : instructorId},
                 data : $('#formExam').serialize(),
-                success : function (response)
-                {
+                success : function (response) {
                     if (response.status === 'success') {
-                        $('.examUpdate').load(location.href + ' .examUpdate');
+                        $('#examUpdate').load(location.href + ' #examUpdate');
                         $("#updateExamModal").modal('hide');
-                        $("#updateExamModal").trigger("reset");
+                        $('#formExam')[0].reset(); // correct way to reset the form
+                        $('.errorMsgContainer').html(''); // clear error messages
                     }
                 },
-                error: function (err) {
-                    $('.errorMsgContainer').html(''); // clear old errors
-
-                    if (err.responseJSON && err.responseJSON.errors) {
-                        $.each(err.responseJSON.errors, function(index, value) {
-                            $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span><br>');
-                        });
-                    } else {
-                        $('.errorMsgContainer').append('<span class="text-danger">Something went wrong.</span><br>');
-                        console.error('Full error:', err); // log full error for debugging
-                    }
+                error :function (err)
+                {
+                    let error = err.responseJSON;
+                    $.each(error.errors, function(index, value) {
+                        $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
                 }
 
             });
         });
         $(document).on('click', '.close', function(e) {
             e.preventDefault();
-            $("#examUpdate").trigger("reset");
+            $('#examUpdate').load(location.href + ' #examUpdate');
             $('.errorMsgContainer').text("");
         });
     });

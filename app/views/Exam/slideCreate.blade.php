@@ -132,6 +132,7 @@
 <br><hr><br>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -150,7 +151,16 @@
             let marks = $('.marks').val();
             let instructorId = $('.instructorId').val();
 
-            console.log(courseId, examTitle, departmentId, semesterId, credit, examType, marks, instructorId);
+            if (!courseId && !examTitle && !departmentId && !semesterId && !credit && !examType && !marks && !instructorId) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url : "{{ URL::route('exams.store') }}",
                 type : 'post',
@@ -160,7 +170,14 @@
                     if (response.status === 'success') {
                         $("#examForm").modal('hide');
                         $("#examForm").trigger("reset");
-                        $('.examUpdate').load(location.href + ' .examUpdate')
+                        $('.examUpdate').load(location.href + ' .examUpdate');
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Exam created successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

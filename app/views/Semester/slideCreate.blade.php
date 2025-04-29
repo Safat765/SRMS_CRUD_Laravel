@@ -41,6 +41,7 @@
 <br><hr><br>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -52,7 +53,16 @@
             e.preventDefault();
             let name = $('.name').val();
 
-            console.log(name);
+            if (!name) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url : "{{ URL::route('semesters.store') }}",
                 type : 'post',
@@ -62,7 +72,14 @@
                     if (response.status === 'success') {
                         $("#semesterForm").modal('hide');
                         $("#semesterForm").trigger("reset");
-                        $('.semesterUpdate').load(location.href + ' .semesterUpdate')
+                        $('.semesterUpdate').load(location.href + ' .semesterUpdate');
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: `${name} Department added successfully`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

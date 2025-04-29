@@ -35,6 +35,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -57,7 +58,17 @@
             let departmentId = $('#departmentId').val();
             let depName = $('#depName').val();
 
-            console.log(departmentId, depName);
+            // console.log(departmentId, depName);
+            if (!depName) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url : `/departments/${departmentId}`,
                 type : 'PUT',
@@ -67,7 +78,14 @@
                     if (response.status === 'success') {
                         $("#updateDepartmentModal").modal('hide');
                         $("#updateDepartmentModal").trigger("reset");
-                        $('.departmentUpdate').load(location.href + ' .departmentUpdate')
+                        $('.departmentUpdate').load(location.href + ' .departmentUpdate');
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: `${name} Department added successfully`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

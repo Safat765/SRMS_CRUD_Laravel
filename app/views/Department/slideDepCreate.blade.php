@@ -41,6 +41,7 @@
 <br><hr><br>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -52,7 +53,17 @@
             e.preventDefault();
             let name = $('.name').val();
 
-            console.log(name);
+            if (!name) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup the form first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
+            // console.log(name);
             $.ajax({
                 url : "{{ URL::route('departments.store') }}",
                 type : 'post',
@@ -62,6 +73,13 @@
                         $("#departmentForm").modal('hide');
                         $("#departmentForm").trigger("reset");
                         $('.departmentUpdate').load(location.href + ' .departmentUpdate')
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: `${name} Department added successfully`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

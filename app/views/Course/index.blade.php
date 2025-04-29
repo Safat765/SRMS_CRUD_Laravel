@@ -8,13 +8,13 @@
             <div class="p-1">
                 <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal"  class="btn btn-success m-2">Create</a>
             </div>
-            <div class="p-1">            
+            <!-- <div class="p-1">            
                 <div class="d-flex justify-content-start mb-3">
                     <a href="{{url('/courses/create')}}" class="btn btn-primary m-2">
                         Create Course
                     </a>
                 </div>
-            </div>
+            </div> -->
             <div class="p-1">                       
                 <div class="d-flex justify-content-start mb-3">
                     <a href="{{url('/courses')}}" class="btn btn-secondary m-2">
