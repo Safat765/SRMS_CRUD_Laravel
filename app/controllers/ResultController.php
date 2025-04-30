@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Result;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 

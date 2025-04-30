@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Input;
 
 App::before(function($request)
 { 
-	$publicRoutes = ['login', 'login/create'];
+	$publicRoutes = ['login', 'login/create', 'logout'];
 
     // Get the current path (e.g., /profile, /login)
     $path = $request->path();

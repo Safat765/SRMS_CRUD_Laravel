@@ -17,7 +17,7 @@
                             <span style="color: red; font-weight: bold;"> *</span>
                             
                             {{ Form::select('courseId', 
-                                ['' => 'Select course'] + Course::lists('name', 'course_id'),
+                                ['' => 'Select course'] + $list['courses'],
                                 isset($exams->course_id) ? $exams->course_id : null, 
                                 [
                                     'class' => 'form-control shadow-lg courseId1',
@@ -43,7 +43,7 @@
                         <div class="col-md-4">
                             {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('departmentId', 
-                                ['' => 'Select Department'] + Department::lists('name', 'department_id'),
+                                ['' => 'Select Department'] + $list['department'],
                                 Input::old('departmentId', isset($exams->department_id) ? $exams->department_id : null), [
                                     'class' => 'form-control shadow-lg departmentId1',
                                     'id' => 'departmentId1',
@@ -59,7 +59,7 @@
                         <div class="col-md-4">
                             {{ Form::label('semesterId', 'Semester Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('semesterId', 
-                                ['' => 'Select Department'] + Semester::lists('name', 'semester_id'),
+                                ['' => 'Select Department'] + $list['semester'],
                                 Input::old('semesterId', isset($exams->semester_id) ? $exams->semester_id : null), [
                                     'class' => 'form-control shadow-lg semesterId1',
                                     'id' => 'semesterId1',
@@ -117,7 +117,7 @@
                         <div class="col-md-6">
                             {{ Form::label('instructorId', 'Instructor Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('instructorId', 
-                                ['' => 'Select Department'] + User::where('user_type', 2)->lists('username', 'user_id'),
+                                ['' => 'Select Department'] + $list['instructor'],
                                 Input::old('instructorId', isset($exams->instructor_id) ? $exams->instructor_id : null), [
                                     'class' => 'form-control shadow-lg instructorId1',
                                     'id' => 'instructorId1',

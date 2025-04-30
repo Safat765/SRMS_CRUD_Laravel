@@ -79,7 +79,7 @@
                         <div class="col-md-4" id="semesterName">
                             {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('semesterId', 
-                                ['' => 'Select Semester'] + Semester::lists('name', 'semester_id'),
+                                ['' => 'Select Semester'] + $list['semester'],
                                 Input::old('semesterId', ''), [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'semesterId',
@@ -115,7 +115,7 @@
                         <div class="col-md-4">
                             {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('departmentId', 
-                                ['' => 'Select Department'] + Department::lists('name', 'department_id'),
+                                ['' => 'Select Department'] + $list['department'],
                                 Input::old('departmentId', ''), [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'departmentId',

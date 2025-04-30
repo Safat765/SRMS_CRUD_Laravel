@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\User;
+use App\Models\Department;
+use App\Models\Semester;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
@@ -32,7 +34,11 @@ class UserController extends \BaseController
 		$INACTIVE = User::STATUS_INACTIVE;
 		$info = ['Admin' => $ADMIN, 'Instructor' => $INSTRUCTOR, 'Student' => $STUDENT, 'Active' => $ACTIVE, 'Inactive' => $INACTIVE];
 
-		$data = compact('users', 'totalUsers', 'search', 'info');
+		$list = [
+			'department' => Department::lists('name', 'department_id'),
+			'semester' => Semester::lists('name', 'semester_id')
+		];
+		$data = compact('users', 'totalUsers', 'search', 'info', 'list');
 
 		return View::make('User.index')->with($data);
 	}

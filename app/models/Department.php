@@ -1,7 +1,6 @@
 <?php
 
-// namespace App\Models;
-
+namespace App\Models;
 use Illuminate\Auth\UserTrait;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableTrait;

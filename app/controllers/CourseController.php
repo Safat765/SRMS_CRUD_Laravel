@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Course;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;

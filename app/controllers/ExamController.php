@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\User;
+use App\Models\Course;
+use App\Models\Department;
+use App\Models\Semester;
+use App\Models\Exam;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -39,8 +44,14 @@ class ExamController extends \BaseController {
 			"Viva" => Exam::EXAM_TYPE_VIVA,
 			"Final" => Exam::EXAM_TYPE_FINAL
 		];
+		$list = [
+			'courses' => Course::lists('name', 'course_id'),
+			'department' => Department::lists('name', 'department_id'),
+			'semester' => Semester::lists('name', 'semester_id'),
+			'instructor' => User::where('user_type', 2)->lists('username', 'user_id')
+		];
 
-		$data = compact('exams', 'totalExams', 'search', 'examType');
+		$data = compact('exams', 'totalExams', 'search', 'examType', 'list');
 
 		return View::make('Exam.index')->with($data);
 	}

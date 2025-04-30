@@ -121,7 +121,7 @@
         </tbody>
     </table>
     
-    @include('Exam.updateModal', ['examType' => $examType])
+    @include('Exam.updateModal', ['examType' => $examType, 'list' => $list])
 </div>
 
 @endsection

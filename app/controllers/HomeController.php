@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\View;
+
 class HomeController extends BaseController {
 
 	/*
