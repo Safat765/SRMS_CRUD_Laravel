@@ -33,7 +33,6 @@ class UserController extends \BaseController
 		$ACTIVE = User::STATUS_ACTIVE;
 		$INACTIVE = User::STATUS_INACTIVE;
 		$info = ['Admin' => $ADMIN, 'Instructor' => $INSTRUCTOR, 'Student' => $STUDENT, 'Active' => $ACTIVE, 'Inactive' => $INACTIVE];
-
 		$list = [
 			'department' => Department::lists('name', 'department_id'),
 			'semester' => Semester::lists('name', 'semester_id')
@@ -75,13 +74,6 @@ class UserController extends \BaseController
 			'in' => 'Please select a valid :attribute.',
     		'sometimes' => 'The :attribute must be a string when provided.'
 		]);
-		
-		// if ($validator->fails()) {
-		// 	Session::flash('message', "validation fail");
-		// 	return Redirect::back()
-		// 	->withErrors($validator)
-		// 	->withInput(Input::except('password'));
-		// }
 
 		if ($validator->fails()) {
 			return Response::json([
@@ -89,7 +81,6 @@ class UserController extends \BaseController
 			], 422);
 		}
 		$user = new User();
-		
 		$username = Input::get('username');
 		$email = Input::get('email');
 		$password = Input::get('password');
@@ -100,6 +91,7 @@ class UserController extends \BaseController
 		$firstName = null;
 		$middleName = null;
 		$lastName = null;
+
 		if ($userType == 3) {
 			$session = Input::get('session');
 			$semesterId = Input::get('semesterId');
@@ -115,7 +107,6 @@ class UserController extends \BaseController
 			$profile = $user->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId);
 			
 			if (!$profile) {
-				Session::flash('message', 'Failed to create profile');
 				return Response::json([
 					'status' => 'fail',
 					'message' => 'Failed to create profile'
@@ -125,7 +116,6 @@ class UserController extends \BaseController
 				'status' => 'success',
 			], 200);
 		} else {
-			Session::flash('message', 'Failed to create user');
 			return Response::json([
 				'status' => 'fail',
 				'message' => 'Failed to create user'
@@ -161,8 +151,6 @@ class UserController extends \BaseController
 			Session::flash('message', 'User not found');
 			return Redirect::back();
 		}
-		
-		
 		$validator = Validator::make(Input::all(), [
 			'username' => 'required|min:3|max:20|unique:users,username,'.$id.',user_id',
 			'email' => 'required|email|unique:users,email,'.$id.',user_id',
@@ -175,12 +163,7 @@ class UserController extends \BaseController
 			'min' => 'The :attribute must be at least :min characters.',
 			'in' => 'Please select a valid :attribute.',
     		'sometimes' => 'The :attribute must be a string when provided.'
-		]);
-		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }	
+		]);	
 
 		if ($validator->fails()) {
 			return Response::json([
@@ -191,14 +174,14 @@ class UserController extends \BaseController
 		$update = $user->updateUser(Input::all(), $id);
 		
 		if ($update) {
-			Session::flash('success', 'User updated successfully');
-			// return Redirect::to('users');
 			return Response::json([
-				'status' => 'success',
+				'status' => 'success'
 			]);
 		} else {
-			Session::flash('message', 'Failed to update user');
-			return Redirect::back();
+			
+			return Response::json([
+				'errors' => 'error'
+			]);
 		}
 	}
 	

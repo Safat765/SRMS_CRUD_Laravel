@@ -32,27 +32,77 @@
         <thead>
             <tr>
                 <th scope="col">Semester</th>
-                <th scope="col">courses</th>
-                <th scope="col">GPA</th>
+                <th scope="col">Credits</th>
                 <th scope="col">CGPA</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($records as $record)
+            @foreach ($semesters as $semester)
                 <tr>
-                    <td>{{ $record->semester_name }}</td>
-                    <td>{{ $record->course_name }}</td>
-                    <td>{{ $record->gpa }}</td>
+                    <td>{{ $semester->semester_name }}</td>
+                    <td>{{ $totalCredits[$semester->semester_id] }}</td>
+                    <td>{{ $GPA[$semester->semester_id] }}</td>
+                    <td>
+                        <div class="text-center">
+                            {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
+                                'class' => 'btn btn-info btn-sm',
+                                'id' => 'courseWiseResult',
+                                'data-id' => $semester->semester_id,
+                                'data-name' => $semester->semester_name,
+                                'data-studentid' => Session::get('user_id'),
+                                'type' => 'submit'
+                            ])}}
+                        </div>
+                    </td>
                 </tr>
             @endforeach
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>{{ $result['CGPA'] }}</td>
-            </tr>
         </tbody>
     </table>
 </div>
-
+@include('Result.semesterWise', ['result' => $result])
 @endsection
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '#courseWiseResult', function(e) {
+            e.preventDefault();
+            let semesterId = $(this).data('id');
+            let studentId = $(this).data('studentid');
+            let semesterName = $(this).data('name');
+            const $tbody = $(this).find('tbody');
+            console.log(semesterId, studentId);
+
+            $.ajax({
+                url: `/results/semester/${semesterId}`,
+                type: 'GET',
+                data: {semesterId : semesterId, studentId : studentId},
+                success: function(response) {
+                    $('#samName').val(semesterName);
+                    console.log(response.status)
+                    const records = response.records;
+                    const $tbody = $('#modalTableBody');                    
+                    $tbody.empty();
+                    let text = $('#updateModalLabel').text();
+                    let newText = text + semesterName +'"';
+                    $('#updateModalLabel').text(newText);
+
+                    records.forEach(record => {
+                        $tbody.append(`
+                            <tr>
+                                <td>${record.course_name}</td>
+                                <td>${record.marks}</td>
+                                <td>${record.gpa}</td>
+                            </tr>
+                        `);
+                    });
+                    $('#semesterWiseCourseModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error:', xhr.status, error);
+                }
+            });
+        });
+    });
+</script>

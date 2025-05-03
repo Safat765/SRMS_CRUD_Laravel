@@ -5,7 +5,6 @@
                 <div class="card-header">
                     <h4 class="text-center fw-bold text-info">Create Exam</h4>
                 </div>
-                
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
                     {{ Form::open(['url' => '/departments', 'method' => 'post', 'novalidate' => true]) }}   

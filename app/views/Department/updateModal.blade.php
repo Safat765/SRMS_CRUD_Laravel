@@ -49,8 +49,6 @@
 
             $('.departmentId').val(courseId);
             $('.depName').val(depName);
-
-            // console.log(courseId, depName);
         });
 
         $(document).on('click', '.updateDepartment', function(e) {
@@ -58,7 +56,6 @@
             let departmentId = $('#departmentId').val();
             let depName = $('#depName').val();
 
-            // console.log(departmentId, depName);
             if (!depName) {
                 Swal.fire({
                     icon: "error",

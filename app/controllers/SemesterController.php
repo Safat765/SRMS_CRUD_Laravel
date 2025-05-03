@@ -25,7 +25,6 @@ class SemesterController extends BaseController {
 			$totalSemester = $data['totalSemester'];
 			$semester = $data['semester'];
 		}
-
 		$data = compact('semester', 'totalSemester', 'search');
 
 		return View::make('Semester/index')->with($data);
@@ -60,7 +59,6 @@ class SemesterController extends BaseController {
 		
 		if ($exist) {
 			Session::flash('success', 'Semester created successfully');
-			// return Redirect::to('semesters');
 			return Response::json([
 				'status' => 'success',
 				'message'=> 'Semester created successfully'
@@ -91,6 +89,7 @@ class SemesterController extends BaseController {
 			return View::make('Semester/update')->with($data);
 		}
 		Session::flash('message', 'Semester not found');
+
 		return Redirect::back();
 	}
 				
@@ -99,9 +98,10 @@ class SemesterController extends BaseController {
 		$semester = new Semester();
 		$semester = $semester->edit($id);
 		
-		if (!$semester) {
-			Session::flash('message', 'Semester not found');
-			return Redirect::back();
+		if (!$semester) {			
+			return Response::json([
+				'status' => 'error',
+			]);
 		}
 		
 		$validator = Validator::make(Input::all(), [
@@ -110,35 +110,22 @@ class SemesterController extends BaseController {
 			'required' => 'The Semester field is required.',
 			'min' => 'The Semester must be at least :min characters.'
 		]);
-		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		// $name = Input::get('name');
-		// $exist = $semester->searchName($name);
-
-		// if ($exist) {
-		// 	Session::flash('message', $name.' Semester already exist');
-		// 	return Redirect::back();
-		// }
 		$update = $semester->updateSemester(Input::all(), $id);
 		
 		if ($update) {
-			Session::flash('success', 'Semester updated successfully');
-			// return Redirect::to('semesters');
 			return Response::json([
 				'status' => 'success',
 			]);
 		} else {
-			Session::flash('message', 'Failed to update Semester');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		}
 	}
 				
@@ -148,20 +135,17 @@ class SemesterController extends BaseController {
 		$semester = $semester->edit($id);
 		
 		if (!$semester) {
-			Session::flash('message', 'Semester not found');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		}
 		$delete = $semester->deleteSemester($id);
 		
 		if (!$delete) {
-			Session::flash('message', 'Failed to delete Semester');
-			// return Redirect::back();
 			return Response::json([
 				'status' => 'error',
 			]);
 		} else{
-			Session::flash('success', 'Semester deleted successfully');
-			// return Redirect::to('semesters');
 			return Response::json([
 				'status' => 'success',
 			]);

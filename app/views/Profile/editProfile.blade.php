@@ -42,7 +42,6 @@
             <?php
                 } else {
             ?>
-
                 <tr scope="row">
                     <td scope="row">{{$user->first_name}}</td>
                     <td scope="row">{{$user->middle_name}}</td>
@@ -77,16 +76,6 @@
                                         'type' => 'submit'
                                     ])}}
                                 </div>
-                            <!-- {{ Form::open(['url' => 'profiles/' .$user->profile_id.'/edit', 'method' => 'get']) }}
-                                
-                                <div class="text-center">
-                                    {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                        'class' => 'btn btn-success btn-sm',
-                                        'id' => 'editProfile',
-                                        'type' => 'submit'
-                                    ])}}
-                                </div>
-                            {{ Form::close() }} -->
                         </div>
                     </td>
                 </tr>

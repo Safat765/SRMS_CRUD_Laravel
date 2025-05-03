@@ -49,7 +49,6 @@ class Semester extends Eloquent implements UserInterface, RemindableInterface {
 			return false;
 		}
 		$semester = new Semester();
-		
 		$semester->name = $name;
 		$semester->created_by = 1;
 		$semester->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
@@ -62,11 +61,10 @@ class Semester extends Eloquent implements UserInterface, RemindableInterface {
     public function filter($search)
 	{
 		$semesterCount = Semester::where('name', 'LIKE', '%' . $search . '%');
-		
 		$totalSemester = $semesterCount->count();
 		$semester = $semesterCount->paginate(5);
-		
 		$data = compact('semester', 'totalSemester');
+
 		return $data;
 	}
 
@@ -83,6 +81,7 @@ class Semester extends Eloquent implements UserInterface, RemindableInterface {
     public function edit($id)
 	{
 		$semester = Semester::find($id);
+	
 		return $semester;
 	}
 	
@@ -107,7 +106,6 @@ class Semester extends Eloquent implements UserInterface, RemindableInterface {
 		if (!$semester) {
 			return false;
 		}
-		
 		$semester->delete();
 		
 		return $semester;

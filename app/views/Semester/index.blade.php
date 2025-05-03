@@ -5,13 +5,6 @@
 <div class="table-responsive semesterUpdate">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
-            <!-- <div class="p-1">            
-                <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/semesters/create')}}" class="btn btn-primary m-2">
-                        Create Semester
-                    </a>
-                </div>
-            </div> -->
             <div class="p-1">
                 <div class="d-flex justify-content-start mt-2 mb-3">
                     <button class="btn btn-success" id="createSemester">Create Semester</button>
@@ -25,7 +18,6 @@
                 </div>
             </div>  
         </div>
-        
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
             {{ Form::open([URL::route('semesters.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
@@ -102,33 +94,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
-        // $(document).on("click", "#deleteBtn", function(e) {
-        //     e.preventDefault();
-        //     let id = $(this).data('id');
-        //     let name = $(this).data('name');
-
-        //     if (confirm("Are you sure you want to delete '" + name + "' ?")) {
-        //         $.ajax({
-        //             url: `/departments/${id}`,
-        //             type: 'delete',
-        //             data: {
-        //                 _token: '{{ csrf_token() }}'
-        //             },
-        //             success: function (response) {
-        //                 if (response.status === 'success') {
-        //                     $('.departmentUpdate').load(location.href + ' .departmentUpdate')
-        //                 }
-        //             },
-        //             error: function (xhr) {
-        //                 console.error(xhr.responseText);
-        //                 alert("Error deleting user. Please try again.");
-        //                 $('.departmentUpdate').load(location.href + ' .departmentUpdate')
-        //             }
-        //         });
-        //     } else {
-        //         console.log("Cenceled deleting '"+ name +"'");
-        //     }
-        // });
         $(document).on("click", "#createSemester", function(e) {
             e.preventDefault();
             $("#createForm").load('slideCreate', function() {

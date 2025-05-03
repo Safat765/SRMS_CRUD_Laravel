@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class ExamController extends \BaseController {
@@ -33,7 +32,6 @@ class ExamController extends \BaseController {
 			$exams = $data['exams'];
 		} else {		
 			$results = $exam->joinTables();
-			// $data = $exam->showAll();
 			$totalExams = $results['totalExams'];
 			$exams = $results['results'];
 		}
@@ -99,11 +97,6 @@ class ExamController extends \BaseController {
 			'numeric' => 'The :attribute must be a number.',
 			'in' => 'Please select a valid :attribute.'
 		]);
-		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }
 
 		if ($validator->fails()) {
 			return Response::json([
@@ -159,7 +152,7 @@ class ExamController extends \BaseController {
 		$exam = new Exam();
 		$pageName = "Edit Exam";		
 		$url = url('/exams/'.$id);
-		$exams = $exam->ediFind($id);
+		$exams = $exam->editFind($id);
 		$data = compact('exams', 'url', 'pageName');
 
 		if (empty($exams) || $exams->count() == 0) {
@@ -179,7 +172,7 @@ class ExamController extends \BaseController {
 	public function update($id)
 	{
 		$exam = new Exam();
-		$examFind = $exam->ediFind($id);
+		$examFind = $exam->editFind($id);
 
 		if (!$examFind) {
 			return Response::json([
@@ -223,9 +216,7 @@ class ExamController extends \BaseController {
 				'message' => 'Failed to update exam'
 			], 500);
 		}
-	}
-
-	
+	}	
 	
 	/**
 	* Remove the specified resource from storage.
@@ -236,7 +227,7 @@ class ExamController extends \BaseController {
 	public function destroy($id)
 	{
 		$exam = new Exam();
-		$exam = $exam->ediFind($id);
+		$exam = $exam->editFind($id);
 		
 		if (!$exam) {
 			Session::flash('message', 'Exam not found');
@@ -255,6 +246,4 @@ class ExamController extends \BaseController {
 			], 200);
 		}
 	}
-	
-	
 }

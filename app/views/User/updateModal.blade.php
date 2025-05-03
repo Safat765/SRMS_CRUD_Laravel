@@ -109,7 +109,6 @@
             $('.registrationNumber').val(registrationNumber);
             $('.phoneNumber').val(phoneNumber);
 
-            // console.log(userId, username, email, userType, registrationNumber, phoneNumber);
         });
 
         $(document).on('click', '.updateUser', function(e) {
@@ -131,7 +130,6 @@
             }
             $('.errorMsgContainer').html("");
 
-            // console.log(userId, username, email, userType, registrationNumber, phoneNumber);
             $.ajax({
                 url : `/users/${userId}`,
                 type : 'PUT',
@@ -144,9 +142,11 @@
                         $("#courseUpdate").trigger("reset");
                         $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
-                            title: "User updated successfully!",
+                            position: "top-end",
                             icon: "success",
-                            draggable: true
+                            title: "User update successfully",
+                            showConfirmButton: false,
+                            timer: 1500
                         });
                     }
                 },

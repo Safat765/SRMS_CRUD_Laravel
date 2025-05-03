@@ -8,7 +8,7 @@
                 
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
-                    <!-- {{ Form::open(['url' => '/departments', 'method' => 'post', 'novalidate' => true]) }}    -->
+                    <form>
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 {{ Form::label('name', 'Department Name', ['class' => 'form-label']) }}
@@ -32,7 +32,7 @@
                                 </div>
                             </div>
                         </div>
-                    <!-- {{ Form::close() }} -->
+                    </form>
                 </div>
             </div>
         </div>
@@ -63,7 +63,6 @@
             }
             $('.errorMsgContainer').html("");
 
-            // console.log(name);
             $.ajax({
                 url : "{{ URL::route('departments.store') }}",
                 type : 'post',

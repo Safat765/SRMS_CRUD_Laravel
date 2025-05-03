@@ -7,9 +7,7 @@
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="errorMsgContainer">
-
-                    </div>
+                    <div class="errorMsgContainer"></div>
                     <div class="row mb-3">
                         {{ Form::hidden('examId', null, ['class' => 'examId1', 'id' => 'examId']) }}
                         <div class="col-md-4">
@@ -140,6 +138,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -168,37 +167,48 @@
             $('#marks1').val(marks);
             $('#instructorId1').val(instructorId);
 
-            console.log(examId, courseId, examTitle, departmentId, semesterId, credit, examType, marks, instructorId);
         });
 
         $(document).on('click', '#updateExam', function(e) {
             e.preventDefault();
-            console.log($('#formExam').serialize())
             let examId = $('#examId').val();
-            // console.log(examId);
-            // console.log("abc");
-            // let examId = $('.examId1').val();
-            // let courseId = $('.courseId1').val();
-            // let examTitle = $('.examTitle1').val();
-            // let departmentId = $('.departmentId1').val();
-            // let semesterId = $('.semesterId1').val();
-            // let credit = $('.credit1').val();
-            // let examType = $('.examType1').val();
-            // let marks = $('.marks1').val();
-            // let instructorId = $('.instructorId1').val();
+            let courseId = $('.courseId1').val();
+            let examTitle = $('.examTitle1').val();
+            let departmentId = $('.departmentId1').val();
+            let semesterId = $('.semesterId1').val();
+            let credit = $('.credit1').val();
+            let examType = $('.examType1').val();
+            let marks = $('.marks1').val();
+            let instructorId = $('.instructorId1').val();
 
-            // console.log(examId, courseId, examTitle, departmentId, semesterId, credit, examType, marks, instructorId);
+            if (!examId && !courseId && !examTitle && !departmentId && !semesterId && !credit && !examType && !marks && !instructorId) {
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Fillup all the field first!"
+                });
+                return;
+            }
+            $('.errorMsgContainer').html("");
+
             $.ajax({
                 url : `/exams/${examId}`,
                 type : 'put',
-                // data : {id : examId, courseId : courseId, examTitle : examTitle, departmentId : departmentId, semesterId : semesterId, credit : credit, examType : examType, marks : marks, instructorId : instructorId},
                 data : $('#formExam').serialize(),
                 success : function (response) {
                     if (response.status === 'success') {
                         $('#examUpdate').load(location.href + ' #examUpdate');
                         $("#updateExamModal").modal('hide');
-                        $('#formExam')[0].reset(); // correct way to reset the form
-                        $('.errorMsgContainer').html(''); // clear error messages
+                        $('#formExam')[0].reset();
+                        $('.errorMsgContainer').html('');
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Exam update successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)

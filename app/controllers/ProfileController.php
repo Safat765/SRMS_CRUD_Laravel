@@ -96,8 +96,6 @@ class ProfileController extends BaseController
 				'status' => 'error'
 			], 404);
 		}
-		// $data = compact('title', 'pageName', 'user', 'url');
-		// return View::make("Profile/update")->with($data);
 	}
 				
 	public function update($id)
@@ -123,13 +121,13 @@ class ProfileController extends BaseController
 			->withErrors($validator);
 		}
 		$profile = new Profile();
-
 		$firstName = Input::get('firstName');
 		$middleName = Input::get('middleName');
 		$lastName = Input::get('lastName');
 		$registrationNumber = Input::get('registrationNumber');
 		$departmentId = Input::get('departmentId');
 		$userType = Session::get('user_type');
+
 		if ($userType == 3) {
 			$session = Input::get('session');
 			$semesterId = Input::get('semesterId');
@@ -172,12 +170,8 @@ class ProfileController extends BaseController
 
 	public function editProfile()
 	{
-		// $title = "Edit Profile";
 		$profile = new Profile();
-		// $user = $profile->joinProfile(Session::get('user_id'));
 		$user = $profile->existProfile(Session::get('user_id'));
-		// echo Session::get('user_id');
-		// p($user);
 		$data = compact('title', 'user');
 
 		return View::make("Profile/editProfile")->with($data);

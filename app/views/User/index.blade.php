@@ -5,13 +5,6 @@
 <div class="table-responsive userIndex" id="userIndex">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
-            <!-- <div class="p-1">
-                <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/users/create')}}" class="btn btn-primary m-2">
-                        Create User
-                    </a>
-                </div>
-            </div> -->
             <div class="p-1">
                 <div class="d-flex justify-content-start mt-2 mb-3">
                     <button class="btn btn-success" id="createUser">Create User</button>

@@ -8,10 +8,8 @@
     <div class="bg-warning text-black text-center mx-5">
         <h5>Total Students : {{ $totalStudent }}</h5>
     </div>
-
     <a href="{{ URL::route('marks.index') }}" class="col-md-1 btn btn-danger">Back</a>
     <hr>
-
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
             <tr class="bg-info text-white">
@@ -43,7 +41,6 @@
                     <td>
                         <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
                             @if (!empty($marks[$result->user_id]))
-                                {{-- View --}}
                                 {{ Form::open(['url' => '/marks/'.$result->user_id, 'method' => 'get']) }}
                                 {{ Form::hidden('examId', $result->exam_id) }}
                                     <div class="text-center">
@@ -53,25 +50,12 @@
                                         ])}}
                                     </div>
                                 {{ Form::close() }}
-
-                                {{-- Add --}}
                                 <div class="text-center">
                                     {{ Form::button('<i class="las la-plus"></i>', [
                                         'class' => 'btn btn-success btn-sm',
                                         'disabled' => 'disabled'
                                     ]) }}
                                 </div>
-
-                                {{-- Edit --}}
-                                <!-- {{ Form::open(['url' => '/marks/'.$result->user_id.'/edit', 'method' => 'get']) }}
-                                    {{ Form::hidden('examId', $result->exam_id) }}
-                                    <div class="text-center">
-                                        {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                            'class' => 'btn btn-warning btn-sm',
-                                            'type' => 'submit'
-                                        ])}}
-                                    </div>
-                                {{ Form::close() }} -->
                                 <div class="text-center">
                                     {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
                                         'class' => 'btn btn-warning btn-sm',
@@ -81,8 +65,6 @@
                                         'data-examid' => $result->exam_id,
                                     ])}}
                                 </div>
-
-                                {{-- Delete --}}
                                 {{ Form::open(['url' => '/marks/'.$result->user_id, 'method' => 'delete']) }}
                                 {{ Form::hidden('username', isset($result->username) ? $result->username : null) }}
                                 {{ Form::hidden('courseName', isset($result->course_name) ? $result->course_name : null) }}
@@ -95,7 +77,6 @@
                                     </div>
                                 {{ Form::close() }}
                             @else
-                                {{-- Disabled buttons --}}
                                 <div class="text-center">
                                     {{ Form::button('<i class="las la-eye"></i>', [
                                         'class' => 'btn btn-info btn-sm',
@@ -108,7 +89,7 @@
                                         'type' => 'submit',
                                         'id' => 'marksCreate',
                                         'data-bs-toggle' => 'modal',
-                                        'data-bs-target' => '#updateUserModal',
+                                        'data-bs-target' => '#createMarksModal',
                                         'data-studentid' => $result->user_id,
                                         'data-username' => $result->username,
                                         'data-courseid' => $result->course_id,
@@ -158,13 +139,11 @@
                 url : `/marks/${userId}/edit`,
                 method: 'GET',
                 data: {examId : examId},
-                
                 success:function(response)
                 {
                     if (response.status == 'success') {
                         console.log('Data fetched successfully:', response.records);
                         let data = response.records[0];
-                        // console.log(data);
                         
                         $('#updateTotalMarks').val(data.total_marks);
                         $('#updateUsername').val(data.username);

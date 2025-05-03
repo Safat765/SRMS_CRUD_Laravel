@@ -30,25 +30,26 @@ Route::group(['prefix' => 'courses'], function() {
         Route::get('/status/{id}', ['as' => 'courseStatus', 'uses' => 'CourseController@status']);
 });
 Route::resource('/exams', 'ExamController');
-// Route::resource('/marks', 'CourseController');
-// Route::resource('/results', 'CourseController');
 Route::resource('/profiles', 'ProfileController');
 Route::group(['prefix' => 'profiles'], function() {
         Route::get('/change-password', 'ProfileController@changePassword');
         Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
         Route::get('/search/{id}', 'ProfileController@searchProfile');
         Route::get('/add/{id}', 'ProfileController@addNameProfile');
-        // Route::get('/index', 'ProfileController@editProfile');
 });
-Route::resource('/marks', 'MarkController');
-Route::group(['prefix'=> 'marks'], function() {
-    Route::post('/students', 'MarkController@students');
-    Route::get('/all/students', 'MarkController@studentList');
-    Route::post('/add', 'MarkController@addMark');
-    Route::post('/go', 'MarkController@createMark');
+Route::group(['before'=> 'onlyInstructor'], function() {
+    Route::resource('/marks', 'MarkController');
+    Route::group(['prefix'=> 'marks'], function() {
+        Route::post('/students', 'MarkController@students');
+        Route::get('/all/students', 'MarkController@studentList');
+        Route::post('/add', 'MarkController@addMark');
+        Route::post('/go', 'MarkController@createMark');
+    });
 });
-Route::resource('/results', 'ResultController');
-
+Route::group(['before'=> 'onlyStudents'], function() {
+    Route::resource('/results', 'ResultController');
+    Route::get('/results/semester/{id}', 'ResultController@semeterWise');
+});
 Route::get('/session', function(){
     $all = Session::all();
     p($all);
@@ -56,7 +57,6 @@ Route::get('/session', function(){
 
 Route::get('/logout', function(){
     Session::flush();
-    // return Redirect::to('/session');
 	Session::flash('success', 'Logout Successful');
     return Redirect::to('login/create');
 });

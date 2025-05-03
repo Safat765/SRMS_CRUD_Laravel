@@ -21,7 +21,6 @@ class LoginController extends BaseController {
 				
 	public function store()
 	{
-		// Handle form submission
 		$validator = Validator::make(Input::all(), [
 			'username' => 'required',
 			'password' => 'required|min:4'
@@ -33,23 +32,16 @@ class LoginController extends BaseController {
 			->withInput(Input::except('password'));
 		}
 		
-		// p(Input::all());
-		
 		$username = Input::get('username');
 		$password = Input::get('password');
-		
-		// echo Input::get('username');
-		// echo "<br>";
-		// echo Input::get('password');
-		// echo "<br>";
-		$user = User::where('username', $username)->first();
+		$user = User::where('username', $username)->first(); //---------------
 		
 		if (!password_verify($password, $user->password)) {
 			Session::flash('message', 'Incorrect Password');
 			return Redirect::to('login/create');
 		}
 		$password = $user->password;		
-		$userExists = User::where('username', $username)
+		$userExists = User::where('username', $username) //----------------
 							->where('password', $password)->exists();
 		
 		if ($userExists) {

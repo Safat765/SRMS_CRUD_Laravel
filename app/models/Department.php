@@ -65,8 +65,8 @@ class Department extends Eloquent implements UserInterface, RemindableInterface 
 		
 		$totalDepartment = $departmentCount->count();
 		$department = $departmentCount->paginate(5);
-		
 		$data = compact('department', 'totalDepartment');
+
 		return $data;
 	}
 
@@ -83,6 +83,7 @@ class Department extends Eloquent implements UserInterface, RemindableInterface 
     public function edit($id)
 	{
 		$department = Department::find($id);
+		
 		return $department;
 	}
 	
@@ -107,7 +108,6 @@ class Department extends Eloquent implements UserInterface, RemindableInterface 
 		if (!$department) {
 			return false;
 		}
-		
 		$department->delete();
 		
 		return $department;

@@ -7,9 +7,7 @@
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="errorMsgContainer">
-
-                    </div>
+                    <div class="errorMsgContainer"></div>
                     <div class="row mb-3">
                             <div class="col-md-6">
                                 {{ Form::hidden('courseId', null, ['class' => 'courseId', 'id' => 'courseId']) }}
@@ -62,8 +60,6 @@
             $('.courseId').val(courseId);
             $('.name').val(name1);
             $('.credit').val(credit1);
-
-            // console.log(courseId, name1, credit1);
         });
 
         $(document).on('click', '.updateCourse', function(e) {
@@ -72,7 +68,6 @@
             let name1 = $('#name1').val();
             let credit1 = $('#credit1').val();
 
-            // console.log(id, name1, credit1);
             if (!id && !name1 && !credit1) {
                 Swal.fire({
                     icon: "error",
@@ -92,7 +87,7 @@
                     if (response.status === 'success') {
                         $("#updateModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
-                        $('.courseIndex').load(location.href + ' .courseIndex');                        
+                        $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
                             position: "top-end",
                             icon: "success",

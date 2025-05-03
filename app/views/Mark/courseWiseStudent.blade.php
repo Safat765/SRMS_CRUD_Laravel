@@ -33,7 +33,7 @@
                                         'type' => 'submit',
                                         'id' => 'marksCreate',
                                         'data-bs-toggle' => 'modal',
-                                        'data-bs-target' => '#updateUserModal',
+                                        'data-bs-target' => '#createMarksModal',
                                         'data-studentid' => $result->user_id,
                                         'data-username' => $result->username,
                                         'data-courseid' => $result->course_id,

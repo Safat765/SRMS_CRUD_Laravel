@@ -67,25 +67,11 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 			)
 		);
 		
-		// $exam = new Exam();
-		// $exam->course_id = $data['courseId'];
-		// $exam->department_id = $data['departmentId'];
-		// $exam->semester_id = $data['semesterId'];
-		// $exam->exam_title = $data['examTitle'];
-		// $exam->exam_type = $data['examType'];
-		// $exam->credit = $data['credit'];
-		// $exam->marks = $data['marks'];
-		// $exam->instructor_id = $data['instructorId'];
-		// $exam->created_by = $createdBy;
-		// $exam->save();
-		
 		return $exam;
 	}
 	
 	public function filter($search)
 	{
-		// echo $search;
-
 		$exams = DB::table('exams')
 		->join('courses', 'exams.course_id', '=', 'courses.course_id')
 		->join('departments', 'exams.department_id', '=', 'departments.department_id')
@@ -109,12 +95,9 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 			->where('exams.exam_title', 'LIKE', $search)
 			->orWhere('exams.credit', 'LIKE', $search)
 			->get();
-		// p($exams);
 		$totalExams = count($exams);
-		// echo $totalExams;
-		// $exams = Exam::paginate(5);
-		
 		$data = compact('exams', 'totalExams');
+		
 		return $data;
 	}
 	
@@ -128,7 +111,7 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 		return $data;
 	}
 	
-	public function ediFind($id)
+	public function editFind($id)
 	{
 		$exam = Exam::find($id);
 		return $exam;
@@ -136,17 +119,11 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	
 	public function updateExam(array $data, $exam_id)
 	{
-		// Find the existing exam
-		$exist = $this->ediFind($data['examId']);
-		echo $exist;
+		$exist = $this->editFind($data['examId']);
 		
 		if (!$exist) {
 			return false;
 		}
-
-		p($data);
-		
-		// Update the existing exam's properties
 		$exam = DB::table('exams')
 			->where('exam_id', $data['examId'])
 				->update([
@@ -165,12 +142,11 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	
 	public function deleteExam($id)
 	{
-		$exam = $this->ediFind($id);
+		$exam = $this->editFind($id);
 		
 		if (!$exam) {
 			return false;
 		}
-		
 		$exam->delete();
 		
 		return $exam;
@@ -192,21 +168,11 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 			'semesters.name as semester_name',
 			'courses.course_id',
 			'courses.name as course_name',
-			// 'exams.exam_id',
-			// 'exams.exam_title',
-			// 'exams.semester_id',
-			// 'exams.department_id',
-			// 'exams.course_id',
-			// 'exams.exam_type',
-			// 'exams.credit',
-			// 'exams.marks'
 			'exams.*'
 			)->get();
 		
 		
 		$totalExams = count($results);
-		// echo $totalExams;
-		
 		$data = compact('results', 'totalExams');
 
 		return $data;

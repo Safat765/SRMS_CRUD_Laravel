@@ -1,15 +1,13 @@
-<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateModalLabel">
-    {{ Form::open(['url' => '/users', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
+<div class="modal fade" id="createMarksModal" tabindex="-1" aria-labelledby="updateModalLabel">
+    <form>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Add Marks</h5>
+                    <h5 class="modal-title" id="create">Add Marks</h5>
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="errorMsgContainer">
-
-                    </div>
+                    <div class="errorMsgContainer"></div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             {{ Form::hidden('totalMarks', null, ['id' => 'totalMarks']) }}
@@ -73,14 +71,15 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary updateUser">Update</button>
+                    <button type="button" class="btn btn-primary" id="updateMarks">Update</button>
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -109,11 +108,9 @@
             $('#semesterId').val(semesterId);
             $('#courseId').val(courseId);
             $('#givenMark').attr('placeholder', 'Enter mark out of ' + totalMarks);
-
-            // console.log(totalMarks, username, courseName, semesterName, examTitle);
         });
 
-        $(document).on('click', '.updateUser', function(e) {
+        $(document).on('click', '#updateMarks', function(e) {
             e.preventDefault();
             let totalMarks = $('#totalMarks').val();
             let username = $('#username').val();
@@ -135,6 +132,18 @@
                 return;
             }
             $('.errorMsgContainer').html("");
+            
+            givenMark = Number(givenMark);
+            totalMarks = Number(totalMarks);
+
+            if ((givenMark > totalMarks) && (givenMark > -1)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Wrong Input...",
+                    text: `Given marks should be 0 to less than or equal to ${totalMarks}`
+                });
+                return;
+            }
 
             $.ajax({
                 url : `/marks/go`,
@@ -145,7 +154,7 @@
                     if (response.status === 'success') {
                         $('#marksIndex').load(location.href + ' #marksIndex')
                         $('#studentList').load(location.href + ' #studentList')
-                        $("#updateUserModal").modal('hide');
+                        $("#createMarksModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
                         Swal.fire({
                             title: "Marks added successfully!",

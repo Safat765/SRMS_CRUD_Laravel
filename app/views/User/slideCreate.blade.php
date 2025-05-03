@@ -5,7 +5,6 @@
                 <div class="card-header">
                     <h4 class="text-center fw-bold text-info">Create User</h4>
                 </div>
-                
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
                     {{ Form::open(['url' => '/users', 'method' => 'post', 'novalidate' => true, 'id' => 'userCreateForm']) }}
@@ -21,7 +20,6 @@
                                 ]
                             )}}
                         </div>
-                        
                         <div class="col-md-4">
                             {{ Form::label('email', 'Email', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::text('email', Input::old('email'), 
@@ -154,7 +152,6 @@
         });
         $('#sessionName').hide();
         $('#semesterName').hide();
-        
         $('#userType').click(function() {            
             let userType = $('#userType').val();
             let semesterId = $('#semesterId').val();
@@ -173,7 +170,6 @@
         });
         $(document).on('click', '.submitCreate', function(e) {
             e.preventDefault();
-
             var username = $("#username").val();
             var email = $("#email").val();
             var password = $("#password").val();
@@ -183,7 +179,7 @@
             var registrationNumber = $("#registrationNumber").val();
             var phoneNumber = $("#phoneNumber").val();
             var departmentId = $("#departmentId").val();
-            // console.log(values);
+
             if (!username && !email && !password && !userType && !session && !semesterId && !registrationNumber && !phoneNumber && !departmentId) {
                 Swal.fire({
                     icon: "error",
@@ -197,7 +193,7 @@
             $.ajax({
                 url: "{{ route('users.store') }}",
                 type: 'POST',
-                data: $('#userCreateForm').serialize(), // This properly serializes all form data
+                data: $('#userCreateForm').serialize(),
                 dataType: 'json',
                 success : function (response)
                 {

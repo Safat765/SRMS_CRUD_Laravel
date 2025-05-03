@@ -48,11 +48,6 @@ class DepartmentController extends BaseController
 			'required' => 'The Department field is required.',
 			'min' => 'The Department must be at least :min characters.'
 		]);
-		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }
 
 		if ($validator->fails()) {
 			return Response::json([
@@ -65,7 +60,6 @@ class DepartmentController extends BaseController
 		
 		if ($exist) {
 			Session::flash('success', 'Department created successfully');
-			// return Redirect::to('departments');
 			return Response::json([
 				'status' => 'success',
 			], 200);
@@ -82,7 +76,6 @@ class DepartmentController extends BaseController
 				
 	public function edit($id)
 	{
-		// echo "Edit " . $id;
 		$department = new Department();
 		$department = $department->edit($id);
 		$pageName = "Edit Department";
@@ -98,7 +91,6 @@ class DepartmentController extends BaseController
 				
 	public function update($id)
 	{
-		// echo "Hello update" . $id;
 		$department = new Department();
 		$department = $department->edit($id);
 		
@@ -113,11 +105,6 @@ class DepartmentController extends BaseController
 			'required' => 'The Department field is required.',
 			'min' => 'The Department must be at least :min characters.'
 		]);
-		
-		// if ($validator->fails()) {
-		// 	return Redirect::back()
-		// 	->withErrors($validator);
-		// }
 
 		if ($validator->fails()) {
 			return Response::json([
@@ -157,13 +144,11 @@ class DepartmentController extends BaseController
 		
 		if (!$delete) {
 			Session::flash('message', 'Failed to delete department');
-			// return Redirect::back();
 			return Response::json([
 				'status' => 'error',
 			]);
 		} else{
 			Session::flash('success', 'Department deleted successfully');
-			// return Redirect::to('departments');
 			return Response::json([
 				'status' => 'success',
 			]);

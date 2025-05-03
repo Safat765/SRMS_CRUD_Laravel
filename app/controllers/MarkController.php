@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Mark;
+use App\Models\Result;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -23,24 +24,12 @@ class MarkController extends BaseController
 		return View::make("Mark.courseList")->with($data);
 	}
 				
-	// public function create()
-	// {
-	// 	$pageName = "Give Mark";			
-	// 	$url = url('/users');
-	// 	// Show create form
-	// 	$data = compact('url', 'pageName');
-		
-	// 	return View::make('Mark/create')->with($data);
-	// }
-				
 	public function createMark()
 	{
-		// Get all the input data
 		$data = Input::all();
 		$totalMarks = Input::get('totalMarks');
 		$givenMarks = Input::get('givenMark');
 
-		// Check if the given marks are empty
 		if (empty($givenMarks)) {
 			return Response::json([
 				'status' => 'error',
@@ -48,7 +37,6 @@ class MarkController extends BaseController
 			], 400);
 		}
 
-		// Validate that the given marks are not greater than the total marks
 		if ($totalMarks < $givenMarks) {
 			return Response::json([
 				'status' => 'error',
@@ -61,10 +49,8 @@ class MarkController extends BaseController
 			], 400);
 		}
 
-		// Calculate the percentage
 		$percentage = ($givenMarks / $totalMarks) * 100;
 
-		// GPA calculation based on percentage
 		if ($percentage >= 90) $gpa = 4.00;
 		elseif ($percentage >= 85) $gpa = 3.75;
 		elseif ($percentage >= 80) $gpa = 3.50;
@@ -75,7 +61,6 @@ class MarkController extends BaseController
 		elseif ($percentage >= 50) $gpa = 2.25;
 		else $gpa = 0.00;
 
-		// Check if marks already exist for the student and exam
 		$mark = new Mark();
 		$exist = $mark->existOrNot($data['studentId'], $data['examId']);
 
@@ -85,14 +70,13 @@ class MarkController extends BaseController
 				'message' => 'Marks already assigned for this student.'
 			], 400);
 		}
-
-		// Create the marks record
 		$result = $mark->createMarks($data, $gpa);
 
 		if ($result) {
+			$this->addResunt($data['studentId']);
 			return Response::json([
 				'status' => 'success',
-				'message' => 'Marks added successfully for student - "'. $data['username'].'" for the course of "'. $data['courseName'].'"'
+				'message' => 'Marks added successfully for student - "'. $data['username'].'" for the course of "'. $data['courseName'].' and result also added"'
 			], 200);
 		} else {
 			return Response::json([
@@ -102,11 +86,38 @@ class MarkController extends BaseController
 		}
 	}
 
+	public function addResunt($studentId)
+	{
+		$result = new Result();
+		$records = $result->results($studentId);
+		$info = [];
+		foreach ($records as $record) {
+			array_push($info, $record->gpa);
+		}
+		
+		$cgpSum = [];
+		$credit = [];
+		foreach ($records as $record) {
+			array_push($credit, $record->credit);
+			$totalGpa = $record->gpa * $record->credit;
+			array_push($cgpSum, $totalGpa);
+		}
+
+		$credit = array_sum($credit);
+		$gpa = array_sum($cgpSum);
+		$CGPA = $gpa / $credit;
+
+		$get = $result->resultExistonNot($studentId);
+		if ($get) {
+			$result->updateResult($studentId, $CGPA);
+		} else {
+			$result->createResult($studentId, $CGPA);
+		}
+	}
+
 				
 	public function store()
 	{
-
-		
 		// Handle form submission
 	}
 				
@@ -114,11 +125,8 @@ class MarkController extends BaseController
 	{
 		$records = Input::all();
 		$studentId = $id;
-		// p($records);
 		$mark = new Mark();
 		$records = $mark->editMarks($studentId, $records['examId']);
-		// p($records);
-		// echo "<br>";
 		$pageName = "View Marks";
 
 		if ($records) {
@@ -133,7 +141,6 @@ class MarkController extends BaseController
 	public function addMark()
 	{
 		$records = Input::all();
-		// p($records);
 		$pageName = "Give Mark";			
 		$url = URL::route('marks.store');
 		// Show create form
@@ -145,28 +152,21 @@ class MarkController extends BaseController
 				
 	public function students()
 	{
-		// p(Input::all());
 		$semesterId = Input::get("semesterId");
 		$courseId = Input::get("courseID");
 		$marks = new Mark();
 		$results = $marks->getStudents(Session::get("user_id"), $semesterId, $courseId);
-		// p($results);
-
 		$userId = [];
+
 		foreach ($results as $result) {
 			array_push($userId, $result->user_id);
 		}
-		// p($userId);
 
 		foreach ($results as $result) {
 			$examId = $result->exam_id;
 			break;
 		}
-		// echo "<br>". $examId;
-
 		$marks = $marks->getMarks($userId, $examId);
-		// p($marks);
-
 		$totalStudent = count($results);
 		$data = compact('results', 'totalStudent', 'marks', 'userId');
 			
@@ -275,7 +275,6 @@ class MarkController extends BaseController
 			die();
 		}
 		$result = $mark->deleteMarks($id, $records['examId']);
-		// p($result);
 
 		if ($result) {
 			Session::flash('success', 'Marks Deleted successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
@@ -290,7 +289,7 @@ class MarkController extends BaseController
 	{
 		$marks = new Mark();
 		$results = $marks->viewMarks(Session::get("user_id"));
-		// p($results);
+
 		return View::make('Mark/courseWiseStudent')->with([
 			'results'=> $results
 		]);

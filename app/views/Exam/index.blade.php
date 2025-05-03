@@ -5,13 +5,6 @@
 <div class="table-responsive examUpdate" id="examUpdate">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
-            <!-- <div class="p-1">            
-                <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/exams/create')}}" class="btn btn-primary m-2">
-                        Create exam
-                    </a>
-                </div>
-            </div> -->
             <div class="p-1">
                 <div class="d-flex justify-content-start mt-2 mb-3">
                     <button class="btn btn-success" id="createExam">Create Exam</button>
@@ -25,7 +18,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
             {{ Form::open([URL::route('exams.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">

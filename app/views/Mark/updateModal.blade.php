@@ -3,13 +3,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Add Marks</h5>
+                    <h5 class="modal-title" id="updateModalLabel">Update Marks</h5>
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="errorMsgContainer">
-
-                    </div>
+                    <div class="errorMsgContainer"></div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             {{ Form::hidden('marksId', null, ['id' => 'updateMarksId']) }}
@@ -19,7 +17,6 @@
                             {{ Form::hidden('courseId', null, ['id' => 'updateCourseId']) }}
                             {{ Form::hidden('examId', null, ['id' => 'updateExamId']) }}
                             {{ Form::hidden('studentId', null, ['id' => 'updateStudentId']) }}
-                            
                             {{ Form::label('givenMark', 'Mark', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::text('givenMark', '', 
                                 [
@@ -82,6 +79,7 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $(document).on('click', '#updataMarks', function(e) {
@@ -102,10 +100,9 @@
                 return;
             }
             $('.errorMsgContainer').html("");
-            // console.log(marksId);
             $.ajax({
                 url: `/marks/${marksId}`,
-                method: 'PUT', // Specify the HTTP method
+                method: 'PUT',
                 data: {
                     totalMarks: totalMarks,
                     givenMark: givenMark,
@@ -114,7 +111,6 @@
                     examId : examId
                 },
                 success: function(response) {
-                    // Handle success
                     if (response.status === 'success') {
                         $('#studentList').load(location.href + ' #studentList')
                         $('#marksIndex').load(location.href + ' #marksIndex')
@@ -129,7 +125,7 @@
                 },                
                 error: function(response) {
                     try {
-                        if (response.responseJSON.status === 'error') { // notice: use response.responseJSON
+                        if (response.responseJSON.status === 'error') {
                             alert(response.responseJSON.message);
                         }
                     } catch (e) {

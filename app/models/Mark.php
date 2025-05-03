@@ -174,9 +174,9 @@ class Mark extends Eloquent implements UserInterface, RemindableInterface {
             'semesters.name as semester_name',
             'semesters.semester_id'
         )
-                ->where('marks.student_id', $studentId)
-                ->where('marks.exam_id', $examId)
-                ->get();
+        ->where('marks.student_id', $studentId)
+        ->where('marks.exam_id', $examId)
+        ->get();
             
         return $result;
     }
@@ -184,6 +184,7 @@ class Mark extends Eloquent implements UserInterface, RemindableInterface {
     public function getMarks(array $studentIds, $examId)
     {
         $results = [];
+
         foreach ($studentIds as $studentId) {
             $result = DB::table('marks')
                     ->where('marks.student_id', $studentId)
@@ -191,6 +192,7 @@ class Mark extends Eloquent implements UserInterface, RemindableInterface {
                     ->get();
             $results[$studentId] = $result;
         }
+
         return $results;
     }
 
@@ -229,6 +231,4 @@ class Mark extends Eloquent implements UserInterface, RemindableInterface {
 
         return $result;
     }
-
-
 }

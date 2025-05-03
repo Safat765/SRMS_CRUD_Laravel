@@ -80,12 +80,11 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function filter($search)
 	{
 		$userCount = User::where('username', 'LIKE', '%' . $search . '%')
-		->orWhere('email', 'LIKE', '%' . $search . '%');
-		
+							->orWhere('email', 'LIKE', '%' . $search . '%');
 		$totalUsers = $userCount->count();
 		$users = $userCount->paginate(5);
-		
 		$data = compact('users', 'totalUsers');
+		
 		return $data;
 	}
 	
@@ -130,7 +129,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if (!$user) {
 			return false;
 		}
-		
 		$user->delete();
 		
 		return $user;
@@ -151,7 +149,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 			$user->status = self::STATUS_ACTIVE;
 			Session::flash('success', 'User activated successfully');
 		}
-		
 		$user->save();
 		
 		return $user;

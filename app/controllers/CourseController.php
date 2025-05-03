@@ -90,32 +90,6 @@ class CourseController extends \BaseController
 		}
 	}
 
-// 	public function store()
-// {
-// 		$validator = Validator::make(Input::all(), [
-// 			'name' => 'required|min:2',
-// 			'credit' => 'required|numeric'
-// 		], [
-// 			'required' => 'The Course field is required.',
-// 			'min' => 'The Course must be at least :min characters.',
-// 			'numeric' => 'The Course must be a number.'	
-// 		]);
-
-//     if ($validator->fails()) {
-//         return Response::json([
-//             'errors' => $validator->errors()
-//         ], 422);
-//     }
-
-//     // Save course logic
-//     Course::create($input);
-
-//     return Response::json([
-//         'message' => 'Course created successfully'
-//     ], 200);
-// }
-
-
 	/**
 	 * Display the specified resource.
 	 *

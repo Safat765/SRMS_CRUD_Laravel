@@ -75,31 +75,26 @@
         <div class="collapse ps-4 w-100" id="userMenu">
             <a href="{{ URL::route('users.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
-            <!-- <a href="{{ URL::route('users.create') }}" class="btn btn-outline-secondary fs-6 mb-3">Create</a> -->
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#departmentMenu"><i class="las la-list fs-4"></i> Department</button>
         <div class="collapse ps-4 w-100" id="departmentMenu">
             <a href="{{ URL::route('departments.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
-            <!-- <a href="{{ URL::route('departments.create') }}" class="btn btn-outline-secondary fs-6">Create</a> -->
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#semesterMenu"><i class="las la-stream fs-4"></i> Semester</button>
         <div class="collapse ps-4 w-100" id="semesterMenu">
             <a href="{{ URL::route('semesters.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
-            <!-- <a href="{{ URL::route('semesters.create') }}" class="btn btn-outline-secondary fs-6 mb-3">Create</a> -->
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#courseMenu"><i class="lab la-discourse fs-4"></i> Course</button>
         <div class="collapse ps-4 w-100" id="courseMenu">
             <a href="{{ URL::route('courses.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
-            <!-- <a href="{{ URL::route('courses.create') }}" class="btn btn-outline-secondary fs-6 mb-3">Create</a> -->
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#examMenu"><i class="las la-clipboard-list fs-4"></i> Exam</button>
         <div class="collapse ps-4 w-100" id="examMenu">
             <a href="{{ URL::route('exams.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
-            <!-- <a href="{{ URL::route('exams.create') }}" class="btn btn-outline-secondary fs-6 mb-3">Create</a> -->
         </div>
         @endif
         

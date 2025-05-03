@@ -47,16 +47,12 @@
 
             $('.semesterId').val(semesterId);
             $('.semesterName').val(semesterName);
-
-            // console.log(semesterId, semesterName);
         });
 
         $(document).on('click', '.updateSemester', function(e) {
             e.preventDefault();
             let semesterId = $('.semesterId').val();
             let semesterName = $('.semesterName').val();
-
-            console.log(semesterId, semesterName);
             $.ajax({
                 url : `/semesters/${semesterId}`,
                 type : 'PUT',

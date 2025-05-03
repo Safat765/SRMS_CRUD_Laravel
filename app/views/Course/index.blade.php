@@ -8,13 +8,6 @@
             <div class="p-1">
                 <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal"  class="btn btn-success m-2">Create</a>
             </div>
-            <!-- <div class="p-1">            
-                <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/courses/create')}}" class="btn btn-primary m-2">
-                        Create Course
-                    </a>
-                </div>
-            </div> -->
             <div class="p-1">                       
                 <div class="d-flex justify-content-start mb-3">
                     <a href="{{url('/courses')}}" class="btn btn-secondary m-2">
@@ -23,7 +16,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
             {{ Form::open([URL::route('courses.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
@@ -101,7 +93,6 @@
             @endforeach
         </tbody>
     </table>
-    
     <div class="text-center">
         {{ $course->links() }}
     </div>
@@ -122,8 +113,6 @@
         });
         $(document).on('click', '#courseDelete', function() {
             let courseId = $(this).data('id');
-
-            console.log(courseId);
             $.ajax({
                 url : `/courses/${courseId}`,
                 type : 'delete',

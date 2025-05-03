@@ -44,7 +44,6 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
     {
         p($data);
         $profile = new Profile();
-
         $profile->first_name = $data['firstName'];
         $profile->middle_name = $data['middleName'];
         $profile->last_name = $data['lastName'];
@@ -55,7 +54,6 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
         $profile->user_id = $data['userId'];
         $profile->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
         $profile->updated_at = "";
-        
         $profile->save();
 
         return $profile;
@@ -66,6 +64,7 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
         $updatePassword = Hash::make($password);
         $update = DB::table('users')->where('user_id', Session::get('user_id'))
                 ->update(['password'=> $updatePassword]);
+        
         return $update;
     }
 
@@ -93,7 +92,6 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
     {
         $result = DB::table('profiles')
         ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
-
             ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
             ->select(
                     'profiles.*',
@@ -110,17 +108,21 @@ class Profile extends Eloquent implements UserInterface, RemindableInterface
     public function getDepartmentId($departmentId)
     {
         $department = DB::table('departments')->where('name', $departmentId)->first();
+        
         if ($department) {
             return $department->department_id;
         }
+
         return null;
     }
     public function getSemesterId($semesterId)
     {
         $semester = DB::table('semesters')->where('name', $semesterId)->first();
+        
         if ($semester) {
             return $semester->semester_id;
         }
+
         return null;
     }
 
