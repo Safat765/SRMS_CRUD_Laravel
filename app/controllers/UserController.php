@@ -39,21 +39,12 @@ class UserController extends \BaseController
 		];
 		$data = compact('users', 'totalUsers', 'search', 'info', 'list');
 
-		return View::make('User.index')->with($data);
+		return View::make('user.index')->with($data);
 	}
 	
 	public function create()
 	{	
-		$pageName = "Create User";			
-		$url = url('/users');
-		$ADMIN = User::USER_TYPE_ADMIN;
-		$INSTRUCTOR = User::USER_TYPE_INSTRUCTOR;
-		$STUDENT = User::USER_TYPE_STUDENT;
-		$ACTIVE = User::STATUS_ACTIVE;
-		$INACTIVE = User::STATUS_INACTIVE;
-		$data = compact('url', 'pageName', 'type', 'ADMIN', 'INSTRUCTOR', 'STUDENT', 'ACTIVE', 'INACTIVE');
-		
-		return View::make('User/create')->with($data);
+		//
 	}
 	
 	public function store()
@@ -130,16 +121,7 @@ class UserController extends \BaseController
 	
 	public function edit($id)
 	{
-		$user = new User();
-		$users = $user->edit($id);
-		$pageName = "Edit User";
-		$url = url('/users/' . $id);
-		if (!$users) {
-			Session::flash('message', 'User not found');
-			return Redirect::back();
-		}
-		$data = compact('users', 'url', 'pageName');
-		return View::make('User/update')->with($data);
+		//
 	}
 	
 	public function update($id)
@@ -177,8 +159,7 @@ class UserController extends \BaseController
 			return Response::json([
 				'status' => 'success'
 			]);
-		} else {
-			
+		} else {			
 			return Response::json([
 				'errors' => 'error'
 			]);
@@ -213,16 +194,20 @@ class UserController extends \BaseController
 		$users = $user->edit($id);
 		
 		if (!$users) {
-			Session::flash('message', 'User not found');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		}
 		$status = $user->statusUpdate($id);
 		
 		if (!$status) {
-			Session::flash('message', 'Failed to update user status');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		} else {
-			return Redirect::back();
+			return Response::json([
+				'status' => 'success',
+			]);
 		}
 	}
 }

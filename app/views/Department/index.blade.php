@@ -38,7 +38,7 @@
         </div>     
     </div>
     <div id="createForm" style="display: none;">
-        @include('Department.slideDepCreate')
+        @include('department.slideDepCreate')
     </div>
     <div class="bg-warning  text-black text-center mx-5">
         <h5>Total Department : {{ $totalDepartment }}</h5>
@@ -85,7 +85,7 @@
     <div class="text-center">
         {{ $department->links() }}
     </div>
-    @include('Department.updateModal')
+    @include('department.updateModal')
 </div>
 
 @endsection

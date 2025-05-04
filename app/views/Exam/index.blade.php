@@ -38,7 +38,7 @@
         </div>     
     </div>
     <div id="createForm" style="display: none;">
-        @include('Exam.slideCreate', ['examType' => $examType])
+        @include('exam.slideCreate', ['examType' => $examType])
     </div>
     <div class="bg-warning  text-black text-center mx-5">
         <h5>Total Exam : {{ $totalExams }}</h5>
@@ -113,7 +113,7 @@
         </tbody>
     </table>
     
-    @include('Exam.updateModal', ['examType' => $examType, 'list' => $list])
+    @include('exam.updateModal', ['examType' => $examType, 'list' => $list])
 </div>
 
 @endsection

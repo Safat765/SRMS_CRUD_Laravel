@@ -13,6 +13,7 @@ class ResultController extends BaseController
 		$studentId = Session::get("user_id");
 		$requiredMinCredit = 9;
 		$requiredMinGPA = 3.00;
+		
 		$result = new Result();
 		$semesters = $result->getSemester($studentId);
 		$semestersInfo = [];
@@ -67,7 +68,6 @@ class ResultController extends BaseController
 			$result->updateStudentsSemester($studentId, $updateSemester);
 		}
 
-		// -----------------------------------------------------------------
 		$getInfo = $result->showResult($studentId);
 		$records = $result->results($studentId);
 		$info = [];
@@ -103,7 +103,7 @@ class ResultController extends BaseController
 		];
 		$data = compact('result', 'getInfo', 'semesters', 'GPA', 'totalCredits');
 
-		return View::make('Result/index')->with($data);
+		return View::make('result/index')->with($data);
 	}
 
 	public function semeterWise($semesterId)
@@ -120,7 +120,6 @@ class ResultController extends BaseController
 			], 200);
 		} else {
 			return Response::json([
-				// 'status' => $data
 				'status' => 'error'
 			], 400);
 		}

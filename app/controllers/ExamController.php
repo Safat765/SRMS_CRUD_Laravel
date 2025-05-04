@@ -50,7 +50,7 @@ class ExamController extends \BaseController {
 
 		$data = compact('exams', 'totalExams', 'search', 'examType', 'list');
 
-		return View::make('Exam.index')->with($data);
+		return View::make('exam.index')->with($data);
 	}
 	
 	
@@ -61,18 +61,7 @@ class ExamController extends \BaseController {
 	*/
 	public function create()
 	{
-		$exam = new Exam();	
-		$pageName = "Create Exam";			
-		$url = url('/exams');
-		$examType = [
-			"Mid" => Exam::EXAM_TYPE_MID,
-			"Quiz" => Exam::EXAM_TYPE_QUIZ,
-			"Viva" => Exam::EXAM_TYPE_VIVA,
-			"Final" => Exam::EXAM_TYPE_FINAL
-		];
-		$data = compact('url', 'pageName', 'allTables', 'examType');
-		
-		return View::make('Exam/create')->with($data);
+		//
 	}
 	
 	
@@ -236,11 +225,10 @@ class ExamController extends \BaseController {
 		$delete = $exam->deleteExam($id);
 		
 		if (!$delete) {
-			Session::flash('message', 'Failed to delete Exam');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			], 400);
 		} else{
-			Session::flash('success', 'Exam deleted successfully');
-			// return Redirect::to('exams');
 			return Response::json([
 				'status' => 'success',
 			], 200);

@@ -16,12 +16,11 @@ class MarkController extends BaseController
 		$url = '/marks/students';
 		$marks = new Mark();
 		$results = $marks->assignedCourses(Session::get("user_id"));
-		// p($results);
 		$totalCourse = count($results);
 		$userType = Session::get("user_type");
 		$data = compact('userType', 'results', 'totalCourse', 'url');
 			
-		return View::make("Mark.courseList")->with($data);
+		return View::make("mark.courseList")->with($data);
 	}
 				
 	public function createMark()
@@ -73,7 +72,7 @@ class MarkController extends BaseController
 		$result = $mark->createMarks($data, $gpa);
 
 		if ($result) {
-			$this->addResunt($data['studentId']);
+			$this->addResult($data['studentId']);
 			return Response::json([
 				'status' => 'success',
 				'message' => 'Marks added successfully for student - "'. $data['username'].'" for the course of "'. $data['courseName'].' and result also added"'
@@ -86,7 +85,7 @@ class MarkController extends BaseController
 		}
 	}
 
-	public function addResunt($studentId)
+	public function addResult($studentId)
 	{
 		$result = new Result();
 		$records = $result->results($studentId);
@@ -131,7 +130,7 @@ class MarkController extends BaseController
 
 		if ($records) {
 			$data = compact('records', 'pageName');
-			return View::make('Mark/View')->with($data);
+			return View::make('mark/View')->with($data);
 		} else {
 			Session::flash('message', 'Student not added');
 			return Redirect::to('marks');
@@ -146,7 +145,7 @@ class MarkController extends BaseController
 		// Show create form
 		$data = compact('records', 'url', 'pageName');
 		
-		return View::make('Mark/create')->with($data);
+		return View::make('mark/create')->with($data);
 		die();
 	}
 				
@@ -170,7 +169,7 @@ class MarkController extends BaseController
 		$totalStudent = count($results);
 		$data = compact('results', 'totalStudent', 'marks', 'userId');
 			
-		return View::make("Mark.studentList")->with($data);
+		return View::make("mark.studentList")->with($data);
 	}
 				
 	public function edit($studentId)
@@ -281,6 +280,7 @@ class MarkController extends BaseController
 		} else {
 			Session::flash('message', 'Failes to Delete marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
 		}
+
 		return Redirect::to('marks/all/students');
 		die();
 	}
@@ -290,7 +290,7 @@ class MarkController extends BaseController
 		$marks = new Mark();
 		$results = $marks->viewMarks(Session::get("user_id"));
 
-		return View::make('Mark/courseWiseStudent')->with([
+		return View::make('mark/courseWiseStudent')->with([
 			'results'=> $results
 		]);
 	}

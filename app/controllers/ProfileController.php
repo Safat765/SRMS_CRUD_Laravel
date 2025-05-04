@@ -22,7 +22,8 @@ class ProfileController extends BaseController
 		$pageName = "Change Password";			
 		$url = url('/profiles');
 		$data = compact('url' ,'pageName');
-		return View::make("Profile/changePassword")->with($data);
+
+		return View::make("profile/changePassword")->with($data);
 	}
 				
 	public function store()
@@ -39,13 +40,13 @@ class ProfileController extends BaseController
 			return Redirect::back()
 				->withErrors($validation);
 		}
-		p(Input::all());
 		$currentPassword = Session::get("password");
 
 		if (password_verify(Input::get("oldPassword"), $currentPassword)) {
 			
 			if (Input::get("newPassword") === Input::get("oldPassword")) {
 				Session::flash("message", "Previous password and New Password can not be same");
+
 				return Redirect::back();
 				die();
 			} else {
@@ -55,9 +56,11 @@ class ProfileController extends BaseController
 				if ($update) {
 					Session::put("password", Hash::make(Input::get("newPassword")));
 					Session::flash("success", "Password Changed Successfully");
+
 					return Redirect::to('login');
 				} else {
 					Session::flash("message", "Failed to change password");
+
 					return Redirect::back();
 				}
 			}
@@ -75,7 +78,8 @@ class ProfileController extends BaseController
 		$profile = new Profile();
 		$user = $profile->joinProfile(Session::get('user_id'));
 		$data = compact('title', 'pageName', 'user', 'url');
-		return View::make("Profile/update")->with($data);
+
+		return View::make("profile/update")->with($data);
 	}
 				
 	public function edit($userID)
@@ -165,7 +169,7 @@ class ProfileController extends BaseController
 
 	public function changePassword()
 	{
-		return View::make("Profile/changePassword");
+		return View::make("profile/changePassword");
 	}
 
 	public function editProfile()
@@ -174,7 +178,7 @@ class ProfileController extends BaseController
 		$user = $profile->existProfile(Session::get('user_id'));
 		$data = compact('title', 'user');
 
-		return View::make("Profile/editProfile")->with($data);
+		return View::make("profile/editProfile")->with($data);
 	}
 
 	public function searchProfile($userID)

@@ -2,7 +2,7 @@
 @push("title")
     <title>Semester View</title>
 @section('main')
-<div class="table-responsive pt-5" id="editProfileForm">
+<div class="table-responsive" id="editProfileForm">
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
             <tr>
@@ -58,24 +58,15 @@
                     ?>
                     <td scope="row">{{$user->department_name}}</td>
                     <td>
-                        <div class="d-flex gap-2" style="display: inline-block;">
-                            {{ Form::open(['url' => 'profiles/' .$user->profile_id, 'method' => 'get']) }}
-                                
-                                <div class="text-center">
-                                    {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
-                                        'class' => 'btn btn-info btn-sm',
-                                        'type' => 'submit'
-                                    ])}}
-                                </div>
-                            {{ Form::close() }}
-                                <div class="text-center">
-                                    {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
-                                        'class' => 'btn btn-success btn-sm',
-                                        'id' => 'editProfile',
-                                        'data-user_id' => $user->user_id,
-                                        'type' => 'submit'
-                                    ])}}
-                                </div>
+                        <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
+                            <div class="text-center">
+                                {{ Form::button(HTML::decode('<i class="las la-edit"></i>'), [
+                                    'class' => 'btn btn-success btn-sm',
+                                    'id' => 'editProfile',
+                                    'data-user_id' => $user->user_id,
+                                    'type' => 'submit'
+                                ])}}
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -85,8 +76,8 @@
         </tbody>
     </table>
 </div>
-@include('Profile.addNameModal')
-@include('Profile.updateModal')
+@include('profile.addNameModal')
+@include('profile.updateModal')
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

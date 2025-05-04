@@ -34,7 +34,7 @@
       </div>
       <div class="dropdown">
         <button class="btn btn-dark dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="las la-user-edit me-1 fs-4"></i> {{ strtoupper(Session::get('username')) }}
+          <i class="las la-user-edit me-1 fs-4"></i> <span class="text-danger fw-bold">{{ strtoupper(Session::get('username')) }}</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark mt-2" aria-labelledby="profileDropdown">
           <li>

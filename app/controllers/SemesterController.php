@@ -27,16 +27,12 @@ class SemesterController extends BaseController {
 		}
 		$data = compact('semester', 'totalSemester', 'search');
 
-		return View::make('Semester/index')->with($data);
+		return View::make('semester/index')->with($data);
 	}
 				
 	public function create()
 	{
-		$pageName = "Create Semester";			
-		$url = url('/semesters');
-		$data = compact('url', 'pageName');
-		
-		return View::make('Semester/create')->with($data);
+		//
 	}
 				
 	public function store()
@@ -79,18 +75,18 @@ class SemesterController extends BaseController {
 				
 	public function edit($id)
 	{
-		$semester = new Semester();
-		$semester = $semester->edit($id);
-		$pageName = "Edit Semester";
-		$url = url('/semesters/' . $id);
-		$data = compact('semester', 'url', 'pageName');
+		// $semester = new Semester();
+		// $semester = $semester->edit($id);
+		// $pageName = "Edit Semester";
+		// $url = url('/semesters/' . $id);
+		// $data = compact('semester', 'url', 'pageName');
 
-		if ($semester) {
-			return View::make('Semester/update')->with($data);
-		}
-		Session::flash('message', 'Semester not found');
+		// if ($semester) {
+		// 	return View::make('Semester/update')->with($data);
+		// }
+		// Session::flash('message', 'Semester not found');
 
-		return Redirect::back();
+		// return Redirect::back();
 	}
 				
 	public function update($id)

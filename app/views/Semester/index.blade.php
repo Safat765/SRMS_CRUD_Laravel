@@ -38,7 +38,7 @@
         </div>     
     </div>
     <div id="createForm" style="display: none;">
-        @include('Semester.slideCreate')
+        @include('semester.slideCreate')
     </div>
     <div class="bg-warning  text-black text-center mx-5">
         <h5>Total Semester : {{ $totalSemester }}</h5>
@@ -86,7 +86,7 @@
     <div class="text-center">
         {{ $semester->links() }}
     </div>
-    @include('Semester.updateModal')
+    @include('semester.updateModal')
 </div>
 
 @endsection

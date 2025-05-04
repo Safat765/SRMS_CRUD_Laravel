@@ -38,12 +38,12 @@
         </div>     
     </div>
     <div id="createForm" style="display: none;">
-        @include('User.slideCreate', ['info' => $info])
+        @include('user.slideCreate', ['info' => $info])
     </div>
     <div class="bg-warning  text-black text-center mx-5">
         <h5>Total User : {{ $totalUsers }}</h5>
     </div>
-    <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
+    <table class="table table-striped table-bordered table-hover text-center" id="userTable" style="font-size: 15px;">
         <thead>
             <tr>
                 <th scope="col">Username</th>
@@ -61,18 +61,18 @@
                 <td scope="row" class="p-3">{{$user->username}}</td>
                 <td scope="row" class="p-3">{{$user->email}}</td>
                 <td scope="row" class="p-3"> 
-                    {{ $user->user_type == 1 ? 'Admin' : ($user->user_type == 2 ? 'Instructor' : 'Student') }}</td>
+                    {{ $user->user_type == $info['Admin'] ? 'Admin' : ($user->user_type == $info['Instructor'] ? 'Instructor' : 'Student') }}</td>
                 </td>
                 <td scope="row" class="p-3">{{$user->registration_number}}</td>
                 <td scope="row" class="p-3">{{$user->phone_number}}</td>
                 <td scope="row" class="p-3">
-                    @if ($user->status == 1)
-                    <a href="/users/status/{{$user->user_id}}">
-                        <span class="badge bg-success">Active</span>
+                    @if ($user->status == $info['Active'])
+                    <a href="" data-id="{{ $user->user_id }}">
+                        <span class="badge bg-success" id="userStatusBtn" data-id="{{ $user->user_id }}">Active</span>
                     </a>
                     @else
-                    <a href="/users/status/{{$user->user_id}}">
-                        <span class="badge bg-danger">Inactive</span>
+                    <a href="" data-id="{{ $user->user_id }}">
+                        <span class="badge bg-danger" id="userStatusBtn" data-id="{{ $user->user_id }}">Inactive</span>
                     </a>
                     @endif
                 </td>
@@ -113,48 +113,97 @@
         {{ $users->links() }}
     </div>
 
-    @include('User.updateModal', ['info' => $info])
+    @include('user.updateModal', ['info' => $info])
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $(document).on("click", "#deleteBtn", function(e) {
-                e.preventDefault();
-                let userId = $(this).data('id');
-                let username = $(this).data('username');
-                let row = $(this).closest("tr");
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on("click", "#deleteBtn", function(e) {
+            e.preventDefault();
+            let userId = $(this).data('id');
+            let username = $(this).data('username');
+            let row = $(this).closest("tr");
                 
-                if (confirm("Are you sure you want to delete '" + username + "' ?")) {
-                    $.ajax({
-                        url: `/users/${userId}`,
-                        type: 'delete',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                $('.userIndex').load(location.href + ' .userIndex')
-                            }
-                        },
-                        error: function (xhr) {
-                            console.error(xhr.responseText);
-                            alert("Error deleting user. Please try again.");
+            if (confirm("Are you sure you want to delete '" + username + "' ?")) {
+                $.ajax({
+                    url: `/users/${userId}`,
+                    type: 'delete',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
                             $('.userIndex').load(location.href + ' .userIndex')
                         }
-                    });
-                } else {
-                    console.log("Cenceled deleting '"+ username +"'");
-                }
-
-            });
-            $(document).on("click", "#createUser", function(e) {
-                e.preventDefault();
-                $("#createForm").load('slideCreate.blade.php', function() {
-                    $(this).slideToggle(500);
+                    },
+                    error: function (xhr) {
+                        console.error(xhr.responseText);
+                        alert("Error deleting user. Please try again.");
+                        $('.userIndex').load(location.href + ' .userIndex')
+                    }
                 });
+            } else {
+                console.log("Cenceled deleting '"+ username +"'");
+            }
+        });
+        $(document).on('click', '#userStatusBtn', function(e) {
+            e.preventDefault();
+            let userId = $(this).data('id');
+            let status = $("#userStatusBtn").text().trim();
+            console.log(userId, status);
+            $.ajax({
+                url : `/users/status/${userId}`,
+                type : 'get',
+                data : {id : userId},
+                success : function (response)
+                {
+                    if (response.status === 'success') {
+                        $('.userIndex').load(location.href + ' .userIndex')
+                        $('#userTable').load(location.href + ' #userTable')
+                        if (status === 'Active') {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "User Inactivated successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "User Activated successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    } else {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Error changing status. Please try again.",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error :function (err)
+                {
+                    if (err.status === 'error') {
+                        console.log(err.status);
+                    }
+                }
             });
-        })
-    </script>
+        });
+        $(document).on("click", "#createUser", function(e) {
+            e.preventDefault();
+            $("#createForm").load('slideCreate.blade.php', function() {
+                $(this).slideToggle(500);
+            });
+        });
+    })
+</script>
 
 @endsection

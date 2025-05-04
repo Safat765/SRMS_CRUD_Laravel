@@ -28,16 +28,12 @@ class DepartmentController extends BaseController
 
 		$data = compact('department', 'totalDepartment', 'search');
 
-		return View::make('Department.index')->with($data);
+		return View::make('department.index')->with($data);
 	}
 				
 	public function create()
 	{
-		$pageName = "Create Department";			
-		$url = url('/departments');
-		$data = compact('url', 'pageName');
-		
-		return View::make('Department/create')->with($data);
+		//
 	}
 				
 	public function store()
@@ -76,17 +72,7 @@ class DepartmentController extends BaseController
 				
 	public function edit($id)
 	{
-		$department = new Department();
-		$department = $department->edit($id);
-		$pageName = "Edit Department";
-		$url = url('/departments/' . $id);
-		$data = compact('department', 'url', 'pageName');
-
-		if ($department) {
-			return View::make('Department/update')->with($data);
-		}
-		Session::flash('message', 'Department not found');
-		return Redirect::back();
+		//
 	}
 				
 	public function update($id)

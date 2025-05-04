@@ -35,7 +35,7 @@ class CourseController extends \BaseController
 
 		$data = compact('course', 'totalCourse', 'search', 'ACTIVE', 'INACTIVE');
 
-		return View::make('Course.index')->with($data);
+		return View::make('course.index')->with($data);
 	}
 
 
@@ -46,11 +46,7 @@ class CourseController extends \BaseController
 	 */
 	public function create()
 	{
-		$pageName = "Create Course";			
-		$url = url('/courses');
-		$data = compact('url', 'pageName');
-		
-		return View::make('Course/create')->with($data);
+		//
 	}
 
 
@@ -110,17 +106,7 @@ class CourseController extends \BaseController
 	 */
 	public function edit($id)
 	{
-		$course = new Course();
-		$course = $course->edit($id);
-		$pageName = "Edit Course";
-		$url = url('/courses/' . $id);
-		$data = compact('course', 'url', 'pageName');
-
-		if ($course) {
-			return View::make('Course/update')->with($data);
-		}
-		Session::flash('message', 'Course not found');
-		return Redirect::back();
+		//
 	}
 
 
@@ -143,7 +129,7 @@ class CourseController extends \BaseController
 		}
 		
 		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:1|unique:courses',
+			'name' => 'required|min:1|unique:courses,name,' . $id . ',course_id',
 			'credit' => 'required|numeric'
 		], [
 			'required' => 'The Course field is required.',
@@ -157,23 +143,16 @@ class CourseController extends \BaseController
 			], 422);
 		}
 		
-		$exist = $course->searchName($name);
-
-		if ($exist) {
-			Session::flash('message', $name.' Course already exist');
-			return Redirect::back();
-		}
 		$update = $course->updateCourse(Input::all(), $id);
 		
 		if ($update) {
-			Session::flash('success', 'Course updated successfully');
-			// return Redirect::to('courses');
 			return Response::json([
 				'status' => 'success',
 			]);
 		} else {
-			Session::flash('message', 'Failed to update course');
-			return Redirect::back();
+			return Response::json([
+				'errors' => 'error'
+			]);
 		}
 	}
 
@@ -214,7 +193,6 @@ class CourseController extends \BaseController
 		$course = $course->edit($id);
 		
 		if (!$course) {
-			Session::flash('message', 'User not found');
 			return Response::json([
 				'status' => 'error',
 			]);
@@ -222,7 +200,6 @@ class CourseController extends \BaseController
 		$status = $course->statusUpdate($id);
 		
 		if (!$status) {
-			Session::flash('message', 'Failed to update user status');
 			return Response::json([
 				'status' => 'error',
 			]);

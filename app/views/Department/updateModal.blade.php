@@ -79,7 +79,7 @@
                         Swal.fire({
                             position: "top-end",
                             icon: "success",
-                            title: `${name} Department added successfully`,
+                            title: `${name} Department updated successfully`,
                             showConfirmButton: false,
                             timer: 1500
                         });

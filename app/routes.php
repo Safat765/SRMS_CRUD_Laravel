@@ -47,7 +47,7 @@ Route::group(['before'=> 'onlyInstructor'], function() {
     });
 });
 Route::group(['before'=> 'onlyStudents'], function() {
-    Route::resource('/results', 'ResultController');
+    Route::resource('/results', 'ResultController', ['only' => ['index']]);
     Route::get('/results/semester/{id}', 'ResultController@semeterWise');
 });
 Route::get('/session', function(){

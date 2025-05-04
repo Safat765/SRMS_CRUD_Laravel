@@ -21,6 +21,8 @@ class LoginController extends BaseController {
 				
 	public function store()
 	{
+		$user = new User();
+
 		$validator = Validator::make(Input::all(), [
 			'username' => 'required',
 			'password' => 'required|min:4'
@@ -34,15 +36,14 @@ class LoginController extends BaseController {
 		
 		$username = Input::get('username');
 		$password = Input::get('password');
-		$user = User::where('username', $username)->first(); //---------------
+		$user = $user->findPassword($username);
 		
 		if (!password_verify($password, $user->password)) {
 			Session::flash('message', 'Incorrect Password');
 			return Redirect::to('login/create');
 		}
 		$password = $user->password;		
-		$userExists = User::where('username', $username) //----------------
-							->where('password', $password)->exists();
+		$userExists = $user->login($username, $password);
 		
 		if ($userExists) {
 

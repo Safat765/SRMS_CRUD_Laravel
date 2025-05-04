@@ -55,9 +55,7 @@
                 <td scope="row" class="p-3">
                     @if ($courses->status == $ACTIVE)
                     <a href="" data-id="{{ $courses->course_id }}">
-                        <span class="badge bg-success" id="statusBtn" data-id="{{ $courses->course_id }}">
-                            Active
-                        </span>
+                        <span class="badge bg-success" id="statusBtn" data-id="{{ $courses->course_id }}">Active</span>
                     </a>
                     @else
                     <a href="" data-id="{{ $courses->course_id }}">
@@ -98,12 +96,13 @@
     </div>
 </div>
 
-@include('Course.createModal')
-@include('Course.updateModal')
+@include('course.createModal')
+@include('course.updateModal')
 
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $.ajaxSetup({
@@ -145,6 +144,31 @@
                 {
                     if (response.status === 'success') {
                         $('.courseIndex').load(location.href + ' .courseIndex')
+                        if (status === 'Active') {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Course Inactivated successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Course Activated successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    } else {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "error",
+                            title: "Error changing status. Please try again.",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)
@@ -155,6 +179,5 @@
                 }
             });
         });
-        
     });
 </script>

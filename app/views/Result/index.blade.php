@@ -60,7 +60,7 @@
         </tbody>
     </table>
 </div>
-@include('Result.semesterWise', ['result' => $result])
+@include('result.semesterWise', ['result' => $result])
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -84,7 +84,7 @@
                     const records = response.records;
                     const $tbody = $('#modalTableBody');                    
                     $tbody.empty();
-                    let text = $('#updateModalLabel').text();
+                    let text = 'Course wise Result for -- ';
                     let newText = text + semesterName +'"';
                     $('#updateModalLabel').text(newText);
 

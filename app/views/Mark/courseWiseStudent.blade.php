@@ -54,5 +54,5 @@
     </table>
 </div>
 
-@include('Mark.createModal')
+@include('mark.createModal')
 @endsection

@@ -123,8 +123,8 @@
     </table>
 </div>
 <br><hr><hr><br><br>
-@include('Mark.createModal')
-@include('Mark.updateModal')
+@include('mark.createModal')
+@include('mark.updateModal')
 @endsection
 
 

@@ -57,6 +57,21 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		$this->attributes['password'] = Hash::make($value);
 	}
+
+	public function login($username, $password)
+	{
+		$result = User::where('username', $username) 
+						->where('password', $password)->exists();
+		
+		return $result;
+	}
+
+	public function findPassword($username)
+	{
+		$result = User::where('username', $username)->first();
+
+		return $result;
+	}
 	
 	public function createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber)
 	{
