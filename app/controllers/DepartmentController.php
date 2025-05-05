@@ -60,14 +60,15 @@ class DepartmentController extends BaseController
 				'status' => 'success',
 			], 200);
 		} else {
-			Session::flash('message', 'Department already exist');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error'
+			], 409);
 		}
 	}
 				
 	public function show($id)
 	{
-		echo "Hello show" . $id;
+		//
 	}
 				
 	public function edit($id)
@@ -81,8 +82,9 @@ class DepartmentController extends BaseController
 		$department = $department->edit($id);
 		
 		if (!$department) {
-			Session::flash('message', 'Department not found');
-			return Redirect::back();
+			Response::json([
+				'errors' => 'Course not found'
+			], 404);
 		}
 		
 		$validator = Validator::make(Input::all(), [
@@ -101,19 +103,20 @@ class DepartmentController extends BaseController
 		$exist = $department->searchName($name);
 
 		if ($exist) {
-			Session::flash('message', $name.' Department already exist');
-			return Redirect::back();
+			return Response::json([
+				'errors' => 'Department already exist'
+			]);
 		}
 		$update = $department->updateDepartment(Input::all(), $id);
 		
 		if ($update) {
-			Session::flash('success', 'Department updated successfully');
 			return Response::json([
 				'status' => 'success',
 			], 200);
 		} else {
-			Session::flash('message', 'Failed to update department');
-			return Redirect::back();
+			return Response::json([
+				'errors' => 'error'
+			]);
 		}
 	}
 				
@@ -123,18 +126,17 @@ class DepartmentController extends BaseController
 		$department = $department->edit($id);
 		
 		if (!$department) {
-			Session::flash('message', 'Department not found');
-			return Redirect::back();
+			Response::json([
+				'status' => 'error'
+			], 404);
 		}
 		$delete = $department->deleteDepartment($id);
 		
 		if (!$delete) {
-			Session::flash('message', 'Failed to delete department');
 			return Response::json([
 				'status' => 'error',
 			]);
 		} else{
-			Session::flash('success', 'Department deleted successfully');
 			return Response::json([
 				'status' => 'success',
 			]);
