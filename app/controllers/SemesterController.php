@@ -54,13 +54,11 @@ class SemesterController extends BaseController {
 		$exist = $semester->createSemester($name);
 		
 		if ($exist) {
-			Session::flash('success', 'Semester created successfully');
 			return Response::json([
 				'status' => 'success',
 				'message'=> 'Semester created successfully'
 			], 200);
 		} else {
-			Session::flash('message', 'Semester already exist');
 			return Response::json([
 				'status' => 'error',
 				'message'=> 'Semester already exist'
@@ -75,18 +73,7 @@ class SemesterController extends BaseController {
 				
 	public function edit($id)
 	{
-		// $semester = new Semester();
-		// $semester = $semester->edit($id);
-		// $pageName = "Edit Semester";
-		// $url = url('/semesters/' . $id);
-		// $data = compact('semester', 'url', 'pageName');
-
-		// if ($semester) {
-		// 	return View::make('Semester/update')->with($data);
-		// }
-		// Session::flash('message', 'Semester not found');
-
-		// return Redirect::back();
+		//
 	}
 				
 	public function update($id)

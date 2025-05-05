@@ -172,16 +172,17 @@ class UserController extends \BaseController
 		$users = $user->edit($id);
 		
 		if (!$users) {
-			Session::flash('message', 'User not found');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		}
 		$delete = $user->deleteUser($id);
 		
 		if (!$delete) {
-			Session::flash('message', 'Failed to delete user');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error',
+			]);
 		} else{
-			Session::flash('success', 'User deleted successfully');
 			return Response::json([
 				'status' => 'success',
 			], 200);
