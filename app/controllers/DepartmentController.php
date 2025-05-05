@@ -2,10 +2,8 @@
 
 use App\Models\Department;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
 
 
@@ -55,7 +53,6 @@ class DepartmentController extends BaseController
 		$exist = $department->createDepartment($name);
 		
 		if ($exist) {
-			Session::flash('success', 'Department created successfully');
 			return Response::json([
 				'status' => 'success',
 			], 200);

@@ -98,21 +98,20 @@ class ExamController extends \BaseController {
 		$exist = $exam->searchName($data['courseId'], $data['departmentId'], $data['semesterId'], $data['examType']);
 
 		if ($exist) {
-			Session::flash('message', 'Exam already exists');
-			return Redirect::to('exams/create');
+			return Response::json([
+				'status' => 'error'
+			], 403);
 		} else {
 			$create = $exam->createExam($data, $createdBy);
 			
 			if ($create) {
-				$exam = new Exam();
-				Session::flash('success', 'Exam created successfully');
-				// return Redirect::to('exams');
 				return Response::json([
 					'status' => 'success',
 				], 200);
 			} else {
-				Session::flash('message', 'Failed to create exam');
-				return Redirect::back();
+				return Response::json([
+					'status' => 'error'
+				], 409);
 			}
 		}
 	}
@@ -138,17 +137,7 @@ class ExamController extends \BaseController {
 	*/
 	public function edit($id)
 	{
-		$exam = new Exam();
-		$pageName = "Edit Exam";		
-		$url = url('/exams/'.$id);
-		$exams = $exam->editFind($id);
-		$data = compact('exams', 'url', 'pageName');
-
-		if (empty($exams) || $exams->count() == 0) {
-			Session::flash('message', 'Exam not found');
-			return Redirect::back();
-		}
-		return View::make('Exam/update')->with($data);
+		//
 	}
 	
 	
@@ -219,8 +208,9 @@ class ExamController extends \BaseController {
 		$exam = $exam->editFind($id);
 		
 		if (!$exam) {
-			Session::flash('message', 'Exam not found');
-			return Redirect::back();
+			Response::json([
+				'status' => 'error'
+			], 404);
 		}
 		$delete = $exam->deleteExam($id);
 		
