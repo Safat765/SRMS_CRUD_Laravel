@@ -42,7 +42,6 @@ Route::group(['before'=> 'onlyInstructor'], function() {
     Route::group(['prefix'=> 'marks'], function() {
         Route::post('/students', 'MarkController@students');
         Route::get('/all/students', 'MarkController@studentList');
-        Route::post('/add', 'MarkController@addMark');
         Route::post('/go', 'MarkController@createMark');
     });
 });

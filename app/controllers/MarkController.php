@@ -136,18 +136,6 @@ class MarkController extends BaseController
 			return Redirect::to('marks');
 		}
 	}
-
-	public function addMark()
-	{
-		$records = Input::all();
-		$pageName = "Give Mark";			
-		$url = URL::route('marks.store');
-		// Show create form
-		$data = compact('records', 'url', 'pageName');
-		
-		return View::make('mark/create')->with($data);
-		die();
-	}
 				
 	public function students()
 	{
