@@ -75,14 +75,13 @@ class CourseController extends \BaseController
 		$exist = $course->createCourse(Input::all());
 		
 		if ($exist) {
-			Session::flash('success', 'Course created successfully');
-			// return Redirect::to('courses');
 			return Response::json([
 				'status' => 'success',
 			], 200);
 		} else {
-			Session::flash('message', 'Course already exist');
-			return Redirect::back();
+			return Response::json([
+				'status' => 'error'
+			], 409);
 		}
 	}
 
@@ -124,8 +123,9 @@ class CourseController extends \BaseController
 		$course = $course->edit($id);
 		
 		if (!$course) {
-			Session::flash('message', 'Course not found');
-			return Redirect::back();
+			Response::json([
+				'errors' => 'Course not found'
+			], 404);
 		}
 		
 		$validator = Validator::make(Input::all(), [
@@ -169,18 +169,17 @@ class CourseController extends \BaseController
 		$course = $course->edit($id);
 		
 		if (!$course) {
-			Session::flash('message', 'Course not found');
-			return Redirect::back();
+			Response::json([
+				'status' => 'error'
+			], 404);
 		}
 		$delete = $course->deleteCourse($id);
 		
 		if (!$delete) {
-			Session::flash('message', 'Failed to delete course');
 			return Response::json([
 				'status' => 'error',
 			]);
 		} else{
-			Session::flash('success', 'Course deleted successfully');
 			return Response::json([
 				'status' => 'success',
 			]);
