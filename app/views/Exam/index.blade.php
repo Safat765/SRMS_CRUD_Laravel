@@ -12,14 +12,14 @@
             </div>
             <div class="p-1">                       
                 <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/exams')}}" class="btn btn-secondary m-2">
+                    <a href="{{url('/admin/exams')}}" class="btn btn-secondary m-2">
                         Reset
                     </a>
                 </div>
             </div>
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('exams.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.exams.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -127,7 +127,7 @@
 
             if (confirm("Are you sure you want to delete?")) {
                 $.ajax({
-                    url: `/exams/${id}`,
+                    url: `/admin/exams/${id}`,
                     type: 'delete',
                     data: {
                         _token: '{{ csrf_token() }}'

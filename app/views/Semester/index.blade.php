@@ -2,7 +2,7 @@
 @push("title")
 <title>Semester View</title>
 @section('main')
-<div class="table-responsive semesterUpdate">
+<div class="table-responsive semesterUpdate" id="semesterIndex">
     <div class="form-group d-flex justify-content-between align-items-start">
         <div class="d-flex">
             <div class="p-1">
@@ -12,14 +12,14 @@
             </div>
             <div class="p-1">                       
                 <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/semesters')}}" class="btn btn-secondary m-2">
+                    <a href="{{url('/admin/semesters')}}" class="btn btn-secondary m-2">
                         Reset
                     </a>
                 </div>
             </div>  
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('semesters.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.semesters.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -70,8 +70,8 @@
                         <div class="text-center">
                             {{ Form::button(HTML::decode('<i class="las la-trash-alt"></i>'), [
                                 'class' => 'btn btn-danger btn-sm',
-                                'id' => 'deleteBtn',
-                                'data-id' => $semesters->semesters_id,
+                                'id' => 'semesterDeleteBtn',
+                                'data-id' => $semesters->semester_id,
                                 'data-name' => $semesters->name,
                                 'type' => 'button'
                             ])}}
@@ -92,8 +92,49 @@
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
+        $(document).on("click", "#semesterDeleteBtn", function(e) {
+            e.preventDefault();
+            let id = $(this).data('id');
+            let name = $(this).data('name');
+
+            if (confirm("Are you sure you want to delete '" + name + "' ?")) {
+                $.ajax({
+                    url: `/admin/semesters/${id}`,
+                    type: 'delete',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            $('#semesterIndex').load(location.href + ' #semesterIndex');
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Semester deleted successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        alert("Error deleting user. Please try again.");
+                        $('#semesterIndex').load(location.href + ' #semesterIndex');
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Semester deleted faild",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                });
+            } else {
+                console.log("Cenceled deleting '"+ name +"'");
+            }
+        });
         $(document).on("click", "#createSemester", function(e) {
             e.preventDefault();
             $("#createForm").load('slideCreate', function() {

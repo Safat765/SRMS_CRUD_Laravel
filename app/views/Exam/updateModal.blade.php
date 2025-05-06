@@ -166,7 +166,6 @@
             $('#examType1').val(examType);
             $('#marks1').val(marks);
             $('#instructorId1').val(instructorId);
-
         });
 
         $(document).on('click', '#updateExam', function(e) {
@@ -193,7 +192,7 @@
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url : `/exams/${examId}`,
+                url : `/admin/exams/${examId}`,
                 type : 'put',
                 data : $('#formExam').serialize(),
                 success : function (response) {

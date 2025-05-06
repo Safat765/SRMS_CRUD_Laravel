@@ -101,7 +101,7 @@
             }
             $('.errorMsgContainer').html("");
             $.ajax({
-                url: `/marks/${marksId}`,
+                url: `/instructor/marks/${marksId}`,
                 method: 'PUT',
                 data: {
                     totalMarks: totalMarks,

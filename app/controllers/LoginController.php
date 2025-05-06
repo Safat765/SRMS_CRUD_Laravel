@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Mark;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -11,7 +12,18 @@ class LoginController extends BaseController {
 				
 	public function index()
 	{
-		return View::make('dashboard');
+		$marks = new Mark();
+		$studentId = Session::get("user_id");
+		$results = $marks->assignedCourses($studentId);
+		$totalCourse = count($results);
+		$marksResults = $marks->viewMarks($studentId);
+
+		$user = new User();
+		$courses = $user->enrollCourse($studentId);
+		$totalEnrollCourse = count($courses);
+		$data = compact('results', 'totalCourse', 'marksResults', 'courses', 'totalEnrollCourse');
+
+		return View::make("dashboard")->with($data);
 	}
 				
 	public function create()
@@ -59,8 +71,7 @@ class LoginController extends BaseController {
 
 				Session::flash('success', 'Login Successful');
 
-				return View::make('dashboard');
-				die();
+				return Redirect::to('login');
 			} else {
 				Session::flash('message', 'User not found');
 				return Redirect::to('login/create');

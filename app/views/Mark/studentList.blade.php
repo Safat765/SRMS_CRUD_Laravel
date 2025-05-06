@@ -4,11 +4,11 @@
 <title>Student List</title>
 @section('main')
 
-<div class="table-responsive pt-5" id="studentList">
+<div class="table-responsive pt-2" id="studentList">
     <div class="bg-warning text-black text-center mx-5">
         <h5>Total Students : {{ $totalStudent }}</h5>
     </div>
-    <a href="{{ URL::route('marks.index') }}" class="col-md-1 btn btn-danger">Back</a>
+    <a href="{{ URL::route('instructor.marks.index') }}" class="col-md-1 btn btn-danger">Back</a>
     <hr>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
@@ -26,7 +26,7 @@
                 <th>Registration Number</th>
                 <th>Email</th>
                 <th>Department</th>
-                <th>Email</th>
+                <th>Semester</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -41,7 +41,7 @@
                     <td>
                         <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
                             @if (!empty($marks[$result->user_id]))
-                                {{ Form::open(['url' => '/marks/'.$result->user_id, 'method' => 'get']) }}
+                                {{ Form::open(['url' => '/instructor/marks/'.$result->user_id, 'method' => 'get']) }}
                                 {{ Form::hidden('examId', $result->exam_id) }}
                                     <div class="text-center">
                                         {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
@@ -65,7 +65,7 @@
                                         'data-examid' => $result->exam_id,
                                     ])}}
                                 </div>
-                                {{ Form::open(['url' => '/marks/'.$result->user_id, 'method' => 'delete']) }}
+                                {{ Form::open(['url' => '/instructor/marks/'.$result->user_id, 'method' => 'delete']) }}
                                 {{ Form::hidden('username', isset($result->username) ? $result->username : null) }}
                                 {{ Form::hidden('courseName', isset($result->course_name) ? $result->course_name : null) }}
                                 {{ Form::hidden('examId', isset($result->exam_id) ? $result->exam_id : null) }}
@@ -136,13 +136,12 @@
             let examId = $(this).data('examid');
             
             $.ajax({
-                url : `/marks/${userId}/edit`,
+                url : `/instructor/marks/${userId}/edit`,
                 method: 'GET',
                 data: {examId : examId},
                 success:function(response)
                 {
                     if (response.status == 'success') {
-                        console.log('Data fetched successfully:', response.records);
                         let data = response.records[0];
                         
                         $('#updateTotalMarks').val(data.total_marks);

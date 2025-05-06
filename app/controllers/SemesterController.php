@@ -126,11 +126,11 @@ class SemesterController extends BaseController {
 		
 		if (!$delete) {
 			return Response::json([
-				'status' => 'error',
+				'status' => 'error'
 			]);
 		} else{
 			return Response::json([
-				'status' => 'success',
+				'status' => 'success'
 			]);
 		}
 	}

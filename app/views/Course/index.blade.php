@@ -10,14 +10,14 @@
             </div>
             <div class="p-1">                       
                 <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/courses')}}" class="btn btn-secondary m-2">
+                    <a href="{{url('/admin/courses')}}" class="btn btn-secondary m-2">
                         Reset
                     </a>
                 </div>
             </div>
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('courses.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.courses.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -113,13 +113,20 @@
         $(document).on('click', '#courseDelete', function() {
             let courseId = $(this).data('id');
             $.ajax({
-                url : `/courses/${courseId}`,
+                url : `/admin/courses/${courseId}`,
                 type : 'delete',
                 data : {id : courseId},
                 success : function (response)
                 {
                     if (response.status === 'success') {
-                        $('.courseIndex').load(location.href + ' .courseIndex')
+                        $('.courseIndex').load(location.href + ' .courseIndex');
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Course deleted successfully",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
                     }
                 },
                 error :function (err)
@@ -137,7 +144,7 @@
             let status = $("#statusBtn").text().trim();
             console.log(courseId, status);
             $.ajax({
-                url : `/courses/status/${courseId}`,
+                url : `/admin/courses/status/${courseId}`,
                 type : 'get',
                 data : {id : courseId},
                 success : function (response)

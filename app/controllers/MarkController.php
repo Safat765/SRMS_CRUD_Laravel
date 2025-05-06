@@ -5,7 +5,6 @@ use App\Models\Result;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
 
@@ -13,7 +12,7 @@ class MarkController extends BaseController
 {				
 	public function index()
 	{
-		$url = '/marks/students';
+		$url = 'instructor/marks/students';
 		$marks = new Mark();
 		$results = $marks->assignedCourses(Session::get("user_id"));
 		$totalCourse = count($results);
@@ -133,14 +132,12 @@ class MarkController extends BaseController
 			return View::make('mark/View')->with($data);
 		} else {
 			Session::flash('message', 'Student not added');
-			return Redirect::to('marks');
+			return Redirect::to('instructor/marks');
 		}
 	}
 				
-	public function students()
+	public function students($courseId, $semesterId)
 	{
-		$semesterId = Input::get("semesterId");
-		$courseId = Input::get("courseID");
 		$marks = new Mark();
 		$results = $marks->getStudents(Session::get("user_id"), $semesterId, $courseId);
 		$userId = [];
@@ -249,16 +246,13 @@ class MarkController extends BaseController
 				
 	public function destroy($id)
 	{
-		echo "destroy --".$id;
 		$records = Input::all();
-		p($records);
 		$mark = new Mark();
 		$exist = $mark->marksExistOrNotForDelete($id, $records['examId']);
-		p($exist);
 
 		if (!$exist) {
 			Session::flash('message', 'Marks not assigned for this student. Assign the marks first');
-			return Redirect::to('marks');
+			return Redirect::to('instructor/marks');
 			die();
 		}
 		$result = $mark->deleteMarks($id, $records['examId']);
@@ -269,17 +263,22 @@ class MarkController extends BaseController
 			Session::flash('message', 'Failes to Delete marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
 		}
 
-		return Redirect::to('marks/all/students');
-		die();
+		return Redirect::to('/instructor/marks/all/students');
 	}
 
 	public function studentList()
 	{
 		$marks = new Mark();
 		$results = $marks->viewMarks(Session::get("user_id"));
+		
+		$groupedResults = [];
+		foreach ($results as $result) {
+			$groupedResults[$result->course_name][] = $result;
+		}
 
 		return View::make('mark/courseWiseStudent')->with([
-			'results'=> $results
+			'results'=> $results,
+			'groupedResults'=> $groupedResults
 		]);
 	}
 }

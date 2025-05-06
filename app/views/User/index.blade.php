@@ -12,14 +12,14 @@
             </div>
             <div class="p-1">                       
                 <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/users')}}" class="btn btn-secondary m-2">
+                    <a href="{{url('/admin/users')}}" class="btn btn-secondary m-2">
                         Reset
                     </a>
                 </div>
             </div>
         </div>        
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('users.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.users.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -57,7 +57,7 @@
         </thead>
         <tbody>
             @foreach ($users as $user)
-            <tr @if($user->status == 0) class="disabled-row" style="opacity: 0.3;" @endif>
+            <tr>
                 <td scope="row" class="p-3">{{$user->username}}</td>
                 <td scope="row" class="p-3">{{$user->email}}</td>
                 <td scope="row" class="p-3"> 
@@ -91,6 +91,9 @@
                                 'data-user_type' => $user->user_type,
                                 'data-registration_number' => $user->registration_number,
                                 'data-phone_number' => $user->phone_number,
+                                'data-department_id' => $user->department_id,
+                                'data-semester_id' => $user->semester_id,
+                                'data-session' => $user->session,
                             ])}}
                         </div>
                         <div class="text-center">
@@ -113,7 +116,7 @@
         {{ $users->links() }}
     </div>
 
-    @include('user.updateModal', ['info' => $info])
+    @include('user.updateModal', ['info' => $info, 'list' => $list])
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -128,14 +131,22 @@
                 
             if (confirm("Are you sure you want to delete '" + username + "' ?")) {
                 $.ajax({
-                    url: `/users/${userId}`,
+                    url: `/admin/users/${userId}`,
                     type: 'delete',
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
                     success: function (response) {
                         if (response.status === 'success') {
-                            $('.userIndex').load(location.href + ' .userIndex')
+                            $('#userIndex').load(location.href + ' #userIndex');
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "User deleted successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            $('#userForm').load(location.href + ' #userForm > *');
                         }
                     },
                     error: function (xhr) {
@@ -154,7 +165,7 @@
             let status = $("#userStatusBtn").text().trim();
             console.log(userId, status);
             $.ajax({
-                url : `/users/status/${userId}`,
+                url : `/admin/users/status/${userId}`,
                 type : 'get',
                 data : {id : userId},
                 success : function (response)

@@ -73,27 +73,27 @@
         @if (Session::get('user_type') == 1)
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#userMenu"><i class="las la-user me-1 fw-bold fs-4"></i> User</button>
         <div class="collapse ps-4 w-100" id="userMenu">
-            <a href="{{ URL::route('users.index') }}" class="btn btn-outline-secondary fs-6">View</a>
+            <a href="{{ URL::route('admin.users.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#departmentMenu"><i class="las la-list fs-4"></i> Department</button>
         <div class="collapse ps-4 w-100" id="departmentMenu">
-            <a href="{{ URL::route('departments.index') }}" class="btn btn-outline-secondary fs-6">View</a>
+            <a href="{{ URL::route('admin.departments.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#semesterMenu"><i class="las la-stream fs-4"></i> Semester</button>
         <div class="collapse ps-4 w-100" id="semesterMenu">
-            <a href="{{ URL::route('semesters.index') }}" class="btn btn-outline-secondary fs-6">View</a>
+            <a href="{{ URL::route('admin.semesters.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#courseMenu"><i class="lab la-discourse fs-4"></i> Course</button>
         <div class="collapse ps-4 w-100" id="courseMenu">
-            <a href="{{ URL::route('courses.index') }}" class="btn btn-outline-secondary fs-6">View</a>
+            <a href="{{ URL::route('admin.courses.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#examMenu"><i class="las la-clipboard-list fs-4"></i> Exam</button>
         <div class="collapse ps-4 w-100" id="examMenu">
-            <a href="{{ URL::route('exams.index') }}" class="btn btn-outline-secondary fs-6">View</a>
+            <a href="{{ URL::route('admin.exams.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
         </div>
         @endif
@@ -101,15 +101,15 @@
         @if (Session::get('user_type') == 2)
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#marksMenu"><i class="las la-pen-alt fs-4"></i> Marks</button>
         <div class="collapse ps-4 w-100" id="marksMenu">
-            <a href="{{ URL::route('marks.index') }}" class="btn btn-outline-secondary fs-6 mb-3">Assigned Course</a>
+            <a href="{{ URL::route('instructor.marks.index') }}" class="btn btn-outline-secondary fs-6 mb-3">Assigned Course</a>
             <hr>
-            <a href="{{url('marks/all/students')}}" class="btn btn-outline-secondary fs-6 mb-3">View marks</a>
+            <a href="{{url('/instructor/marks/all/students')}}" class="btn btn-outline-secondary fs-6 mb-3">View marks</a>
         </div>
         @endif
         @if (Session::get('user_type') == 3)
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#resultMenu"><i class="las la-poll fs-4"></i> Result</button>
         <div class="collapse ps-4 w-100" id="resultMenu">
-            <a href="{{ URL::route('results.index') }}" class="btn btn-outline-secondary fs-6 mb-3">View</a>
+            <a href="{{ URL::route('students.results.index') }}" class="btn btn-outline-secondary fs-6 mb-3">View</a>
             <hr>
         </div>
         @endif

@@ -1,5 +1,5 @@
 <div class="modal fade" id="updateSemesterModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/semesters', 'method' => 'post', 'novalidate' => true, 'id' => 'semesterUpdate']) }}
+    {{ Form::open(['url' => '/admin/semesters', 'method' => 'post', 'novalidate' => true, 'id' => 'semesterUpdate']) }}
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -54,7 +54,7 @@
             let semesterId = $('.semesterId').val();
             let semesterName = $('.semesterName').val();
             $.ajax({
-                url : `/semesters/${semesterId}`,
+                url : `/admin/semesters/${semesterId}`,
                 type : 'PUT',
                 data : {id : semesterId, name : semesterName},
                 success : function (response)
@@ -66,7 +66,7 @@
                         Swal.fire({
                             position: "top-end",
                             icon: "success",
-                            title: "Your work has been saved",
+                            title: "Semester Updated successfully",
                             showConfirmButton: false,
                             timer: 1500
                         });

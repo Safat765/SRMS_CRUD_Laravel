@@ -1,5 +1,5 @@
 <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
+    {{ Form::open(['url' => '/admin/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -79,7 +79,7 @@
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url : `/courses/${id}`,
+                url : `/admin/courses/${id}`,
                 type : 'PUT',
                 data : {id : id ,name : name1, credit : credit1},
                 success : function (response)

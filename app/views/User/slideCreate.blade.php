@@ -9,7 +9,7 @@
                 <div class="card-body bg-light">
                     {{ Form::open(['url' => '/users', 'method' => 'post', 'novalidate' => true, 'id' => 'userCreateForm']) }}
                     <div class="row mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             {{ Form::label('username', 'Username', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::text('username', Input::old('username'), 
                                 [
@@ -20,7 +20,7 @@
                                 ]
                             )}}
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             {{ Form::label('email', 'Email', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::text('email', Input::old('email'), 
                                 [
@@ -31,13 +31,26 @@
                                 ]
                             )}}
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             {{ Form::label('password', 'Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::password('password', 
                                 [
-                                'class' => 'form-control',
+                                'class' => 'form-control shadow-lg',
                                 'placeholder' => 'Enter password',
                                 'id' => 'password',
+                                'required' => true
+                                ]
+                            )}}
+                        </div>
+                        <div class="col-md-3">
+                            <span id="matchPassword"></span>
+                            {{ Form::label('confirmPassword', 'Confirm Password', ['class' => 'form-label']) }}
+                                <span style="color: red; font-weight: bold;"> *</span>
+                            {{ Form::password('confirmPassword', 
+                                [
+                                'class' => 'form-control shadow-lg',
+                                'placeholder' => 'Enter Confirm Password',
+                                'id' => 'confirmPassword',
                                 'required' => true
                                 ]
                             )}}
@@ -63,7 +76,7 @@
                                 ]
                             )}}
                         </div>
-                        <div class="col-md-4" id = 'sessionName'>
+                        <div class="col-md-4" id = 'sessionName' style="display: none;">
                             {{ Form::label('session', 'Session', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> (Only for students)</span>
                             {{ Form::text('session', Input::old('session'), 
                                 [
@@ -74,7 +87,7 @@
                                 ]) 
                             }}
                         </div>
-                        <div class="col-md-4" id="semesterName">
+                        <div class="col-md-4" id="semesterName" style="display: none;">
                             {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('semesterId', 
                                 ['' => 'Select Semester'] + $list['semester'],
@@ -110,7 +123,7 @@
                                 ]
                             )}}
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4" id="departmentDiv" style="display: none;">
                             {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('departmentId', 
                                 ['' => 'Select Department'] + $list['department'],
@@ -150,8 +163,25 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        $('#password, #confirmPassword').on('keyup', function() {
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmPassword').val();
+            var message = $('#matchPassword');
+
+            if (password === "" && confirmPassword === "") {
+                message.removeClass('las la-times las la-check');
+            } else if (password === confirmPassword) {
+                message.removeClass('las la-times').addClass('las la-check').css({'font-size': '30px', 'color': 'green'});
+            } else {
+                message.removeClass('las la-check').addClass('las la-times').css({'font-size': '30px', 'color': 'red'});
+            }
+        });
+
         $('#sessionName').hide();
         $('#semesterName').hide();
+        $('#semesterName').hide();
+        $('#departmentDiv').hide();
+
         $('#userType').click(function() {            
             let userType = $('#userType').val();
             let semesterId = $('#semesterId').val();
@@ -161,11 +191,18 @@
                 if (session == "" && semesterId == "") {
                     $('#sessionName').show();
                     $('#semesterName').show();
+                    $('#departmentDiv').show();
                 }
+            } else if (userType == 2) {
+                $('#submitCreate').prop('disabled', false);
+                $('#sessionName').hide();
+                $('#semesterName').hide();
+                $('#departmentDiv').show();
             } else {
                 $('#submitCreate').prop('disabled', false);
                 $('#sessionName').hide();
                 $('#semesterName').hide();
+                $('#departmentDiv').hide();
             }
         });
         $(document).on('click', '.submitCreate', function(e) {
@@ -173,6 +210,7 @@
             var username = $("#username").val();
             var email = $("#email").val();
             var password = $("#password").val();
+            var confirmPassword = $('#confirmPassword').val();
             var userType = $("#userType").val();
             var session = $("#session").val();
             var semesterId = $("#semesterId").val();
@@ -180,25 +218,53 @@
             var phoneNumber = $("#phoneNumber").val();
             var departmentId = $("#departmentId").val();
 
-            if (!username && !email && !password && !userType && !session && !semesterId && !registrationNumber && !phoneNumber && !departmentId) {
+            if (userType == 1) {
+                if (!username && !email && !password && !confirmPassword && !userType && !registrationNumber && !phoneNumber) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Fillup the form first!"
+                    });
+                    return;
+                }
+            } else if (userType == 3) {
+                if (!username && !email && !password && !confirmPassword && !userType && !session && !semesterId && !registrationNumber && !phoneNumber && !departmentId) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Fillup the form first!"
+                    });
+                    return;
+                }
+            } else {
+                if (!username && !email && !password && !confirmPassword && !userType && !registrationNumber && !phoneNumber && !departmentId) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Fillup the form first!"
+                    });
+                    return;
+                }
+            }
+            if (password != confirmPassword) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
-                    text: "Fillup the form first!"
+                    text: "Password and Confirm Password doesn't match!"
                 });
                 return;
             }
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url: "{{ route('users.store') }}",
+                url: "{{ route('admin.users.store') }}",
                 type: 'POST',
                 data: $('#userCreateForm').serialize(),
                 dataType: 'json',
                 success : function (response)
                 {
                     if (response.status === 'success') {
-                        $('.userForm').load(location.href + ' .userForm', function() {
+                        $('#userForm').load(location.href + ' #userForm', function() {
                             $(this).slideUp();
                         });
                         $('#userIndex').load(location.href + ' #userIndex');

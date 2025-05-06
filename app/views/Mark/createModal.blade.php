@@ -1,6 +1,6 @@
 <div class="modal fade" id="createMarksModal" tabindex="-1" aria-labelledby="updateModalLabel">
     <form>
-        <div class="modal-dialog">
+        <div class="modal-dialog" id="marksForm">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="create">Add Marks</h5>
@@ -146,7 +146,7 @@
             }
 
             $.ajax({
-                url : `/marks/go`,
+                url : `/instructor/marks/go`,
                 type : 'post',
                 data : {totalMarks : totalMarks, username : username, courseName: courseName, givenMark : givenMark, studentId : studentId, examId : examId, semesterId : semesterId, courseId : courseId},
                 success : function (response)
@@ -155,7 +155,7 @@
                         $('#marksIndex').load(location.href + ' #marksIndex')
                         $('#studentList').load(location.href + ' #studentList')
                         $("#createMarksModal").modal('hide');
-                        $("#courseUpdate").trigger("reset");
+                        $("#marksForm").trigger("reset");
                         Swal.fire({
                             title: "Marks added successfully!",
                             icon: "success",
@@ -166,9 +166,9 @@
                 error: function(xhr, status, error) {
                     try {
                         var response = JSON.parse(xhr.responseText);
-                        alert(response.message); // Show the error message
+                        alert(response.message); 
                     } catch (e) {
-                        alert("An unexpected error occurred."); // In case JSON parsing fails
+                        alert("An unexpected error occurred."); 
                     }
                 }
             });

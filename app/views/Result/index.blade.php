@@ -75,7 +75,7 @@
             console.log(semesterId, studentId);
 
             $.ajax({
-                url: `/results/semester/${semesterId}`,
+                url: `/students/results/semester/${semesterId}`,
                 type: 'GET',
                 data: {semesterId : semesterId, studentId : studentId},
                 success: function(response) {

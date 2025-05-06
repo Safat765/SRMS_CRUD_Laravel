@@ -12,14 +12,14 @@
             </div>
             <div class="p-1">
                 <div class="d-flex justify-content-start mb-3">
-                    <a href="{{url('/departments')}}" class="btn btn-secondary m-2">
+                    <a href="{{url('/admin/departments')}}" class="btn btn-secondary m-2">
                         Reset
                     </a>
                 </div>
             </div>  
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('departments.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.departments.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -91,6 +91,7 @@
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $(document).on("click", "#deleteBtn", function(e) {
@@ -100,14 +101,21 @@
 
             if (confirm("Are you sure you want to delete '" + name + "' ?")) {
                 $.ajax({
-                    url: `/departments/${id}`,
+                    url: `/admin/departments/${id}`,
                     type: 'delete',
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
                     success: function (response) {
                         if (response.status === 'success') {
-                            $('.departmentUpdate').load(location.href + ' .departmentUpdate')
+                            $('.departmentUpdate').load(location.href + ' .departmentUpdate');
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Department deleted successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                         }
                     },
                     error: function (xhr) {

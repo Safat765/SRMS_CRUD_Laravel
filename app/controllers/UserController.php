@@ -56,7 +56,9 @@ class UserController extends \BaseController
 			'userType' => 'required|in:1,2,3',
 			'registrationNumber' => 'required|min:3|unique:users,registration_number',
 			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
-			'departmentId'=> 'required'
+			'session' => 'sometimes|min:3',
+			'departmentId' => 'sometimes|min:1',
+			'semesterId' => 'sometimes|min:1'
 		], [
 			'required' => 'The :attribute field is required.',
 			'unique' => 'This :attribute is already taken.',
@@ -86,11 +88,16 @@ class UserController extends \BaseController
 		if ($userType == 3) {
 			$session = Input::get('session');
 			$semesterId = Input::get('semesterId');
+			$departmentId = Input::get('departmentId');
+		} elseif ($userType == 2) {
+			$session = null;
+			$semesterId = null;
+			$departmentId = Input::get('departmentId');
 		} else {
 			$session = null;
 			$semesterId = null;
+			$departmentId = null;
 		}
-		$departmentId = Input::get('departmentId');
 		$user = $user->createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber);
 
 		if ($user) {
@@ -136,8 +143,12 @@ class UserController extends \BaseController
 		$validator = Validator::make(Input::all(), [
 			'username' => 'required|min:3|max:20|unique:users,username,'.$id.',user_id',
 			'email' => 'required|email|unique:users,email,'.$id.',user_id',
+			'userType' => 'required|in:1,2,3',
 			'registrationNumber' => 'required|min:3|unique:users,registration_number,'.$id.',user_id',
-			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/']
+			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
+			'session' => 'sometimes|min:3',
+			'departmentId' => 'sometimes|min:1',
+			'semesterId' => 'sometimes|min:1'
 		], [
 			'required' => 'The :attribute field is required.',
 			'unique' => 'This :attribute is already taken.',
@@ -152,10 +163,27 @@ class UserController extends \BaseController
 				'errors' => $validator->errors()
 			], 422);
 		}
+		$userType = Input::get('userType');
+		$userId = Input::get('userId');
+
+		if ($userType == 3) {
+			$session = Input::get('session');
+			$semesterId = Input::get('semesterId');
+			$departmentId = Input::get('departmentId');
+		} elseif ($userType == 2) {
+			$session = null;
+			$semesterId = null;
+			$departmentId = Input::get('departmentId');
+		} else {
+			$session = null;
+			$semesterId = null;
+			$departmentId = null;
+		}
 		
 		$update = $user->updateUser(Input::all(), $id);
+		$result = $user->updateProfileDuringUserUpdate($userId, $departmentId, $session, $semesterId);
 		
-		if ($update) {
+		if ($update || $result) {
 			return Response::json([
 				'status' => 'success'
 			]);

@@ -7,7 +7,7 @@
                 </div>
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
-                    {{ Form::open(['url' => '/departments', 'method' => 'post', 'novalidate' => true]) }}   
+                    {{ Form::open(['url' => '/admin/departments', 'method' => 'post', 'novalidate' => true]) }}   
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 {{ Form::label('courseId', 'Course Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
@@ -161,7 +161,7 @@
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url : "{{ URL::route('exams.store') }}",
+                url : "{{ URL::route('admin.exams.store') }}",
                 type : 'post',
                 data : {courseId : courseId, examTitle : examTitle, departmentId : departmentId, semesterId : semesterId, credit : credit, examType: examType, marks : marks, instructorId : instructorId},
                 success : function (response)

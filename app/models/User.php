@@ -105,9 +105,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	
 	public function showAll()
 	{
-		$userCount = User::all();
+		$userCount = DB::table('users')
+					->leftJoin('profiles', 'users.user_id', '=', 'profiles.user_id')
+					->select(
+						'users.*',
+						'profiles.department_id',
+						'profiles.semester_id',
+						'profiles.session'
+					)
+					->orderBy('users.user_id', 'desc');
 		$totalUsers = $userCount->count();
-		$users = User::orderBy('user_id', 'desc')->paginate(5);		
+		$users = $userCount->paginate(5);		
 		$data = compact('users', 'totalUsers');
 
 		return $data;
@@ -121,20 +129,43 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	
 	public function updateUser(array $data, $user_id)
 	{		
-		$user = $this->edit($user_id);
+		// $user = $this->edit($user_id);
 		
-		if (!$user) {
-			return false;
-		}
-		$user->username = $data['username'];
-		$user->email = $data['email'];
-		$user->registration_number = $data['registrationNumber'];
-		$user->user_type = $data['userType'];
-		$user->phone_number = $data['phoneNumber'];
-		$user->updated_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
-		$user->save();
+		// if (!$user) {
+		// 	return false;
+		// }
+		// $user->username = $data['username'];
+		// $user->email = $data['email'];
+		// $user->registration_number = $data['registrationNumber'];
+		// $user->user_type = $data['userType'];
+		// $user->phone_number = $data['phoneNumber'];
+		// $user->updated_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
+		// $user->save();
+
+		$result = DB::table('users')
+				->where('user_id', $user_id)
+				->update([
+					'username' => $data['username'],
+					'email' => $data['email'],
+					'registration_number' => $data['registrationNumber'],
+					'user_type' => $data['userType'],
+					'phone_number' => $data['phoneNumber'],
+					'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
+				]);
 		
-		return $user;
+		return $result;
+	}
+
+	public function updateProfileDuringUserUpdate($userId, $departmentId, $session, $semesterId)
+	{
+		$result = DB::table('profiles')
+					->where('user_id', $userId)
+					->update([
+						'semester_id'=> $semesterId,
+						'department_id'=> $departmentId,
+						'session'=> $session,
+					]);
+		return $result;
 	}
 	
 	public function deleteUser($id)
@@ -198,4 +229,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
         return $insert;
     }
+
+	public function enrollCourse($studentId) {
+		$result = DB::table('marks')
+					->join('courses', 'marks.course_id', '=', 'courses.course_id')
+					->select(
+						'courses.name',
+						'courses.credit'
+					)
+					->where('marks.student_id', $studentId)
+					->get();
+		
+		return $result;
+	}
 }
