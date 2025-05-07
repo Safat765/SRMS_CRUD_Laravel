@@ -147,5 +147,4 @@ class Result extends Eloquent implements UserInterface, RemindableInterface {
                 
         return $result;
     }
-
 }

@@ -239,4 +239,40 @@ class UserController extends \BaseController
 			]);
 		}
 	}
+
+	public function allStudents()
+	{
+		$user = new User();
+		$students = $user->allResults();
+		$totalStudents = count($students);
+		$getResults = [];
+		
+		foreach ($students as $student) {
+			$getResults[$student->department_name][] = $student;
+		}
+		
+		return View::make('user.results')->with(['getResults' => $getResults, 'totalStudents' => $totalStudents]);
+	}
+
+	public function semesterWise($id)
+	{
+		$user = new User();
+		$students = $user->semesterWise($id);
+		$getResults = [];
+		
+		foreach ($students as $student) {
+			$getResults[$student->semester_name][] = $student;
+		}
+
+		if ($students) {
+			return Response::json([
+				'status' => 'success',
+				'records' => $getResults
+			], 200);
+		} else {
+			return Response::json([
+				'status' => 'error'
+			], 400);
+		}
+	}
 }

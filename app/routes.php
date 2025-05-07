@@ -18,7 +18,14 @@ use Illuminate\Support\Facades\Session;
 Route::get('/', 'LoginController@create');
 Route::resource('/login', 'LoginController');
 
+
 Route::group(['prefix' => 'admin'], function() {
+    Route::get('/dashboard', [
+        'as' => 'login.index',
+        'uses' => 'LoginController@index'
+    ]);
+    Route::get('/results/all', 'UserController@allStudents');
+    Route::get('/results/semester/{id}', 'UserController@semesterWise');
     Route::group(['prefix' => 'users'], function() {
         Route::get('/status/{id}', ['as' => 'userStatus', 'uses' => 'UserController@status']);
     });
@@ -28,30 +35,52 @@ Route::group(['prefix' => 'admin'], function() {
     Route::resource('semesters', 'SemesterController');
     Route::resource('courses', 'CourseController');
     Route::group(['prefix' => 'courses'], function() {
-            Route::get('/status/{id}', ['as' => 'courseStatus', 'uses' => 'CourseController@status']);
+        Route::get('/assigned/all', 'CourseController@assignedCourse');
+        Route::get('/status/{id}', ['as' => 'courseStatus', 'uses' => 'CourseController@status']);
     });
-});
-    Route::resource('/profiles', 'ProfileController');
+    Route::resource('profiles', 'ProfileController');
     Route::group(['prefix' => 'profiles'], function() {
-            Route::get('/change-password', 'ProfileController@changePassword');
             Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
             Route::get('/search/{id}', 'ProfileController@searchProfile');
             Route::get('/add/{id}', 'ProfileController@addNameProfile');
     });
+});
 Route::group(['before'=> 'onlyInstructor'], function() {
     Route::group(['prefix' => 'instructor'], function() {
+        Route::get('/dashboard', [
+            'as' => 'login.index',
+            'uses' => 'LoginController@index'
+        ]);
         Route::resource('marks', 'MarkController');
         Route::group(['prefix'=> 'marks'], function() {
             Route::get('/students/{courseId}/{semesterId}', 'MarkController@students');
             Route::get('/all/students', 'MarkController@studentList');
+            Route::get('/assigned/courses', 'MarkController@courseView');
             Route::post('/go', 'MarkController@createMark');
+        });
+        Route::resource('profiles', 'ProfileController');
+        Route::group(['prefix' => 'profiles'], function() {
+                Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
+                Route::get('/search/{id}', 'ProfileController@searchProfile');
+                Route::get('/add/{id}', 'ProfileController@addNameProfile');
         });
     });
 });
 Route::group(['before'=> 'onlyStudents'], function() {
     Route::group(['prefix'=> 'students'], function() {
+        Route::get('/dashboard', [
+            'as' => 'login.index',
+            'uses' => 'LoginController@index'
+        ]);
         Route::resource('results', 'ResultController', ['only' => ['index']]);
         Route::get('/results/semester/{id}', 'ResultController@semeterWise');
+        Route::get('/results/ecrolled', 'ResultController@enrolledCourse');
+        Route::resource('profiles', 'ProfileController');
+        Route::group(['prefix' => 'profiles'], function() {
+            Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
+                Route::get('/search/{id}', 'ProfileController@searchProfile');
+                Route::get('/add/{id}', 'ProfileController@addNameProfile');
+        });
     });
 });
 Route::get('/session', function(){

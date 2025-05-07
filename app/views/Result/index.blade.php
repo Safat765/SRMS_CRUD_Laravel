@@ -72,7 +72,6 @@
             let studentId = $(this).data('studentid');
             let semesterName = $(this).data('name');
             const $tbody = $(this).find('tbody');
-            console.log(semesterId, studentId);
 
             $.ajax({
                 url: `/students/results/semester/${semesterId}`,
@@ -80,7 +79,6 @@
                 data: {semesterId : semesterId, studentId : studentId},
                 success: function(response) {
                     $('#samName').val(semesterName);
-                    console.log(response.status)
                     const records = response.records;
                     const $tbody = $('#modalTableBody');                    
                     $tbody.empty();

@@ -12,7 +12,16 @@ class MarkController extends BaseController
 {				
 	public function index()
 	{
-		$url = 'instructor/marks/students';
+		$marks = new Mark();
+		$results = $marks->assignedCourses(Session::get("user_id"));
+		$totalCourse = count($results);
+		$userType = Session::get("user_type");
+		$data = compact('userType', 'results', 'totalCourse');
+			
+		return View::make("mark.addMarks")->with($data);
+	}
+	public function courseView()
+	{
 		$marks = new Mark();
 		$results = $marks->assignedCourses(Session::get("user_id"));
 		$totalCourse = count($results);

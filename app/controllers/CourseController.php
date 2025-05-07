@@ -2,10 +2,8 @@
 
 use App\Models\Course;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
 
 class CourseController extends \BaseController
@@ -207,5 +205,18 @@ class CourseController extends \BaseController
 				'status' => 'success',
 			]);
 		}
+	}
+
+	public function assignedCourse()
+	{
+		$course = new Course();
+		$courses = $course->assignedCourse();
+		$getCourses = [];
+		
+		foreach ($courses as $instructor) {
+			$getCourses[$instructor->semester_name][] = $instructor;
+		}
+		
+		return View::make('course/assigned')->with(['getCourses' => $getCourses]);
 	}
 }

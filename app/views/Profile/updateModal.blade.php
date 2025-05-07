@@ -12,6 +12,7 @@
                     </div>
                     <div class="row mb-3">
                             {{ Form::hidden('userId', Session::get('user_id'), ['id' => 'updateUserId']) }}
+                            {{ Form::hidden('userType', Session::get('user_type'), ['id' => 'updateUserType']) }}
                             <div class="col-md-6">
                                 {{ Form::label('firstName', 'First name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::text('firstName', null, 
@@ -72,6 +73,8 @@
             let middleName = $('#updateMiddleName').val();
             let lastName = $('#updateLastName').val();
             let userId = $('#updateUserId').val();
+            let userType = $('#updateUserType').val();
+            let addURL = '';
 
             if (!firstName && !middleName && !lastName) {
                 Swal.fire({
@@ -82,10 +85,17 @@
                 return;
             }
             $('.errorMsgContainer').html("");
+            
+            if (userType == 1) {
+                addURL = 'admin';
+            } else if (userType == 2) {
+                addURL = 'instructor';
+            } else if (userType == 3) {
+                addURL = 'students';
+            }
 
-            console.log(firstName, middleName, lastName);
             $.ajax({
-                url : `/profiles/add/${userId}`,
+                url : `/${addURL}/profiles/add/${userId}`,
                 type : 'get',
                 data : {firstName : firstName, middleName : middleName, lastName : lastName},
                 success : function (response)

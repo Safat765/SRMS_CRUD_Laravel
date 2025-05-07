@@ -124,6 +124,20 @@ class ResultController extends BaseController
 			], 400);
 		}
 	}
+	
+	public function enrolledCourse()
+	{
+		$studentId = Session::get("user_id");
+		$result = new Result();
+		$records = $result->results($studentId);
+
+		$groupedResults = [];
+		foreach ($records as $result) {
+			$groupedResults[$result->semester_name][] = $result;
+		}
+
+		return View::make('result/enrollCourse')->with(['groupedResults' => $groupedResults]);
+	}
 				
 	public function create()
 	{

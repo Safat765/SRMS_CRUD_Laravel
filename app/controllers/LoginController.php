@@ -71,7 +71,13 @@ class LoginController extends BaseController {
 
 				Session::flash('success', 'Login Successful');
 
-				return Redirect::to('login');
+				if ($user->user_type == 1) {
+					return Redirect::to('/admin/dashboard');
+				} elseif ($user->user_type == 2) {
+					return Redirect::to('/instructor/dashboard');
+				} else {
+					return Redirect::to('/students/dashboard');
+				}
 			} else {
 				Session::flash('message', 'User not found');
 				return Redirect::to('login/create');

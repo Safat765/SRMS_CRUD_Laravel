@@ -15,7 +15,6 @@
                     <th scope="col">Course</th>
                     <th scope="col">Department</th>
                     <th scope="col">Semester</th>
-                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,21 +29,9 @@
                 ?>
                     @foreach ($results as $result)
                         <tr>
-                            <td scope="row">{{$result->course_name}}</td>
-                            <td scope="row">{{$result->department_name}}</td>
-                            <td scope="row">{{$result->semester_name}}</td>
-                            <td>
-                                <div class="d-flex justify-content-center" style="display: inline-block;">
-                                    {{ Form::open(['url' => URL::to('/instructor/marks/students/' . $result->course_id . '/' . $result->semester_id), 'method' => 'get']) }}
-                                        <div class="text-center">
-                                            {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
-                                                'class' => 'btn btn-info btn-sm',
-                                                'type' => 'submit'
-                                            ])}}
-                                        </div>
-                                    {{ Form::close() }}
-                                </div>
-                            </td>
+                            <td scope="row" class="p-3">{{$result->course_name}}</td>
+                            <td scope="row" class="p-3">{{$result->department_name}}</td>
+                            <td scope="row" class="p-3">{{$result->semester_name}}</td>
                         </tr>
                     @endforeach
                 <?php

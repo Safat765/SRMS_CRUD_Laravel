@@ -7,6 +7,7 @@ use Illuminate\Auth\Reminders\RemindableTrait;
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class Course extends Eloquent implements UserInterface, RemindableInterface {
@@ -143,5 +144,23 @@ class Course extends Eloquent implements UserInterface, RemindableInterface {
 		$course->save();
 		
 		return $course;
+	}
+
+	public function assignedCourse()
+	{
+		$students = DB::table('exams')
+			->join('users', 'exams.instructor_id', '=', 'users.user_id')
+			->join('courses', 'exams.course_id', '=', 'courses.course_id')
+			->join('semesters', 'exams.semester_id', '=', 'semesters.semester_id')
+			->select([
+				'users.username',
+				'users.registration_number',
+				'semesters.name as semester_name',
+				'courses.name as course_name'
+			])
+			->orderBy('semesters.semester_id', 'asc')
+			->get();
+
+		return $students;
 	}
 }

@@ -19,8 +19,16 @@ class ProfileController extends BaseController
 				
 	public function create()
 	{
+		$userType = Session::get('user_type');
+		if ($userType == 1) {
+		  $addURL = 'admin';
+		} elseif ($userType == 2) {
+		  $addURL = 'instructor';
+		} elseif ($userType == 3) {
+		  $addURL = 'students';
+		}
 		$pageName = "Change Password";			
-		$url = url('/profiles');
+		$url = url('/' . $addURL . '/profiles');
 		$data = compact('url' ,'pageName');
 
 		return View::make("profile/changePassword")->with($data);
@@ -28,6 +36,14 @@ class ProfileController extends BaseController
 				
 	public function store()
 	{
+		$userType = Session::get('user_type');
+		if ($userType == 1) {
+		  $addURL = 'admin';
+		} elseif ($userType == 2) {
+		  $addURL = 'instructor';
+		} elseif ($userType == 3) {
+		  $addURL = 'students';
+		}
 		$validation = Validator::make(Input::all(), [
 			'oldPassword' => 'required|min:4',
 			'newPassword' => 'required|min:4'
@@ -57,7 +73,7 @@ class ProfileController extends BaseController
 					Session::put("password", Hash::make(Input::get("newPassword")));
 					Session::flash("success", "Password Changed Successfully");
 
-					return Redirect::to('login');
+					return Redirect::to('/'.$addURL.'/dashboard');
 				} else {
 					Session::flash("message", "Failed to change password");
 
@@ -72,14 +88,7 @@ class ProfileController extends BaseController
 				
 	public function show($id)
 	{
-		$title = "View Profile";
-		$pageName = "View Profile";
-		$url = '/Profiles/'.$id.'/update';
-		$profile = new Profile();
-		$user = $profile->joinProfile(Session::get('user_id'));
-		$data = compact('title', 'pageName', 'user', 'url');
-
-		return View::make("profile/update")->with($data);
+		//
 	}
 				
 	public function edit($userID)
@@ -104,6 +113,15 @@ class ProfileController extends BaseController
 				
 	public function update($id)
 	{
+		$userType = Session::get('user_type');
+		if ($userType == 1) {
+		  $addURL = 'admin';
+		} elseif ($userType == 2) {
+		  $addURL = 'instructor';
+		} elseif ($userType == 3) {
+		  $addURL = 'students';
+		}
+
 		$validator = Validator::make(Input::all(), [
 			'firstName'=> 'required|string|min:3|max:30',
 			'middleName' => 'sometimes|string|max:50',
@@ -155,7 +173,7 @@ class ProfileController extends BaseController
 
 		if ($update) {
 			Session::flash('success', 'Profile updated successfully');
-			return Redirect::to('profiles/show/profile');
+			return Redirect::to('/'.$addURL.'/profiles/show/profile');
 		} else {
 			Session::flash('message', 'Failed to update Profile');
 			return Redirect::back();
@@ -165,11 +183,6 @@ class ProfileController extends BaseController
 	public function destroy($id)
 	{
 		// Handle deletion
-	}
-
-	public function changePassword()
-	{
-		return View::make("profile/changePassword");
 	}
 
 	public function editProfile()

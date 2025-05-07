@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Input;
 
 App::before(function($request)
 { 
-	$publicRoutes = ['login', 'login/create', 'logout'];
+	$publicRoutes = ['/admin/dashboard', 'login/create', 'logout', '/instructor/dashboard', '/students/dashboard', 'login'];
 
     // Get the current path (e.g., /profile, /login)
     $path = $request->path();
@@ -112,13 +112,13 @@ Route::filter('onlyInstructor', function()
 {
     if (!Session::has('user_type') || Session::get('user_type') != 2) {
         // Redirect with error message if not instructor
-        return Redirect::to('/login')->with('message', "Only instructors can access this section <br> You are not allow to access this page");
+        return Redirect::to('/instructor/dashboard')->with('message', "Only instructors can access this section <br> You are not allow to access this page");
     }
 });
 Route::filter('onlyStudents', function()
 {
     if (!Session::has('user_type') || Session::get('user_type') != 3) {
         // Redirect with error message if not instructor
-        return Redirect::to('/login')->with('message', "Only students can access this section <br> You are not allow to access this page");
+        return Redirect::to('/students/dashboard')->with('message', "Only students can access this section <br> You are not allow to access this page");
     }
 });

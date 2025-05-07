@@ -28,23 +28,41 @@
         </h5>
       </button>
       <div class="text-start flex-grow-1 ms-3">
-        <a href="{{URL::route('login.index')}}" class="text-decoration-none">
+        @if (Session::get('user_type') == 1)
+        <a href="{{ url('/admin/dashboard') }}" class="text-decoration-none">
           <h5 class="fs-1 fw-bold fst-italic text-info">SRMS</h5>
         </a>
+        @elseif (Session::get('user_type') == 2)
+        <a href="{{ url('/instructor/dashboard') }}" class="text-decoration-none">
+          <h5 class="fs-1 fw-bold fst-italic text-info">SRMS</h5>
+        </a>
+        @elseif (Session::get('user_type') == 3)
+        <a href="{{ url('/students/dashboard') }}" class="text-decoration-none">
+          <h5 class="fs-1 fw-bold fst-italic text-info">SRMS</h5>
+        @endif
       </div>
-      <div class="dropdown">
+      <div class="dropdown pe-3">
         <button class="btn btn-dark dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="las la-user-edit me-1 fs-4"></i> <span class="text-danger fw-bold">{{ strtoupper(Session::get('username')) }}</span>
         </button>
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark mt-2" aria-labelledby="profileDropdown">
+        <?php
+          $userType = Session::get('user_type');
+          $urlMap = [
+              '1' => 'admin',
+              '2' => 'instructor',
+              '3' => 'students',
+          ];
+          $url = isset($urlMap[$userType]) ? $urlMap[$userType] : '';
+        ?>
+        <ul class="dropdown-menu dropdown-menu-dark mt-2" id="profileDropdownMenu" style="display: none;">
           <li>
-            <a class="dropdown-item fs-6" href="{{ URL::route('editProfile') }}">
+            <a class="dropdown-item fs-6" href="{{ url('/'.$url . '/profiles/show/profile') }}">
               <i class="las la-edit"></i> Edit Profile
             </a>
           </li>
           <li><hr class="dropdown-divider"></li>
           <li>
-            <a class="dropdown-item fs-6" href="{{ URL::route('profiles.create') }}">
+            <a class="dropdown-item fs-6" href="{{ URL::route($url.'.profiles.create') }}">
               <i class="las la-exchange-alt"></i> Change Password
             </a>
           </li>
@@ -87,21 +105,24 @@
             <hr>
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#courseMenu"><i class="lab la-discourse fs-4"></i> Course</button>
-        <div class="collapse ps-4 w-100" id="courseMenu">
+        <div class="collapse ps-4 pb-2 w-100" id="courseMenu">
             <a href="{{ URL::route('admin.courses.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
+            <a href="{{url('/admin/courses/assigned/all')}}" class="btn btn-outline-secondary fs-6">Assigned Course</a>
         </div>
         <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#examMenu"><i class="las la-clipboard-list fs-4"></i> Exam</button>
         <div class="collapse ps-4 w-100" id="examMenu">
             <a href="{{ URL::route('admin.exams.index') }}" class="btn btn-outline-secondary fs-6">View</a>
             <hr>
         </div>
+        <a href="{{url('/admin/results/all')}}" class="btn btn-outline-secondary fs-6 mb-3"><i class="las la-poll fs-4"></i>  Results</a>
         @endif
         
         @if (Session::get('user_type') == 2)
-        <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#marksMenu"><i class="las la-pen-alt fs-4"></i> Marks</button>
-        <div class="collapse ps-4 w-100" id="marksMenu">
-            <a href="{{ URL::route('instructor.marks.index') }}" class="btn btn-outline-secondary fs-6 mb-3">Assigned Course</a>
+        <div>
+            <a href="{{ url('/instructor/marks/assigned/courses') }}" class="btn btn-outline-secondary fs-6 mb-3">Assigned Course</a>
+            <hr>
+            <a href="{{ URL::route('instructor.marks.index') }}" class="btn btn-outline-secondary fs-6 mb-3">Add marks</a>
             <hr>
             <a href="{{url('/instructor/marks/all/students')}}" class="btn btn-outline-secondary fs-6 mb-3">View marks</a>
         </div>
@@ -112,6 +133,7 @@
             <a href="{{ URL::route('students.results.index') }}" class="btn btn-outline-secondary fs-6 mb-3">View</a>
             <hr>
         </div>
+        <a href="{{url('/students/results/ecrolled')}}" class="btn btn-outline-secondary fs-6 mb-3"><i class="las la-school fs-4"></i>  Enroll Courses</a>
         @endif
       <button class="position-absolute bottom-0 start-0  btn btn-dark mt-5 mb-3"><i class="las la-cog fs-4"></i> Settings</button>
     </div>
@@ -122,3 +144,13 @@
     <?php
         }
     ?>
+
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#profileDropdown').click(function() {
+      $('#profileDropdownMenu').slideToggle();
+    });
+  });
+</script>

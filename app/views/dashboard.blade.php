@@ -71,7 +71,7 @@
             </div>
         <?php
             }
-            elseif (Session::get('user_type') == 2) {
+            elseif (Session::get('user_type') == '2') {
             ?>
             <div class="container-fluid" style="background-image: url('https://static.vecteezy.com/system/resources/thumbnails/022/093/495/small_2x/teacher-and-students-teaching-in-the-classroom-vector.jpg');
                                      background-size: contain;

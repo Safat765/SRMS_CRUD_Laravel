@@ -171,9 +171,9 @@
             if (password === "" && confirmPassword === "") {
                 message.removeClass('las la-times las la-check');
             } else if (password === confirmPassword) {
-                message.removeClass('las la-times').addClass('las la-check').css({'font-size': '30px', 'color': 'green'});
+                message.removeClass('las la-times').addClass('las la-check').css({'font-size': '20px', 'color': 'green'});
             } else {
-                message.removeClass('las la-check').addClass('las la-times').css({'font-size': '30px', 'color': 'red'});
+                message.removeClass('las la-check').addClass('las la-times').css({'font-size': '20px', 'color': 'red'});
             }
         });
 

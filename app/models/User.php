@@ -128,20 +128,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 	
 	public function updateUser(array $data, $user_id)
-	{		
-		// $user = $this->edit($user_id);
-		
-		// if (!$user) {
-		// 	return false;
-		// }
-		// $user->username = $data['username'];
-		// $user->email = $data['email'];
-		// $user->registration_number = $data['registrationNumber'];
-		// $user->user_type = $data['userType'];
-		// $user->phone_number = $data['phoneNumber'];
-		// $user->updated_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
-		// $user->save();
-
+	{
 		$result = DB::table('users')
 				->where('user_id', $user_id)
 				->update([
@@ -241,5 +228,46 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 					->get();
 		
 		return $result;
+	}
+
+	public function allResults()
+	{
+		$students = DB::table('results')
+			->join('users', 'results.student_id', '=', 'users.user_id')
+			->join('profiles', 'users.user_id', '=', 'profiles.user_id')
+			->join('departments', 'profiles.department_id', '=', 'departments.department_id')
+			->join('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
+			->select([
+				'users.user_id',
+				'users.username',
+				'users.registration_number',
+				'profiles.session',
+				'results.cgpa',
+				'semesters.name as semester_name',
+				'departments.name as department_name'
+			])
+			->orderBy('users.user_id', 'asc')
+			->get();
+
+		return $students;
+	}
+
+	public function semesterWise($id)
+	{
+		$students = DB::table('marks')
+			->join('users', 'marks.student_id', '=', 'users.user_id')
+			->join('profiles', 'users.user_id', '=', 'profiles.user_id')
+			->join('semesters', 'marks.semester_id', '=', 'semesters.semester_id')
+			->join('courses', 'marks.course_id', '=', 'courses.course_id')
+			->select([
+				'courses.name as course_name',
+				'marks.marks',
+				'marks.gpa',
+				'semesters.name as semester_name'
+			])
+			->where('marks.student_id', $id)
+			->get();
+
+		return $students;
 	}
 }

@@ -1,30 +1,25 @@
 <?php
 
-use App\Models\Department;
+use App\Services\DepartmentService;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Response;
 
 
 class DepartmentController extends BaseController
-{				
+{
+	protected $departmentService;
+
+	public function __construct(DepartmentService $departmentService)
+	{
+		$this->departmentService = $departmentService;
+	}
+
 	public function index()
 	{
-		$department = new Department();
+		$service = $this->departmentService;
 		$search = Input::get('search');
-		
-		if ($search != '') {
-			$data = $department->filter($search);
-			$totalDepartment = $data['totalDepartment'];
-			$department = $data['department'];
-		} else {
-			$data = $department->showAll();
-			$totalDepartment = $data['totalDepartment'];
-			$department = $data['department'];
-		}
-
-		$data = compact('department', 'totalDepartment', 'search');
+		$data = $service->getAllDepartment($search);
 
 		return View::make('department.index')->with($data);
 	}
@@ -36,23 +31,17 @@ class DepartmentController extends BaseController
 				
 	public function store()
 	{
-		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:departments'
-		], [
-			'required' => 'The Department field is required.',
-			'min' => 'The Department must be at least :min characters.'
-		]);
+		$service = $this->departmentService;
+		$validator = $service->createValidation(Input::all());
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$name = Input::get('name');
-		$department = new Department();
-		$exist = $department->createDepartment($name);
+		$result = $service->storeDepartment(Input::all());
 		
-		if ($exist) {
+		if ($result) {
 			return Response::json([
 				'status' => 'success',
 			], 200);
@@ -75,36 +64,30 @@ class DepartmentController extends BaseController
 				
 	public function update($id)
 	{
-		$department = new Department();
-		$department = $department->edit($id);
+		$service = $this->departmentService;
+		$department = $service->checkDepartment($id);
 		
 		if (!$department) {
-			Response::json([
-				'errors' => 'Course not found'
+			return Response::json([
+				'errors' => 'department not found'
 			], 404);
 		}
 		
-		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:departments,name,'.$id.',department_id',
-		], [
-			'required' => 'The Department field is required.',
-			'min' => 'The Department must be at least :min characters.'
-		]);
+		$validator = $service->updateValidation(Input::all(), $id);
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$name = Input::get('name');
-		$exist = $department->searchName($name);
+		$exist = $service->checkDepartmentName(Input::get('name'));
 
 		if ($exist) {
 			return Response::json([
 				'errors' => 'Department already exist'
 			]);
 		}
-		$update = $department->updateDepartment(Input::all(), $id);
+		$update = $service->updateDepartment(Input::all(), $id);
 		
 		if ($update) {
 			return Response::json([
@@ -119,15 +102,15 @@ class DepartmentController extends BaseController
 				
 	public function destroy($id)
 	{
-		$department = new Department();
-		$department = $department->edit($id);
+		$service = $this->departmentService;
+		$department = $service->checkDepartment($id);
 		
 		if (!$department) {
 			Response::json([
 				'status' => 'error'
 			], 404);
 		}
-		$delete = $department->deleteDepartment($id);
+		$delete = $service->destroyDepartment($id);
 		
 		if (!$delete) {
 			return Response::json([
