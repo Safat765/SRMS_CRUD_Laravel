@@ -1,13 +1,18 @@
 <?php
 
-use App\Models\Course;
+use App\Services\CourseService;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Response;
 
 class CourseController extends \BaseController
 {
+	protected $courseService;
+	
+	public function __construct(CourseService $courseService)
+	{
+		$this->courseService = $courseService;
+	}
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -15,23 +20,9 @@ class CourseController extends \BaseController
 	 */
 	public function index()
 	{
-		$course = new Course();
+		$service = $this->courseService;
 		$search = Input::get('search');
-
-		$ACTIVE = Course::STATUS_ACTIVE;
-		$INACTIVE = Course::STATUS_INACTIVE;
-		
-		if ($search != '') {
-			$data = $course->filter($search);			
-			$totalCourse = $data['totalCourse'];
-			$course = $data['course'];
-		} else {
-			$data = $course->showAll();			
-			$totalCourse = $data['totalCourse'];
-			$course = $data['course'];
-		}
-
-		$data = compact('course', 'totalCourse', 'search', 'ACTIVE', 'INACTIVE');
+		$data = $service->getAllCourse($search);
 
 		return View::make('course.index')->with($data);
 	}
@@ -55,22 +46,15 @@ class CourseController extends \BaseController
 	 */
 	public function store()
 	{
-		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:2',
-			'credit' => 'required|numeric'
-		], [
-			'required' => 'The Course field is required.',
-			'min' => 'The Course must be at least :min characters.',
-			'numeric' => 'The Course must be a number.'	
-		]);
+		$service = $this->courseService;
+		$validator = $service->checkValidation(Input::all());
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$course = new Course();
-		$exist = $course->createCourse(Input::all());
+		$exist = $service->storeCourse(Input::all());
 		
 		if ($exist) {
 			return Response::json([
@@ -115,34 +99,30 @@ class CourseController extends \BaseController
 	 */
 	public function update($id)
 	{
-		$name = Input::get('name');
+		$service = $this->courseService;
+		$course = $service->checkCourse($id);
 
-		$course = new Course();
-		$course = $course->edit($id);
-		
 		if (!$course) {
-			Response::json([
+			return Response::json([
 				'errors' => 'Course not found'
 			], 404);
 		}
-		
-		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:1|unique:courses,name,' . $id . ',course_id',
-			'credit' => 'required|numeric'
-		], [
-			'required' => 'The Course field is required.',
-			'min' => 'The Course must be at least :min characters.',
-			'numeric' => 'The Course must be a number.'	
-		]);
+		$validator = $service->updateValidation(Input::all(), $id);
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		
-		$update = $course->updateCourse(Input::all(), $id);
-		
+		$exist = $service->checkCourseName(Input::get('name'));
+
+		if ($exist) {
+			return Response::json([
+				'errors' => 'Course already exist'
+			]);
+		}
+		$update = $service->updateCourse(Input::all(), $id);
+
 		if ($update) {
 			return Response::json([
 				'status' => 'success',
@@ -163,38 +143,38 @@ class CourseController extends \BaseController
 	 */
 	public function destroy($id)
 	{
-		$course = new Course();
-		$course = $course->edit($id);
+		$service = $this->courseService;
+		$course = $service->checkCourse($id);
 		
 		if (!$course) {
 			Response::json([
 				'status' => 'error'
 			], 404);
 		}
-		$delete = $course->deleteCourse($id);
+		$delete = $service->destroyCourse($id);
 		
 		if (!$delete) {
 			return Response::json([
 				'status' => 'error',
-			]);
+			], 404);
 		} else{
 			return Response::json([
 				'status' => 'success',
-			]);
+			], 200);
 		}
 	}
 	
 	public function status($id)
 	{
-		$course = new Course();
-		$course = $course->edit($id);
+		$service = $this->courseService;
+		$course = $service->checkCourse($id);
 		
 		if (!$course) {
 			return Response::json([
 				'status' => 'error',
 			]);
 		}
-		$status = $course->statusUpdate($id);
+		$status = $service->statusUpdate($id);
 		
 		if (!$status) {
 			return Response::json([
@@ -209,13 +189,8 @@ class CourseController extends \BaseController
 
 	public function assignedCourse()
 	{
-		$course = new Course();
-		$courses = $course->assignedCourse();
-		$getCourses = [];
-		
-		foreach ($courses as $instructor) {
-			$getCourses[$instructor->semester_name][] = $instructor;
-		}
+		$service = $this->courseService;
+		$getCourses = $service->assignedCourse();
 		
 		return View::make('course/assigned')->with(['getCourses' => $getCourses]);
 	}

@@ -6,7 +6,7 @@
         <?php    
             use Illuminate\Support\Facades\Session;
         ?>  
-        <h1 class="text-center">Welcome {{ Session::get('username') }} </h1>    
+        <h1 class="text-center">Welcome {{ ucwords(Session::get('username')) }} </h1>    
         <?php
             if (Session::get('user_type') == '1') {
         ?>

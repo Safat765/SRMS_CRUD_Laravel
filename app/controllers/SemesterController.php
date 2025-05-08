@@ -1,31 +1,26 @@
 <?php
 
 use App\Models\Semester;
+use App\Services\SemesterService;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
 		
-class SemesterController extends BaseController {
+class SemesterController extends BaseController
+{
+	protected $semesterService;
+
+	public function __construct(SemesterService $semesterService)
+	{
+		$this->semesterService = $semesterService;
+	}
 				
 	public function index()
 	{
-		$semester = new Semester();
+		$service = $this->semesterService;
 		$search = Input::get('search');
-		
-		if ($search != '') {
-			$data = $semester->filter($search);
-			
-			$totalSemester = $data['totalSemester'];
-			$semester = $data['semester'];
-		} else {
-			$data = $semester->showAll();
-			$totalSemester = $data['totalSemester'];
-			$semester = $data['semester'];
-		}
-		$data = compact('semester', 'totalSemester', 'search');
+		$data = $service->getAllSemester($search);
 
 		return View::make('semester/index')->with($data);
 	}
@@ -37,21 +32,15 @@ class SemesterController extends BaseController {
 				
 	public function store()
 	{
-		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:semesters,name'
-		], [
-			'required' => 'The Semester field is required.',
-			'min' => 'The Semester must be at least :min characters.'
-		]);
+		$service = $this->semesterService;
+		$validator = $service->checkValidation(Input::all());
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$name = Input::get('name');
-		$semester = new Semester();
-		$exist = $semester->createSemester($name);
+		$exist = $service->storeSemester(Input::all());
 		
 		if ($exist) {
 			return Response::json([
@@ -78,8 +67,8 @@ class SemesterController extends BaseController {
 				
 	public function update($id)
 	{
-		$semester = new Semester();
-		$semester = $semester->edit($id);
+		$service = $this->semesterService;
+		$semester = $service->checkSemester($id);
 		
 		if (!$semester) {			
 			return Response::json([
@@ -87,19 +76,14 @@ class SemesterController extends BaseController {
 			]);
 		}
 		
-		$validator = Validator::make(Input::all(), [
-			'name' => 'required|min:3|unique:semesters,name,'.$id.',semester_id',
-		], [
-			'required' => 'The Semester field is required.',
-			'min' => 'The Semester must be at least :min characters.'
-		]);
+		$validator = $service->updateValidation(Input::all(), $id);
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$update = $semester->updateSemester(Input::all(), $id);
+		$update = $service->updateSemester(Input::all(), $id);
 		
 		if ($update) {
 			return Response::json([
@@ -114,15 +98,15 @@ class SemesterController extends BaseController {
 				
 	public function destroy($id)
 	{
-		$semester = new Semester();
-		$semester = $semester->edit($id);
+		$service = $this->semesterService;
+		$semester = $service->checkSemester($id);
 		
 		if (!$semester) {
 			return Response::json([
 				'status' => 'error',
 			]);
 		}
-		$delete = $semester->deleteSemester($id);
+		$delete = $service->destroySemester($id);
 		
 		if (!$delete) {
 			return Response::json([

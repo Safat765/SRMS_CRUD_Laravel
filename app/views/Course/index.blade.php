@@ -49,7 +49,7 @@
         </thead>
         <tbody>
             @foreach ($course as $courses)
-            <tr @if($courses->status == 0) class="disabled-row" style="opacity: 0.3;" @endif>
+            <tr>
                 <td scope="row" class="p-3">{{$courses->name}}</td>
                 <td scope="row" class="p-3">{{$courses->credit}}</td>
                 <td scope="row" class="p-3">

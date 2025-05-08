@@ -33,7 +33,7 @@ class DepartmentService
         return $data;
     }
 
-    public function checkValidation(array $data)// check validation
+    public function checkValidation(array $data)
     {        
         $validator = Validator::make($data, [
 			'name' => 'required|min:3|unique:departments'

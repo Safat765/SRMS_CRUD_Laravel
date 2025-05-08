@@ -38,7 +38,7 @@ class UserController extends \BaseController
 			'semester' => Semester::lists('name', 'semester_id')
 		];
 		$data = compact('users', 'totalUsers', 'search', 'info', 'list');
-
+		
 		return View::make('user.index')->with($data);
 	}
 	
@@ -65,9 +65,9 @@ class UserController extends \BaseController
 			'regex' => 'Please enter a valid phone number.',
 			'min' => 'The :attribute must be at least :min characters.',
 			'in' => 'Please select a valid :attribute.',
-    		'sometimes' => 'The :attribute must be a string when provided.'
+			'sometimes' => 'The :attribute must be a string when provided.'
 		]);
-
+		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
@@ -84,7 +84,7 @@ class UserController extends \BaseController
 		$firstName = null;
 		$middleName = null;
 		$lastName = null;
-
+		
 		if ($userType == 3) {
 			$session = Input::get('session');
 			$semesterId = Input::get('semesterId');
@@ -99,7 +99,7 @@ class UserController extends \BaseController
 			$departmentId = null;
 		}
 		$user = $user->createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber);
-
+		
 		if ($user) {
 			$userId = $user->getUserId($username);
 			$profile = $user->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId);
@@ -155,9 +155,9 @@ class UserController extends \BaseController
 			'regex' => 'Please enter a valid phone number.',
 			'min' => 'The :attribute must be at least :min characters.',
 			'in' => 'Please select a valid :attribute.',
-    		'sometimes' => 'The :attribute must be a string when provided.'
+			'sometimes' => 'The :attribute must be a string when provided.'
 		]);	
-
+		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
@@ -165,7 +165,7 @@ class UserController extends \BaseController
 		}
 		$userType = Input::get('userType');
 		$userId = Input::get('userId');
-
+		
 		if ($userType == 3) {
 			$session = Input::get('session');
 			$semesterId = Input::get('semesterId');
@@ -239,7 +239,7 @@ class UserController extends \BaseController
 			]);
 		}
 	}
-
+	
 	public function allStudents()
 	{
 		$user = new User();
@@ -253,7 +253,7 @@ class UserController extends \BaseController
 		
 		return View::make('user.results')->with(['getResults' => $getResults, 'totalStudents' => $totalStudents]);
 	}
-
+	
 	public function semesterWise($id)
 	{
 		$user = new User();
@@ -263,7 +263,7 @@ class UserController extends \BaseController
 		foreach ($students as $student) {
 			$getResults[$student->semester_name][] = $student;
 		}
-
+		
 		if ($students) {
 			return Response::json([
 				'status' => 'success',
