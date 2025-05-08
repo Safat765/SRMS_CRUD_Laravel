@@ -42,7 +42,7 @@
         @endif
       </div>
       <div class="dropdown pe-3">
-        <button class="btn btn-dark dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <button class="btn btn-dark dropdown-toggle" type="button" id="profileDropdown">
           <i class="las la-user-edit me-1 fs-4"></i> <span class="text-danger fw-bold">{{ strtoupper(Session::get('username')) }}</span>
         </button>
         <?php
@@ -149,7 +149,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
   $(document).ready(function() {
-    $('#profileDropdown').click(function() {
+    $('#profileDropdown').click(function(e) {
+      e.preventDefault();
       $('#profileDropdownMenu').slideToggle();
     });
   });

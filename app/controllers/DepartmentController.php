@@ -9,31 +9,31 @@ use Illuminate\Support\Facades\Response;
 class DepartmentController extends BaseController
 {
 	protected $departmentService;
-
+	
 	public function __construct(DepartmentService $departmentService)
 	{
 		$this->departmentService = $departmentService;
 	}
-
+	
 	public function index()
 	{
 		$service = $this->departmentService;
 		$search = Input::get('search');
 		$data = $service->getAllDepartment($search);
-
+		
 		return View::make('department.index')->with($data);
 	}
-				
+	
 	public function create()
 	{
 		//
 	}
-				
+	
 	public function store()
 	{
 		$service = $this->departmentService;
-		$validator = $service->createValidation(Input::all());
-
+		$validator = $service->checkValidation(Input::all());
+		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
@@ -51,17 +51,17 @@ class DepartmentController extends BaseController
 			], 409);
 		}
 	}
-				
+	
 	public function show($id)
 	{
 		//
 	}
-				
+	
 	public function edit($id)
 	{
 		//
 	}
-				
+	
 	public function update($id)
 	{
 		$service = $this->departmentService;
@@ -74,14 +74,14 @@ class DepartmentController extends BaseController
 		}
 		
 		$validator = $service->updateValidation(Input::all(), $id);
-
+		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
 		$exist = $service->checkDepartmentName(Input::get('name'));
-
+		
 		if ($exist) {
 			return Response::json([
 				'errors' => 'Department already exist'
@@ -99,7 +99,7 @@ class DepartmentController extends BaseController
 			]);
 		}
 	}
-				
+	
 	public function destroy($id)
 	{
 		$service = $this->departmentService;

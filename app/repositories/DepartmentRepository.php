@@ -3,45 +3,25 @@
 namespace App\Repositories;
 use App\Models\Department;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DepartmentRepository
 {   
 	public function searchName($name)
 	{
-		$exist = Department::where('name', 'LIKE', $name)->exists();
-		
-		if ($exist) {
-			return true;
-		}
-
-		return false;
+		return Department::where('name', 'LIKE', $name)->exists();
 	}
 
-    public function createDepartment($name)
+    public function createDepartment(array $data)
 	{
-		$exist = $this->searchName($name);
-		
-		if ($exist) {
-			return false;
-		}
-		$department = new Department();
-		
-		$department->name = $name;
-		$department->created_by = 1;
-		$department->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
-		$department->updated_at = "";
-		$department->save();
-
-		return true;
+		return DB::table('departments')->insert($data);
 	}
 
     public function filter($search)
 	{
 		$departmentCount = Department::where('name', 'LIKE', '%' . $search . '%');
-		
-		$totalDepartment = $departmentCount->count();
 		$department = $departmentCount->paginate(5);
-		$data = compact('department', 'totalDepartment');
+		$data = compact('department', 'departmentCount');
 
 		return $data;
 	}
@@ -49,43 +29,23 @@ class DepartmentRepository
     public function showAll()
 	{
 		$departmentCount = Department::all();
-		$totalDepartment = $departmentCount->count();
-		$department = Department::paginate(5);		
-		$data = compact('department', 'totalDepartment');
+		$department = Department::paginate(5);
 
-		return $data;
+		return compact('department', 'departmentCount');
 	}
 
-    public function edit($id)
+    public function find($id)
 	{
-		$department = Department::find($id);
-		
-		return $department;
+		return Department::find($id);
 	}
 	
 	public function updateDepartment(array $data, $department_id)
-	{		
-		$department = $this->edit($department_id);
-		
-		if (!$department) {
-			return false;
-		}
-		$department->name = $data['name'];
-		$department->updated_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
-		$department->save();
-		
-		return $department;
+	{
+		return DB::table('departments')->where('department_id', $department_id)->update($data);
 	}
 	
 	public function deleteDepartment($id)
 	{
-		$department = $this->edit($id);
-		
-		if (!$department) {
-			return false;
-		}
-		$department->delete();
-		
-		return $department;
+		return DB::table('departments')->where('department_id', $id)->delete();
 	}
 }

@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Repositories\DepartmentRepository;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Session;
 
 class DepartmentService
 {
@@ -19,21 +21,19 @@ class DepartmentService
         $repo = $this->departmentRepository;
         
         if ($search != '') {
-            $data = $repo->filter($search);
-            $totalDepartment = $data['totalDepartment'];
-            $department = $data['department'];
+            $result = $repo->filter($search);
         } else {
-			$data = $repo->showAll();
-			$totalDepartment = $data['totalDepartment'];
-			$department = $data['department'];
+			$result = $repo->showAll();
         }
+        $totalDepartment = $result['departmentCount']->count();
+        $department = $result['department'];
 
         $data = compact('department', 'totalDepartment', 'search');
 
         return $data;
     }
 
-    public function createValidation(array $data)// check validation
+    public function checkValidation(array $data)// check validation
     {        
         $validator = Validator::make($data, [
 			'name' => 'required|min:3|unique:departments'
@@ -48,17 +48,25 @@ class DepartmentService
     public function storeDepartment(array $data)
     {
         $repo = $this->departmentRepository;
-
         $name = $data['name'];
-        $exist = $repo->createDepartment($name);
-        
-        return $exist;
+
+        if ($repo->searchName($name)) {
+            return false;
+        }
+
+        $result = [
+            'name' => $name,
+            'created_by' => Session::get('user_id'),
+            'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
+            'updated_at' => ""
+        ];
+        return $repo->createDepartment($result);
     }
 
     public function checkDepartment($id)
     {
         $repo = $this->departmentRepository;
-        $department = $repo->edit($id);
+        $department = $repo->find($id);
 
         return $department;
     }
@@ -86,16 +94,29 @@ class DepartmentService
     public function updateDepartment(array $data, $id)
     {
         $repo = $this->departmentRepository;
-        $update = $repo->updateDepartment($data, $id);
+        
+        if ($repo->find($id)) {
+            $result = [
+                'name' => $data['name'],
+                'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
+            ];
 
-        return $update;
+            return $repo->updateDepartment($result, $id);
+        } else {
+            return false;
+        }
     }
 
     public function destroyDepartment($id)
     {
         $repo = $this->departmentRepository;
-        $delete = $repo->deleteDepartment($id);
 
-        return $delete;
+        if ($repo->find($id)) {
+            $delete = $repo->deleteDepartment($id);
+            
+            return $delete;
+        } else {
+            return false;
+        }
     }
 }
