@@ -7,19 +7,26 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-		
-class LoginController extends BaseController {
-				
+use App\Services\LoginService;
+class LoginController extends BaseController
+{
+	protected $loginService;
+
+	public function __construct(LoginService $loginService)
+	{
+		$this->loginService = $loginService;
+	}
+
 	public function index()
 	{
+		$service = $this->loginService;
 		$marks = new Mark();
 		$studentId = Session::get("user_id");
 		$results = $marks->assignedCourses($studentId);
 		$totalCourse = count($results);
 		$marksResults = $marks->viewMarks($studentId);
 
-		$user = new User();
-		$courses = $user->enrollCourse($studentId);
+		$courses = $service->dashboard();
 		$totalEnrollCourse = count($courses);
 		$data = compact('results', 'totalCourse', 'marksResults', 'courses', 'totalEnrollCourse');
 
@@ -33,12 +40,8 @@ class LoginController extends BaseController {
 				
 	public function store()
 	{
-		$user = new User();
-
-		$validator = Validator::make(Input::all(), [
-			'username' => 'required',
-			'password' => 'required|min:4'
-		]);		
+		$service = $this->loginService;
+		$validator = $service->loginValidation(Input::all());
 		
 		if ($validator->fails()) {
 			return Redirect::back()
@@ -48,32 +51,24 @@ class LoginController extends BaseController {
 		
 		$username = Input::get('username');
 		$password = Input::get('password');
-		$user = $user->findPassword($username);
-		
-		if (!password_verify($password, $user->password)) {
+		$loginPassword = $service->loginPassword($username, $password);
+		if (!$loginPassword) {
 			Session::flash('message', 'Incorrect Password');
 			return Redirect::to('login/create');
 		}
-		$password = $user->password;		
-		$userExists = $user->login($username, $password);
+
+		$password = $loginPassword['password'];
+		$userDetails = $loginPassword['user'];
+		$userExists = $service->loginUser($username, $password, $userDetails);
 		
 		if ($userExists) {
 
-			if ($user) {				
-				Session::put('username', $user->username);
-				Session::put('user_id', $user->user_id);
-				Session::put('email', $user->email);
-				Session::put('registration_number', $user->registration_number);
-				Session::put('phone_number', $user->phone_number);
-				Session::put('password', $user->password);
-				Session::put('user_type', $user->user_type);
-				Session::put('status', $user->status);
-
+			if ($loginPassword) {
 				Session::flash('success', 'Login Successful');
 
-				if ($user->user_type == 1) {
+				if ($loginPassword['user']->user_type == 1) {
 					return Redirect::to('/admin/dashboard');
-				} elseif ($user->user_type == 2) {
+				} elseif ($loginPassword['user']->user_type == 2) {
 					return Redirect::to('/instructor/dashboard');
 				} else {
 					return Redirect::to('/students/dashboard');

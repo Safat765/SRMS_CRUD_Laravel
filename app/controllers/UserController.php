@@ -5,39 +5,25 @@ use App\Models\Department;
 use App\Models\Semester;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
+use App\Services\UserService;
 
 class UserController extends \BaseController
-{	
+{
+	protected $userService;
+
+	public function __construct(UserService $userService)
+	{
+		$this->userService = $userService;
+	}
+
 	public function index()
 	{
-		$user = new User();
+		$service = $this->userService;
 		$search = Input::get('search');
-		
-		if ($search != '') {
-			$data = $user->filter($search);
-			
-			$totalUsers = $data['totalUsers'];
-			$users = $data['users'];
-		} else {
-			$data = $user->showAll();
-			$totalUsers = $data['totalUsers'];
-			$users = $data['users'];
-		}
-		$ADMIN = User::USER_TYPE_ADMIN;
-		$INSTRUCTOR = User::USER_TYPE_INSTRUCTOR;
-		$STUDENT = User::USER_TYPE_STUDENT;
-		$ACTIVE = User::STATUS_ACTIVE;
-		$INACTIVE = User::STATUS_INACTIVE;
-		$info = ['Admin' => $ADMIN, 'Instructor' => $INSTRUCTOR, 'Student' => $STUDENT, 'Active' => $ACTIVE, 'Inactive' => $INACTIVE];
-		$list = [
-			'department' => Department::lists('name', 'department_id'),
-			'semester' => Semester::lists('name', 'semester_id')
-		];
-		$data = compact('users', 'totalUsers', 'search', 'info', 'list');
+		$data = $service->getAllUser($search);
 		
 		return View::make('user.index')->with($data);
 	}
@@ -49,60 +35,18 @@ class UserController extends \BaseController
 	
 	public function store()
 	{
-		$validator = Validator::make(Input::all(), [
-			'username' => 'required|min:3|max:20|unique:users',
-			'email' => 'required|email|unique:users',
-			'password' => 'required|min:4',
-			'userType' => 'required|in:1,2,3',
-			'registrationNumber' => 'required|min:3|unique:users,registration_number',
-			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
-			'session' => 'sometimes|min:3',
-			'departmentId' => 'sometimes|min:1',
-			'semesterId' => 'sometimes|min:1'
-		], [
-			'required' => 'The :attribute field is required.',
-			'unique' => 'This :attribute is already taken.',
-			'regex' => 'Please enter a valid phone number.',
-			'min' => 'The :attribute must be at least :min characters.',
-			'in' => 'Please select a valid :attribute.',
-			'sometimes' => 'The :attribute must be a string when provided.'
-		]);
+		$service = $this->userService;
+		$validator = $service->checkValidation(Input::all());
 		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$user = new User();
-		$username = Input::get('username');
-		$email = Input::get('email');
-		$password = Input::get('password');
-		$userType = Input::get('userType');
-		$status = User::STATUS_ACTIVE;
-		$registrationNumber = Input::get('registrationNumber');
-		$phoneNumber = Input::get('phoneNumber');
-		$firstName = null;
-		$middleName = null;
-		$lastName = null;
 		
-		if ($userType == 3) {
-			$session = Input::get('session');
-			$semesterId = Input::get('semesterId');
-			$departmentId = Input::get('departmentId');
-		} elseif ($userType == 2) {
-			$session = null;
-			$semesterId = null;
-			$departmentId = Input::get('departmentId');
-		} else {
-			$session = null;
-			$semesterId = null;
-			$departmentId = null;
-		}
-		$user = $user->createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber);
-		
+		$user = $service->storeUser(Input::all());
 		if ($user) {
-			$userId = $user->getUserId($username);
-			$profile = $user->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId);
+			$profile = $service->createProfile(Input::all());
 			
 			if (!$profile) {
 				return Response::json([
@@ -133,56 +77,24 @@ class UserController extends \BaseController
 	
 	public function update($id)
 	{
-		$user = new User();
-		$users = $user->edit($id);
+		$service = $this->userService;
+		$user = $service->findUser($id);
 		
-		if (!$users) {
+		if (!$user) {
 			Session::flash('message', 'User not found');
 			return Redirect::back();
 		}
-		$validator = Validator::make(Input::all(), [
-			'username' => 'required|min:3|max:20|unique:users,username,'.$id.',user_id',
-			'email' => 'required|email|unique:users,email,'.$id.',user_id',
-			'userType' => 'required|in:1,2,3',
-			'registrationNumber' => 'required|min:3|unique:users,registration_number,'.$id.',user_id',
-			'phoneNumber' => ['required', 'regex:/^(\+?\d{1,4}[-.\s]?)?(\(?\d{2,4}\)?[-.\s]?)?[\d\-.\s]{6,15}$/'],
-			'session' => 'sometimes|min:3',
-			'departmentId' => 'sometimes|min:1',
-			'semesterId' => 'sometimes|min:1'
-		], [
-			'required' => 'The :attribute field is required.',
-			'unique' => 'This :attribute is already taken.',
-			'regex' => 'Please enter a valid phone number.',
-			'min' => 'The :attribute must be at least :min characters.',
-			'in' => 'Please select a valid :attribute.',
-			'sometimes' => 'The :attribute must be a string when provided.'
-		]);	
+		$validator = $service->updateValidation(Input::all(), $id);
 		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$userType = Input::get('userType');
-		$userId = Input::get('userId');
 		
-		if ($userType == 3) {
-			$session = Input::get('session');
-			$semesterId = Input::get('semesterId');
-			$departmentId = Input::get('departmentId');
-		} elseif ($userType == 2) {
-			$session = null;
-			$semesterId = null;
-			$departmentId = Input::get('departmentId');
-		} else {
-			$session = null;
-			$semesterId = null;
-			$departmentId = null;
-		}
-		
-		$update = $user->updateUser(Input::all(), $id);
-		$result = $user->updateProfileDuringUserUpdate($userId, $departmentId, $session, $semesterId);
-		
+		$update = $service->updateUser(Input::all(), $id);
+		$result = $service->updateProfileDuringUserUpdate(Input::all());
+
 		if ($update || $result) {
 			return Response::json([
 				'status' => 'success'
@@ -196,15 +108,15 @@ class UserController extends \BaseController
 	
 	public function destroy($id)
 	{
-		$user = new User();
-		$users = $user->edit($id);
+		$service = $this->userService;
+		$user = $service->findUser($id);
 		
-		if (!$users) {
+		if (!$user) {
 			return Response::json([
 				'status' => 'error',
 			]);
 		}
-		$delete = $user->deleteUser($id);
+		$delete = $service->destroyUser($id);
 		
 		if (!$delete) {
 			return Response::json([
@@ -219,15 +131,15 @@ class UserController extends \BaseController
 	
 	public function status($id)
 	{
-		$user = new User();
-		$users = $user->edit($id);
+		$service = $this->userService;
+		$user = $service->findUser($id);
 		
-		if (!$users) {
+		if (!$user) {
 			return Response::json([
 				'status' => 'error',
 			]);
 		}
-		$status = $user->statusUpdate($id);
+		$status = $service->statusUpdate($id);
 		
 		if (!$status) {
 			return Response::json([
@@ -242,29 +154,21 @@ class UserController extends \BaseController
 	
 	public function allStudents()
 	{
-		$user = new User();
-		$students = $user->allResults();
-		$totalStudents = count($students);
-		$getResults = [];
-		
-		foreach ($students as $student) {
-			$getResults[$student->department_name][] = $student;
-		}
+		$service = $this->userService;
+		$result = $service->allStudents();
+		$getResults = $result['getResults'];
+		$totalStudents = $result['totalStudents'];
 		
 		return View::make('user.results')->with(['getResults' => $getResults, 'totalStudents' => $totalStudents]);
 	}
 	
 	public function semesterWise($id)
 	{
-		$user = new User();
-		$students = $user->semesterWise($id);
-		$getResults = [];
+		$service = $this->userService;
+		$result = $service->semesterWise($id);
+		$getResults = $result['getResults'];
 		
-		foreach ($students as $student) {
-			$getResults[$student->semester_name][] = $student;
-		}
-		
-		if ($students) {
+		if ($getResults) {
 			return Response::json([
 				'status' => 'success',
 				'records' => $getResults
