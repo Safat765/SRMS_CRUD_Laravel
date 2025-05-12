@@ -4,27 +4,31 @@ use App\Models\User;
 use App\Models\Mark;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Services\LoginService;
+use App\Services\MarkService;
+
+
 class LoginController extends BaseController
 {
 	protected $loginService;
+	protected $markService;
 
-	public function __construct(LoginService $loginService)
+	public function __construct(LoginService $loginService, MarkService $markService)
 	{
 		$this->loginService = $loginService;
+		$this->markService = $markService;
 	}
 
 	public function index()
 	{
 		$service = $this->loginService;
-		$marks = new Mark();
+		$markService = $this->markService;
 		$studentId = Session::get("user_id");
-		$results = $marks->assignedCourses($studentId);
+		$results = $markService->assignedCourses($studentId);
 		$totalCourse = count($results);
-		$marksResults = $marks->viewMarks($studentId);
+		$marksResults = $markService->viewMarks($studentId);
 
 		$courses = $service->dashboard();
 		$totalEnrollCourse = count($courses);

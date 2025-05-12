@@ -7,32 +7,36 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Response;
+use App\Services\MarkService;
 
 class MarkController extends BaseController
-{				
+{
+	protected $markService;
+
+	public function __construct(MarkService $markService)
+	{
+		$this->markService = $markService;
+	}
+	
 	public function index()
 	{
-		$marks = new Mark();
-		$results = $marks->assignedCourses(Session::get("user_id"));
-		$totalCourse = count($results);
-		$userType = Session::get("user_type");
-		$data = compact('userType', 'results', 'totalCourse');
+		$service = $this->markService;
+		$data = $service->getAllMarks();
 			
 		return View::make("mark.addMarks")->with($data);
 	}
+
 	public function courseView()
 	{
-		$marks = new Mark();
-		$results = $marks->assignedCourses(Session::get("user_id"));
-		$totalCourse = count($results);
-		$userType = Session::get("user_type");
-		$data = compact('userType', 'results', 'totalCourse', 'url');
+		$service = $this->markService;
+		$data = $service->courseView();
 			
 		return View::make("mark.courseList")->with($data);
 	}
 				
 	public function createMark()
 	{
+		$service = $this->markService;
 		$data = Input::all();
 		$totalMarks = Input::get('totalMarks');
 		$givenMarks = Input::get('givenMark');
@@ -55,21 +59,7 @@ class MarkController extends BaseController
 				'message' => "Marks cannot be negative"
 			], 400);
 		}
-
-		$percentage = ($givenMarks / $totalMarks) * 100;
-
-		if ($percentage >= 90) $gpa = 4.00;
-		elseif ($percentage >= 85) $gpa = 3.75;
-		elseif ($percentage >= 80) $gpa = 3.50;
-		elseif ($percentage >= 75) $gpa = 3.25;
-		elseif ($percentage >= 70) $gpa = 3.00;
-		elseif ($percentage >= 65) $gpa = 2.75;
-		elseif ($percentage >= 60) $gpa = 2.50;
-		elseif ($percentage >= 50) $gpa = 2.25;
-		else $gpa = 0.00;
-
-		$mark = new Mark();
-		$exist = $mark->existOrNot($data['studentId'], $data['examId']);
+		$exist = $service->checkMarks($data);
 
 		if ($exist) {
 			return Response::json([
@@ -77,7 +67,7 @@ class MarkController extends BaseController
 				'message' => 'Marks already assigned for this student.'
 			], 400);
 		}
-		$result = $mark->createMarks($data, $gpa);
+		$result = $service->createMark($data);
 
 		if ($result) {
 			$this->addResult($data['studentId']);
@@ -95,31 +85,7 @@ class MarkController extends BaseController
 
 	public function addResult($studentId)
 	{
-		$result = new Result();
-		$records = $result->results($studentId);
-		$info = [];
-		foreach ($records as $record) {
-			array_push($info, $record->gpa);
-		}
-		
-		$cgpSum = [];
-		$credit = [];
-		foreach ($records as $record) {
-			array_push($credit, $record->credit);
-			$totalGpa = $record->gpa * $record->credit;
-			array_push($cgpSum, $totalGpa);
-		}
-
-		$credit = array_sum($credit);
-		$gpa = array_sum($cgpSum);
-		$CGPA = $gpa / $credit;
-
-		$get = $result->resultExistonNot($studentId);
-		if ($get) {
-			$result->updateResult($studentId, $CGPA);
-		} else {
-			$result->createResult($studentId, $CGPA);
-		}
+		$this->markService->addResult($studentId);
 	}
 
 				
@@ -130,10 +96,8 @@ class MarkController extends BaseController
 				
 	public function show($id)
 	{
-		$records = Input::all();
-		$studentId = $id;
-		$mark = new Mark();
-		$records = $mark->editMarks($studentId, $records['examId']);
+		$service = $this->markService;
+		$records = $service->showMarks(Input::all(), $id);
 		$pageName = "View Marks";
 
 		if ($records) {
@@ -147,27 +111,15 @@ class MarkController extends BaseController
 				
 	public function students($courseId, $semesterId)
 	{
-		$marks = new Mark();
-		$results = $marks->getStudents(Session::get("user_id"), $semesterId, $courseId);
-		$userId = [];
-
-		foreach ($results as $result) {
-			array_push($userId, $result->user_id);
-		}
-
-		foreach ($results as $result) {
-			$examId = $result->exam_id;
-			break;
-		}
-		$marks = $marks->getMarks($userId, $examId);
-		$totalStudent = count($results);
-		$data = compact('results', 'totalStudent', 'marks', 'userId');
+		$service = $this->markService;
+		$data = $service->students($courseId, $semesterId);
 			
 		return View::make("mark.studentList")->with($data);
 	}
 				
 	public function edit($studentId)
 	{
+		$service = $this->markService;
 		$records = Input::all();
 		$examId = Input::get('examId');
         
@@ -178,7 +130,7 @@ class MarkController extends BaseController
             ], 400);
         }
 		$mark = new Mark();
-		$records = $mark->editMarks($studentId, $records['examId']);
+		$records = $service->edit($records, $studentId);
 
 		if ($records) {
 			return Response::json([
@@ -195,6 +147,7 @@ class MarkController extends BaseController
 				
 	public function update($id)
 	{
+		$service = $this->markService;
 		$records = Input::all();
 		$totalMarks = $records['totalMarks'];
 		$givenMarks = $records['givenMark'];
@@ -215,20 +168,7 @@ class MarkController extends BaseController
 				'message'=> "Enter the Marks first"
 			]);
 		}
-		$percentage = ($givenMarks / $totalMarks) * 100;
-
-		if ($percentage >= 90) $gpa = 4.00;
-		elseif ($percentage >= 85) $gpa = 3.75;
-		elseif ($percentage >= 80) $gpa = 3.50;
-		elseif ($percentage >= 75) $gpa = 3.25;
-		elseif ($percentage >= 70) $gpa = 3.00;
-		elseif ($percentage >= 65) $gpa = 2.75;
-		elseif ($percentage >= 60) $gpa = 2.50;
-		elseif ($percentage >= 50) $gpa = 2.25;
-		else $gpa = 0.00;
-		
-		$mark = new Mark();
-		$exist = $mark->marksExistOrNot($id);
+		$exist = $service->checkExistMarks($id);
 
 		if (!$exist) {
 			return Response::json([
@@ -236,7 +176,7 @@ class MarkController extends BaseController
 				'message'=> 'Marks not assigned for this student. Assign the marks first'
 			]);
 		}
-		$result = $mark->updateMarks($id, $givenMarks, $gpa);
+		$result = $service->update($records, $id);
 
 		if ($result) {
 			Session::flash('success', 'Marks Updated successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
@@ -255,16 +195,16 @@ class MarkController extends BaseController
 				
 	public function destroy($id)
 	{
+		$service = $this->markService;
 		$records = Input::all();
-		$mark = new Mark();
-		$exist = $mark->marksExistOrNotForDelete($id, $records['examId']);
+		$exist = $service->checkExistMarksForDelete($id, $records['examId']);
 
 		if (!$exist) {
 			Session::flash('message', 'Marks not assigned for this student. Assign the marks first');
 			return Redirect::to('instructor/marks');
 			die();
 		}
-		$result = $mark->deleteMarks($id, $records['examId']);
+		$result = $service->destroy($id, $records['examId']);
 
 		if ($result) {
 			Session::flash('success', 'Marks Deleted successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
@@ -277,17 +217,9 @@ class MarkController extends BaseController
 
 	public function studentList()
 	{
-		$marks = new Mark();
-		$results = $marks->viewMarks(Session::get("user_id"));
-		
-		$groupedResults = [];
-		foreach ($results as $result) {
-			$groupedResults[$result->course_name][] = $result;
-		}
+		$service = $this->markService;
+		$data = $service->studentList();
 
-		return View::make('mark/courseWiseStudent')->with([
-			'results'=> $results,
-			'groupedResults'=> $groupedResults
-		]);
+		return View::make('mark/courseWiseStudent')->with($data);
 	}
 }
