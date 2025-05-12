@@ -5,13 +5,18 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
-
+use App\Services\ProfileService;
 
 class ProfileController extends BaseController
-{				
+{
+	protected $profileService;
+
+	public function __construct(ProfileService $profileService)
+	{
+		$this->profileService = $profileService;
+	}
+
 	public function index()
 	{
 		// Show all items
@@ -19,59 +24,38 @@ class ProfileController extends BaseController
 				
 	public function create()
 	{
-		$userType = Session::get('user_type');
-		if ($userType == 1) {
-		  $addURL = 'admin';
-		} elseif ($userType == 2) {
-		  $addURL = 'instructor';
-		} elseif ($userType == 3) {
-		  $addURL = 'students';
-		}
-		$pageName = "Change Password";			
-		$url = url('/' . $addURL . '/profiles');
-		$data = compact('url' ,'pageName');
+		$service = $this->profileService;
+		$data = $service->createProfile();
 
 		return View::make("profile/changePassword")->with($data);
 	}
 				
 	public function store()
 	{
-		$userType = Session::get('user_type');
-		if ($userType == 1) {
-		  $addURL = 'admin';
-		} elseif ($userType == 2) {
-		  $addURL = 'instructor';
-		} elseif ($userType == 3) {
-		  $addURL = 'students';
-		}
-		$validation = Validator::make(Input::all(), [
-			'oldPassword' => 'required|min:4',
-			'newPassword' => 'required|min:4'
-		], [
-			'required' => 'The :attribute field is required.',
-			'min' => 'The :attribute must be at least :min characters.'
-		]);
+		$service = $this->profileService;
+		$data = $service->checkValidation(Input::all());
 
-		if ($validation->fails()) {
+		if ($data->fails()) {
 			return Redirect::back()
-				->withErrors($validation);
+				->withErrors($data);
 		}
 		$currentPassword = Session::get("password");
+		$verify = $service->checkPassword(Input::get("oldPassword"), $currentPassword);
 
-		if (password_verify(Input::get("oldPassword"), $currentPassword)) {
+		if ($verify) {
+			$match = $service->matchPassword(Input::get("newPassword"), Input::get("oldPassword"));
 			
-			if (Input::get("newPassword") === Input::get("oldPassword")) {
+			if ($match) {
 				Session::flash("message", "Previous password and New Password can not be same");
 
 				return Redirect::back();
 				die();
 			} else {
-				$profile = new Profile();
-				$update = $profile->changePassword(Input::get("newPassword"));
+				$update = $service->changePassword(Input::get("newPassword"));
 
 				if ($update) {
-					Session::put("password", Hash::make(Input::get("newPassword")));
 					Session::flash("success", "Password Changed Successfully");
+					$addURL = $service->getURL();
 
 					return Redirect::to('/'.$addURL.'/dashboard');
 				} else {
@@ -93,11 +77,12 @@ class ProfileController extends BaseController
 				
 	public function edit($userID)
 	{
+		$service = $this->profileService;
 		$profile = new Profile();
 		if (Session::get("user_type") == 3) {
-			$user = $profile->joinProfileWithSemester($userID);
+			$user = $service->joinProfileWithSemester($userID);
 		}
-		$user = $profile->joinProfile($userID);
+		$user = $service->joinProfile($userID);
 
 		if ($user) {
 			return Response::json([
@@ -113,63 +98,17 @@ class ProfileController extends BaseController
 				
 	public function update($id)
 	{
-		$userType = Session::get('user_type');
-		if ($userType == 1) {
-		  $addURL = 'admin';
-		} elseif ($userType == 2) {
-		  $addURL = 'instructor';
-		} elseif ($userType == 3) {
-		  $addURL = 'students';
-		}
+		$service = $this->profileService;
+		$addURL = $service->getURL();
 
-		$validator = Validator::make(Input::all(), [
-			'firstName'=> 'required|string|min:3|max:30',
-			'middleName' => 'sometimes|string|max:50',
-			'lastName' => 'required|string|max:50',
-			'registrationNumber' => 'required|min:3|unique:profiles,registration_number',
-			'departmentId'=> 'required',
-			'session'=> 'sometimes|min:3',
-			'semesterId'=> 'sometimes'
-		], [
-			'required' => 'The :attribute field is required.',
-			'unique' => 'This :attribute is already taken.',
-			'min' => 'The :attribute must be at least :min characters.',
-    		'sometimes' => 'The :attribute must be a string when provided.'
-		]);
+		$validator = $service->updateValidation(Input::all());
 		
 		if ($validator->fails()) {
 			Session::flash('message', "validation fail");
 			return Redirect::back()
 			->withErrors($validator);
 		}
-		$profile = new Profile();
-		$firstName = Input::get('firstName');
-		$middleName = Input::get('middleName');
-		$lastName = Input::get('lastName');
-		$registrationNumber = Input::get('registrationNumber');
-		$departmentId = Input::get('departmentId');
-		$userType = Session::get('user_type');
-
-		if ($userType == 3) {
-			$session = Input::get('session');
-			$semesterId = Input::get('semesterId');
-		} else {
-			$session = null;
-			$semesterId = null;
-		}
-		$departmentId = $profile->getDepartmentId($departmentId);
-		$semesterId = $profile->getSemesterId($semesterId);
-		$data = [
-			'profileId'=> $id,
-			'firstName'=> $firstName,
-			'middleName'=> $middleName,
-			'lastName'=> $lastName,
-			'registrationNumber'=> $registrationNumber,
-			'departmentId'=> $departmentId,
-			'session'=> $session,
-			'semesterId'=> $semesterId
-		];
-		$update = $profile->updateProfile($data);
+		$update = $service->updateProfile(Input::all(), $id);
 
 		if ($update) {
 			Session::flash('success', 'Profile updated successfully');
@@ -187,24 +126,22 @@ class ProfileController extends BaseController
 
 	public function editProfile()
 	{
-		$profile = new Profile();
-		$user = $profile->existProfile(Session::get('user_id'));
-		$data = compact('title', 'user');
+		$service = $this->profileService;
+		$user = $service->existProfile(Session::get('user_id'));
 
-		return View::make("profile/editProfile")->with($data);
+		return View::make("profile/editProfile")->with('user', $user);
 	}
 
 	public function searchProfile($userID)
 	{
+		$service = $this->profileService;
 		if ($userID == "") {
 			return Response::json([
 				"status"=> "error",
 				"message"=> "Registration Number not found"
 			], 404);
 		}
-
-		$profile = new Profile();
-		$exist = $profile->checkProfile($userID);
+		$exist = $service->checkProfile($userID);
 
 		if ($exist) {			
 			return Response::json([
@@ -220,6 +157,8 @@ class ProfileController extends BaseController
 
 	public function addNameProfile($id)
 	{
+		$service = $this->profileService;
+
 		if ($id == "") {
 			return Response::json([
 				"status"=> "error",
@@ -227,33 +166,14 @@ class ProfileController extends BaseController
 			], 404);
 		}
 
-		$validator = Validator::make(Input::all(), [
-			'firstName'=> 'required|string|min:3|max:30',
-			'middleName' => 'sometimes|string|max:50',
-			'lastName' => 'required|string|max:50'
-		], [
-			'required' => 'The :attribute field is required.',
-			'min' => 'The :attribute must be at least :min characters.',
-    		'sometimes' => 'The :attribute must be a string when provided.'
-		]);
+		$validator = $service->addNameValidation(Input::all());
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$profile = new Profile();
-
-		$firstName = Input::get('firstName');
-		$middleName = Input::get('middleName');
-		$lastName = Input::get('lastName');
-		$data = [
-			'userId'=> $id,
-			'firstName'=> $firstName,
-			'middleName'=> $middleName,
-			'lastName'=> $lastName
-		];
-		$update = $profile->addName($data);
+		$update = $service->addName(Input::all(), $id);
 
 		if ($update) {
 			return Response::json([
