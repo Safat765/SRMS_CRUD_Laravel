@@ -1,5 +1,5 @@
 <div class="modal fade" id="updateSemesterModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/admin/semesters', 'method' => 'post', 'novalidate' => true, 'id' => 'semesterUpdate']) }}
+    <form>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Mark;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class MarkRepository
 {
@@ -42,10 +41,7 @@ class MarkRepository
 
     public function deleteMarks($studentId, $examId)
     {
-        return DB::table('marks')
-            ->where('student_id', $studentId)
-            ->where('exam_id', $examId)
-            ->delete();
+        return DB::table('marks')->where('student_id', $studentId)->where('exam_id', $examId)->delete();
     }
 
     public function assignedCourses($instructorId)
@@ -103,43 +99,33 @@ class MarkRepository
     public function editMarks($studentId, $examId)
     {
         return DB::table('marks')
-        ->join('exams', 'marks.exam_id', '=', 'exams.exam_id')
-        ->leftJoin('courses', 'marks.course_id', '=', 'courses.course_id')
-        ->join('users','marks.student_id','=', 'users.user_id')
-        ->join('semesters', 'marks.semester_id', '=', 'semesters.semester_id')
-        ->select(
-            'marks.mark_id',
-            'exams.exam_id',
-            'exams.marks as total_marks',
-            'marks.marks as given_marks',
-            'exams.exam_title',
-            'courses.course_id',
-            'courses.name as course_name',
-            'users.username',
-            'users.registration_number',
-            'users.email',
-            'users.user_id',
-            'semesters.name as semester_name',
-            'semesters.semester_id'
-        )
-        ->where('marks.student_id', $studentId)
-        ->where('marks.exam_id', $examId)
-        ->get();
+                ->join('exams', 'marks.exam_id', '=', 'exams.exam_id')
+                ->leftJoin('courses', 'marks.course_id', '=', 'courses.course_id')
+                ->join('users','marks.student_id','=', 'users.user_id')
+                ->join('semesters', 'marks.semester_id', '=', 'semesters.semester_id')
+                ->select(
+                    'marks.mark_id',
+                    'exams.exam_id',
+                    'exams.marks as total_marks',
+                    'marks.marks as given_marks',
+                    'exams.exam_title',
+                    'courses.course_id',
+                    'courses.name as course_name',
+                    'users.username',
+                    'users.registration_number',
+                    'users.email',
+                    'users.user_id',
+                    'semesters.name as semester_name',
+                    'semesters.semester_id'
+                )
+                ->where('marks.student_id', $studentId)
+                ->where('marks.exam_id', $examId)
+                ->get();
     }
 
-    public function getMarks(array $studentIds, $examId)
+    public function getMarks($studentId, $examId)
     {
-        $results = [];
-
-        foreach ($studentIds as $studentId) {
-            $result = DB::table('marks')
-                    ->where('marks.student_id', $studentId)
-                    ->where('marks.exam_id', $examId)
-                    ->get();
-            $results[$studentId] = $result;
-        }
-
-        return $results;
+        return DB::table('marks')->where('marks.student_id', $studentId)->where('marks.exam_id', $examId)->get();
     }
 
     public function viewMarks($instructorId)

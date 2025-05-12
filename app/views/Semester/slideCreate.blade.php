@@ -4,8 +4,7 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="text-center fw-bold text-info">Create Semester</h4>
-                </div>
-                
+                </div>                
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
                     {{ Form::open(['url' => '/admin/semesters', 'method' => 'post', 'novalidate' => true]) }}   

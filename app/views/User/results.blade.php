@@ -45,7 +45,6 @@
         </tbody>
     </table>
 </div>
-
 @include('user.semesterWise')
 @endsection
 
@@ -72,7 +71,7 @@
                                 <th colspan="3" class="bg-light text-warning fs-5 p-2 text-center">${semesterName}</th>
                             </tr>
                         `);
-
+                        
                         $.each(students, function(index, result) {
                             $tbody.append(`
                                 <tr>
@@ -83,8 +82,6 @@
                             `);
                         });
                     });
-
-                    // Show the modal
                     $('#resultUserModal').modal('show');
                 },
                 error: function(xhr) {

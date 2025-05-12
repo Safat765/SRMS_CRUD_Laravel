@@ -1,5 +1,5 @@
 <div class="modal fade" id="semesterWiseCourseModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
+    <form>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -40,5 +40,5 @@
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>

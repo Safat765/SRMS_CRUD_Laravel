@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class UserService
 {
@@ -74,16 +75,17 @@ class UserService
         } else {
             $statusConstants = $repo->getStatusConstants();
             $ACTIVE = $statusConstants['ACTIVE'];
+            $result = [
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+                'user_type' => $data['userType'],
+                'status' => $ACTIVE,
+                'registration_number' => $data['registrationNumber'],
+                'phone_number' => $data['phoneNumber']
+            ];
 
-            $userName = $data['username'];
-            $email = $data['email'];
-            $password = $data['password'];
-            $userType = $data['userType'];
-            $status = $ACTIVE;
-            $registrationNumber = $data['registrationNumber'];
-            $phoneNumber = $data['phoneNumber'];
-
-            return $repo->createUser($userName, $email, $password, $userType, $status, $registrationNumber, $phoneNumber);
+            return $repo->createUser($result);
         }
     }
 
@@ -111,8 +113,25 @@ class UserService
             $departmentId = null;
         }
         $userId = $repo->getUserId($userName);
+        
+        if ($userId) {
+            $result = [
+                'user_id' => $userId, 
+                'first_name' => $firstName, 
+                'middle_name' => $middleName,  
+                'last_name' => $lastName, 
+                'registration_number' => $registrationNumber, 
+                'session' => $session, 
+                'department_id' => $departmentId,
+                'semester_id' => $semesterId,
+                'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
+                'updated_at' => ''
+            ];
 
-        return $repo->createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId);
+            return $repo->createProfile($result);
+        } else {
+            return false;
+        }
     }
 
     public function findUser($id)
@@ -145,7 +164,15 @@ class UserService
     public function updateUser(array $data, $id)
     {
         $repo = $this->userRepository;
-        return $repo->updateUser($data, $id);
+        $result = [
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'registration_number' => $data['registrationNumber'],
+            'user_type' => $data['userType'],
+            'phone_number' => $data['phoneNumber'],
+            'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
+        ];
+        return $repo->updateUser($result, $id);
     }
 
     public function updateProfileDuringUserUpdate(array $data)
@@ -167,19 +194,45 @@ class UserService
 			$departmentId = null;
 		}
         $repo = $this->userRepository;
-        return $repo->updateProfileDuringUserUpdate($userId, $departmentId, $session, $semesterId);
+        $result = [
+            'semester_id' => $semesterId,
+            'department_id' => $departmentId,
+            'session' => $session
+        ];
+        return $repo->updateProfileDuringUserUpdate($userId, $result);
     }
 
     public function destroyUser($id)
     {
         $repo = $this->userRepository;
-        return $repo->deleteUser($id);
+
+        if ($this->findUser($id)) {
+            return $repo->deleteUser($id);
+        } else {
+            return false;
+        }
     }
 
     public function statusUpdate($id)
     {
         $repo = $this->userRepository;
-        return $repo->statusUpdate($id);
+
+        $statusConstants = $repo->getStatusConstants();
+        $ACTIVE = $statusConstants['ACTIVE'];
+		$INACTIVE = $statusConstants['INACTIVE'];
+        $exist = $repo->find($id);
+
+        if ($exist) {
+            if ($exist->status == $ACTIVE) {
+                $status = $INACTIVE;
+            } else {
+                $status = $ACTIVE;
+            }
+
+            return $repo->statusUpdate($id, $status);
+        } else {
+            return false;
+        }
     }
 
     public function allStudents()

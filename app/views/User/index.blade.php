@@ -146,7 +146,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             });
-                            $('#userForm').load(location.href + ' #userForm > *');
+                            $('#userForm').load(location.href + ' #userForm');
                         }
                     },
                     error: function (xhr) {

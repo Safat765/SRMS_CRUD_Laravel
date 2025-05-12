@@ -5,9 +5,7 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\Semester;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class UserRepository
 {
@@ -34,17 +32,13 @@ class UserRepository
 
 	public function login($username, $password)
 	{
-		$result = User::where('username', $username) 
+		return User::where('username', $username) 
 						->where('password', $password)->exists();
-		
-		return $result;
 	}
 
 	public function findPassword($username)
 	{
-		$result = User::where('username', $username)->first();
-
-		return $result;
+		return User::where('username', $username)->first();
 	}
 
 	public function searchName($username)
@@ -52,23 +46,9 @@ class UserRepository
 		return User::where('username', $username)->exists();
 	}
 	
-	public function createUser($username, $email, $password, $userType, $status, $registrationNumber, $phoneNumber)
+	public function createUser($data)
 	{
-		$user = new User();
-		
-		$user->username = $username;
-		$user->email = $email;
-		$user->password = $password;
-		$user->user_type = $userType;
-		$user->status = $status;
-		$user->registration_number = $registrationNumber;
-		$user->phone_number = $phoneNumber;
-		$user->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
-		$user->updated_at = "";
-		
-		$user->save();
-		
-		return $user;
+		return DB::table('users')->insert($data);
 	}
 	
 	public function filter($search)
@@ -93,109 +73,50 @@ class UserRepository
 					)
 					->orderBy('users.user_id', 'desc');
 		$users = $userCount->paginate(5);	
-		$data = compact('users', 'userCount');
-
-		return $data;
+		return compact('users', 'userCount');
 	}
 	
 	public function find($id)
 	{
-		$user = User::find($id);
-		return $user;
+		return User::find($id);
 	}
 	
-	public function updateUser(array $data, $user_id)
+	public function updateUser(array $data, $userId)
 	{
-		$result = DB::table('users')
-				->where('user_id', $user_id)
-				->update([
-					'username' => $data['username'],
-					'email' => $data['email'],
-					'registration_number' => $data['registrationNumber'],
-					'user_type' => $data['userType'],
-					'phone_number' => $data['phoneNumber'],
-					'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-				]);
-		
-		return $result;
+		return DB::table('users')
+				->where('user_id', $userId)
+				->update($data);
 	}
 
-	public function updateProfileDuringUserUpdate($userId, $departmentId, $session, $semesterId)
+	public function updateProfileDuringUserUpdate($userId, $data)
 	{
-		$result = DB::table('profiles')
-					->where('user_id', $userId)
-					->update([
-						'semester_id'=> $semesterId,
-						'department_id'=> $departmentId,
-						'session'=> $session,
-					]);
-		return $result;
+		return DB::table('profiles')->where('user_id', $userId)->update($data);
 	}
 	
 	public function deleteUser($id)
 	{
-		$user = $this->find($id);
-		
-		if (!$user) {
-			return false;
-		}
-		$user->delete();
-		
-		return $user;
+		return DB::table('users')->where('user_id', $id)->delete();
 	}
 	
-	public function statusUpdate($id)
+	public function statusUpdate($id, $status)
 	{
-		$user = $this->find($id);
-		
-		if (!$user) {
-			return false;
-		}
-		
-		if ($user->status == User::STATUS_ACTIVE) {
-			$user->status = User::STATUS_INACTIVE;
-			Session::flash('message', 'User Inactive successfully');
-		} else {
-			$user->status = User::STATUS_ACTIVE;
-			Session::flash('success', 'User activated successfully');
-		}
-		$user->save();
-		
-		return $user;
+		return DB::table('users')->where('user_id', $id)->update(['status' => $status]);
 	}
 
 	public function getUserId($username)
 	{
 		$user = User::where('username', $username)->first();
 		
-		if (!$user) {
-			return false;
-		}
-		
 		return $user->user_id;
 	}
 
-	public function createProfile($firstName, $middleName, $lastName, $registrationNumber, $session, $departmentId, $semesterId, $userId)
+	public function createProfile($data)
     {
-        $insert = DB::table('profiles')->insertGetId(array(
-            'user_id' => $userId, 
-            'first_name' => $firstName, 
-            'middle_name' => $middleName,  
-            'last_name' => $lastName, 
-            'registration_number' => $registrationNumber, 
-            'session' => $session, 
-            'department_id' => $departmentId,
-            'semester_id' => $semesterId,
-            'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
-            'updated_at' => ''
-            )
-		);
-
-        return $insert;
+        return DB::table('profiles')->insert($data);
     }
 
 	public function enrollCourse($studentId) {
-		$result = DB::table('marks')
+		return DB::table('marks')
 					->join('courses', 'marks.course_id', '=', 'courses.course_id')
 					->select(
 						'courses.name',
@@ -203,13 +124,11 @@ class UserRepository
 					)
 					->where('marks.student_id', $studentId)
 					->get();
-		
-		return $result;
 	}
 
 	public function allResults()
 	{
-		$students = DB::table('results')
+		return DB::table('results')
 			->join('users', 'results.student_id', '=', 'users.user_id')
 			->join('profiles', 'users.user_id', '=', 'profiles.user_id')
 			->join('departments', 'profiles.department_id', '=', 'departments.department_id')
@@ -225,13 +144,11 @@ class UserRepository
 			])
 			->orderBy('users.user_id', 'asc')
 			->get();
-
-		return $students;
 	}
 
 	public function semesterWise($id)
 	{
-		$students = DB::table('marks')
+		return DB::table('marks')
 			->join('users', 'marks.student_id', '=', 'users.user_id')
 			->join('profiles', 'users.user_id', '=', 'profiles.user_id')
 			->join('semesters', 'marks.semester_id', '=', 'semesters.semester_id')
@@ -244,7 +161,5 @@ class UserRepository
 			])
 			->where('marks.student_id', $id)
 			->get();
-
-		return $students;
 	}
 }

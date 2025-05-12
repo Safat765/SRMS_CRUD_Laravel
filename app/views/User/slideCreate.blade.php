@@ -163,7 +163,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        $('#password, #confirmPassword').on('keyup', function() {
+        $(document).on('keyup', '#password, #confirmPassword', function() {
             var password = $('#password').val();
             var confirmPassword = $('#confirmPassword').val();
             var message = $('#matchPassword');
@@ -205,6 +205,7 @@
                 $('#departmentDiv').hide();
             }
         });
+        
         $(document).on('click', '.submitCreate', function(e) {
             e.preventDefault();
             var username = $("#username").val();

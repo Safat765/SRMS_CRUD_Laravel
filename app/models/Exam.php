@@ -6,7 +6,6 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableTrait;
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Facades\DB;
 
 class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	

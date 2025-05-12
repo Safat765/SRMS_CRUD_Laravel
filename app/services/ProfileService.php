@@ -68,9 +68,14 @@ class ProfileService
     {
         $repo = $this->profileRepository;
         $updatePassword = Hash::make($newPassword);
+        $userId = Session::get('user_id');
+        $password = [
+            'password' => $updatePassword
+        ];
 
-        if ($repo->changePassword($updatePassword)) {
+        if ($repo->changePassword($password, $userId)) {
             Session::put("password", $updatePassword);
+
             return true;
         }
         return false;
@@ -79,12 +84,14 @@ class ProfileService
     public function joinProfileWithSemester($userID)
     {
         $repo = $this->profileRepository;
+
         return $repo->joinProfileWithSemester($userID);
     }
 
     public function joinProfile($userID)
     {
         $repo = $this->profileRepository;
+
         return $repo->joinProfile($userID);
     }
 
@@ -116,15 +123,33 @@ class ProfileService
 		$departmentId = $data['departmentId'];
 		$userType = Session::get('user_type');
 
-		if ($userType == 3) {
-			$session = $data['session'];
-			$semesterId = $data['semesterId'];
-		} else {
-			$session = null;
-			$semesterId = null;
-		}
-		$departmentId = $repo->getDepartmentId($departmentId);
-		$semesterId = $repo->getSemesterId($semesterId);
+        if ($userType == 3) {
+            $session = $data['session'];
+            $semesterId = $data['semesterId'];
+            $departmentId = $data['departmentId'];
+        } elseif ($userType == 2) {
+            $session = null;
+            $semesterId = null;
+            $departmentId = $data['departmentId'];
+        } else {
+            $session = null;
+            $semesterId = null;
+            $departmentId = null;
+        }
+        $semester = $repo->getSemesterId($semesterId);
+        
+        if (!$semester) {
+            $semesterId = null;
+        } else {
+            $semesterId = $semester->semester_id;
+        }
+        $department = $repo->getDepartmentId($departmentId);
+        
+        if (!$department) {
+            $departmentId = null;
+        } else {
+            $departmentId = $department->department_id;
+        }
 		$data = [
 			'profileId'=> $id,
 			'firstName'=> $firstName,
@@ -135,7 +160,8 @@ class ProfileService
 			'session'=> $session,
 			'semesterId'=> $semesterId
 		];
-		return $repo->updateProfile($data);
+
+		return $repo->updateProfile($data, $id);
     }
 
     public function existProfile($userID)
@@ -169,12 +195,11 @@ class ProfileService
     {
         $repo = $this->profileRepository;
         $data = [
-            'userId'=> $id,
             'firstName'=> $data['firstName'],
             'middleName'=> $data['middleName'],
             'lastName'=> $data['lastName']
         ];
-        return $repo->addName($data);
+        return $repo->addName($data, $id);
     }
 
 }

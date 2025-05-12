@@ -6,9 +6,6 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableTrait;
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class Course extends Eloquent implements UserInterface, RemindableInterface {
 

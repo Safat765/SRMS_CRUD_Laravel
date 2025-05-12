@@ -113,6 +113,7 @@ class MarkController extends BaseController
 	{
 		$service = $this->markService;
 		$data = $service->students($courseId, $semesterId);
+		p($data['marks']);
 			
 		return View::make("mark.studentList")->with($data);
 	}

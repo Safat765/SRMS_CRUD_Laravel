@@ -82,8 +82,7 @@ class ExamRepository
 	
 	public function find($id)
 	{
-		$exam = Exam::find($id);
-		return $exam;
+		return Exam::find($id);
 	}
 	
 	public function updateExam(array $data, $id)

@@ -134,8 +134,13 @@ class MarkService
 			$examId = $result->exam_id;
 			break;
 		}
-        $marks = $repo->getMarks($userId, $examId);
         $totalStudent = count($results);
+        $marks = [];
+
+        foreach ($userId as $studentId) {
+            $getMark = $repo->getMarks($studentId, $examId);
+            $marks[$studentId] = $getMark;
+        }
 
         return compact('results', 'totalStudent', 'marks', 'userId');
     }
@@ -143,12 +148,14 @@ class MarkService
     public function edit(array $data, $studentId)
     {
         $repo = $this->markRepository;
+
         return $repo->editMarks($studentId, $data['examId']);
     }
 
     public function checkExistMarks($id)
     {
         $repo = $this->markRepository;
+
         return $repo->marksExistOrNot($id);
     }
 
@@ -198,6 +205,7 @@ class MarkService
         $repo = $this->markRepository;
         $results = $repo->viewMarks(Session::get("user_id"));
 		$groupedResults = [];
+        
 		foreach ($results as $result) {
 			$groupedResults[$result->course_name][] = $result;
 		}

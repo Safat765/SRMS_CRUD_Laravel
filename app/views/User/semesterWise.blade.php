@@ -18,9 +18,7 @@
                                 <th scope="col">GPA</th>
                             </tr>
                         </thead>
-                        <tbody id="resultModalTableBody">
-
-                        </tbody>
+                        <tbody id="resultModalTableBody"></tbody>
                     </table>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>

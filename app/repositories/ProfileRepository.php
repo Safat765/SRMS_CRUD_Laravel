@@ -2,39 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\Profile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
-use Carbon\Carbon;
 
 class ProfileRepository
 {
-    
-    public function createProfile(array $data)
+    public function changePassword($password, $userId)
     {
-        $profile = new Profile();
-        $profile->first_name = $data['firstName'];
-        $profile->middle_name = $data['middleName'];
-        $profile->last_name = $data['lastName'];
-        $profile->registration_number = $data['registrationNumber'];
-        $profile->session = $data['session'];
-        $profile->semester_id = $data['semesterId'];
-        $profile->department_id = $data['departmentId'];
-        $profile->user_id = $data['userId'];
-        $profile->created_at = Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s');
-        $profile->updated_at = "";
-        $profile->save();
-
-        return $profile;
-        // return DB::table('profiles')->insert($data);
-    }
-
-    public function changePassword($password)
-    {
-        $updatePassword = Hash::make($password);
-        return DB::table('users')->where('user_id', Session::get('user_id'))
-                ->update(['password'=> $updatePassword]);
+        return DB::table('users')->where('user_id', $userId)->update($password);
     }
 
     public function checkProfile($userID)
@@ -56,7 +30,7 @@ class ProfileRepository
     public function joinProfileWithSemester($userID)
     {
         return DB::table('profiles')
-        ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
+            ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
             ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
             ->select(
                     'profiles.*',
@@ -70,39 +44,16 @@ class ProfileRepository
 
     public function getDepartmentId($departmentId)
     {
-        $department = DB::table('departments')->where('name', $departmentId)->first();
-        
-        if ($department) {
-            return $department->department_id;
-        }
-
-        return null;
+        return DB::table('departments')->where('name', $departmentId)->first();
     }
     public function getSemesterId($semesterId)
     {
-        $semester = DB::table('semesters')->where('name', $semesterId)->first();
-        
-        if ($semester) {
-            return $semester->semester_id;
-        }
-
-        return null;
+        return DB::table('semesters')->where('name', $semesterId)->first();
     }
 
-    public function updateProfile(array $data)
+    public function updateProfile(array $data, $id)
     {
-        return DB::table('profiles')
-                ->where('profile_id', $data['profileId'])                
-                ->update([
-                    'first_name' => $data['firstName'],
-                    'middle_name' => $data['middleName'],
-                    'last_name' => $data['lastName'],
-                    'registration_number' => $data['registrationNumber'],
-                    'session' => $data['session'],
-                    'department_id' => $data['departmentId'],
-                    'semester_id' => $data['semesterId'],
-                    'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-        ]);
+        return DB::table('profiles')->where('profile_id', $id)->update($data);
     }
     
     public function existProfile($userID)
@@ -118,22 +69,13 @@ class ProfileRepository
             ->first();
     }
     
-    public function addName(array $data)
+    public function addName(array $data, $id)
     {
-        return DB::table('profiles')
-                ->where('user_id', $data['userId'])                
-                ->update([
-                    'first_name' => $data['firstName'],
-                    'middle_name' => $data['middleName'],
-                    'last_name' => $data['lastName'],
-                    'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-        ]);
+        return DB::table('profiles')->where('user_id', $id)->update($data);
     }
 
     public function edit($id)
     {
-        return DB::table('profiles')
-                ->where('user_id', $id)
-                ->select('profiles.*');
+        return DB::table('profiles')->where('user_id', $id)->select('profiles.*');
     }
 }

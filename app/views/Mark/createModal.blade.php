@@ -15,8 +15,7 @@
                             {{ Form::hidden('semesterId', null, ['id' => 'semesterId']) }}
                             {{ Form::hidden('courseId', null, ['id' => 'courseId']) }}
                             {{ Form::hidden('examId', null, ['id' => 'examId']) }}
-                            {{ Form::hidden('studentId', null, ['id' => 'studentId']) }}
-                            
+                            {{ Form::hidden('studentId', null, ['id' => 'studentId']) }}                            
                             {{ Form::label('givenMark', 'Mark', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::text('givenMark', null, 
                                 [

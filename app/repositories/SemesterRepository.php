@@ -19,7 +19,7 @@ class SemesterRepository
     public function filter($search)
 	{
 		$semesterCount = Semester::where('name', 'LIKE', '%' . $search . '%');
-		$semester = $semesterCount->paginate(5);
+		$semester = $semesterCount->orderBy('semester_id', 'desc')->paginate(5);
         
 		return compact('semester', 'semesterCount');
 	}
@@ -27,7 +27,7 @@ class SemesterRepository
     public function showAll()
 	{
 		$semesterCount = Semester::all();
-		$semester = Semester::paginate(5);		
+		$semester = Semester::orderBy('semester_id', 'desc')->paginate(5);		
 
 		return compact('semester', 'semesterCount');
 	}

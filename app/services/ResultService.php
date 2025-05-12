@@ -71,7 +71,8 @@ class ResultService
 
 		if ($lastCompleteCredits >= $requiredMinCredit && $lastSemesterGPA >= $requiredMinGPA) {
 			$updateSemester = $lastSemester + 1;
-			$repo->updateStudentsSemester($studentId, $updateSemester);
+			$updateSem = ['semester_id' => $updateSemester];
+			$repo->updateStudentsSemester($studentId, $updateSem);
 		}
 
 		$getInfo = $repo->showResult($studentId);

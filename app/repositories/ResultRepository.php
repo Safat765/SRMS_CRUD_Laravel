@@ -98,12 +98,8 @@ class ResultRepository
             ->get();
     }
 
-    public function updateStudentsSemester($studentId, $semesterId)
+    public function updateStudentsSemester($studentId, $updateSem)
     {
-        return DB::table('profiles')
-                ->where('user_id', $studentId)
-                ->update([
-                    'semester_id'=> $semesterId
-                ]);
+        return DB::table('profiles')->where('user_id', $studentId)->update($updateSem);
     }
 }
