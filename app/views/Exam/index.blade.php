@@ -119,6 +119,7 @@
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $(document).on("click", "#deleteBtn", function(e) {
@@ -134,7 +135,14 @@
                     },
                     success: function (response) {
                         if (response.status === 'success') {
-                            $('.examUpdate').load(location.href + ' .examUpdate')
+                            $('.examUpdate').load(location.href + ' .examUpdate');
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Exam deleted successfully",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                         }
                     },
                     error: function (xhr) {

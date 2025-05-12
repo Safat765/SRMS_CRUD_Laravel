@@ -1,18 +1,19 @@
 <?php
 
-use App\Models\User;
-use App\Models\Course;
-use App\Models\Department;
-use App\Models\Semester;
-use App\Models\Exam;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Response;
+use App\Services\ExamService;
+use Illuminate\Support\Facades\Session;
 
-class ExamController extends \BaseController {
+class ExamController extends \BaseController
+{
+	protected $examService;
+
+	public function __construct(ExamService $examService)
+	{
+		$this->examService = $examService;
+	}
 	
 	/**
 	* Display a listing of the resource.
@@ -21,35 +22,10 @@ class ExamController extends \BaseController {
 	*/
 	public function index()
 	{
-		$exam = new Exam();
-		$search = Input::get('search');		
-		$results = $exam->joinTables();
+		$service = $this->examService;
+		$search = Input::get('search');
+		$data = $service->getAllExams($search);
 		
-		if ($search != '') {
-			$data = $exam->filter($search);
-			
-			$totalExams = $data['totalExams'];
-			$exams = $data['exams'];
-		} else {		
-			$results = $exam->joinTables();
-			$totalExams = $results['totalExams'];
-			$exams = $results['results'];
-		}
-		$examType = [
-			"Mid" => Exam::EXAM_TYPE_MID,
-			"Quiz" => Exam::EXAM_TYPE_QUIZ,
-			"Viva" => Exam::EXAM_TYPE_VIVA,
-			"Final" => Exam::EXAM_TYPE_FINAL
-		];
-		$list = [
-			'courses' => Course::lists('name', 'course_id'),
-			'department' => Department::lists('name', 'department_id'),
-			'semester' => Semester::lists('name', 'semester_id'),
-			'instructor' => User::where('user_type', 2)->lists('username', 'user_id')
-		];
-
-		$data = compact('exams', 'totalExams', 'search', 'examType', 'list');
-
 		return View::make('exam.index')->with($data);
 	}
 	
@@ -71,38 +47,25 @@ class ExamController extends \BaseController {
 	* @return Response
 	*/
 	public function store()
-	{		
-		$validator = Validator::make(Input::aLL(), [
-			'courseId' => 'required',
-			'examTitle' => 'required|min:3|max:100',
-			'departmentId' => 'required',
-			'semesterId' => 'required',
-			'examType' => 'required|in:1,2,3,4',
-			'credit' => 'required|numeric',
-			'marks' => 'required|numeric',
-			'instructorId' => 'required'
-		], [
-			'required' => 'The :attribute field is required.',
-			'numeric' => 'The :attribute must be a number.',
-			'in' => 'Please select a valid :attribute.'
-		]);
-
+	{
+		$service = $this->examService;
+		$validator = $service->checkValidation(Input::all());
+		
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-		$exam = new Exam();
 		$data = Input::all();
-		$createdBy = 1;
-		$exist = $exam->searchName($data['courseId'], $data['departmentId'], $data['semesterId'], $data['examType']);
+		$createdBy = Session::get('user_id');
+		$exist = $service->searchExamByName($data);
 
 		if ($exist) {
 			return Response::json([
 				'status' => 'error'
 			], 403);
 		} else {
-			$create = $exam->createExam($data, $createdBy);
+			$create = $service->storeExam($data, $createdBy);
 			
 			if ($create) {
 				return Response::json([
@@ -149,8 +112,8 @@ class ExamController extends \BaseController {
 	*/
 	public function update($id)
 	{
-		$exam = new Exam();
-		$examFind = $exam->editFind($id);
+		$service = $this->examService;
+		$examFind = $service->find($id);
 
 		if (!$examFind) {
 			return Response::json([
@@ -158,30 +121,14 @@ class ExamController extends \BaseController {
 				'message' => 'Exam not found'
 			], 404);
 		}
-
-		$validator = Validator::make(Input::all(), [
-			'courseId' => 'required',
-			'examTitle' => 'required|min:3|max:100',
-			'departmentId' => 'required',
-			'semesterId' => 'required',
-			'credit' => 'required|numeric',
-			'examType' => 'required|in:1,2,3,4',
-			'marks' => 'required|numeric',
-			'instructorId' => 'required'
-		],
-		[
-			'required' => 'The :attribute field is required.',
-			'numeric' => 'The :attribute must be a number.',
-			'in' => 'Please select a valid :attribute.'
-		]);
+		$validator = $service->updateValidation(Input::all());
 
 		if ($validator->fails()) {
 			return Response::json([
 				'errors' => $validator->errors()
 			], 422);
 		}
-
-		$update = $exam->updateExam(Input::all(), $id);
+		$update = $service->updateExam(Input::all(), $id);
 
 		if ($update) {
 			return Response::json([
@@ -204,23 +151,26 @@ class ExamController extends \BaseController {
 	*/
 	public function destroy($id)
 	{
-		$exam = new Exam();
-		$exam = $exam->editFind($id);
+		$service = $this->examService;
+		$examFind = $service->find($id);
 		
-		if (!$exam) {
-			Response::json([
-				'status' => 'error'
+		if (!$examFind) {
+			return Response::json([
+				'status' => 'error',
+				'message' => 'Exam not found'
 			], 404);
 		}
-		$delete = $exam->deleteExam($id);
+		$delete = $service->destroy($id);
 		
 		if (!$delete) {
 			return Response::json([
 				'status' => 'error',
+				'message' => 'Failed to delete exam'
 			], 400);
 		} else{
 			return Response::json([
 				'status' => 'success',
+				'message' => 'Exam deleted successfully'
 			], 200);
 		}
 	}
