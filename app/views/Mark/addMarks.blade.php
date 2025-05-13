@@ -4,7 +4,7 @@
 @section('main')
     <div class="table-responsive pt-5">
         <div class="bg-warning  text-black text-center mx-5">
-            <h5>Total Course : {{ $totalCourse }}</h5>
+            <h5>Total Course : {{ $data['totalCourse'] }}</h5>
         </div>
         <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
             <thead>
@@ -20,7 +20,7 @@
             </thead>
             <tbody>
                 <?php
-                    if ($userType != 2) {
+                    if ($data['userType'] != 2) {
                 ?>
                         <tr>
                             <td scope="row" colspan="3">You are not authorized to view this page</td>
@@ -28,7 +28,7 @@
                 <?php
                     } else {
                 ?>
-                    @foreach ($results as $result)
+                    @foreach ($data['results'] as $result)
                         <tr>
                             <td scope="row">{{$result->course_name}}</td>
                             <td scope="row">{{$result->department_name}}</td>

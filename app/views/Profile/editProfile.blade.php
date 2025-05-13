@@ -20,8 +20,12 @@
                         <th scope="col">Semester</th>
                 <?php
                     }
+                    if ($value == 2 || $value == 3) {
                 ?>
-                <th scope="col">Department</th>
+                        <th scope="col">Department</th>
+                <?php
+                    }
+                ?>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -51,13 +55,19 @@
                     <?php                    
                         $value = Session::get('user_type');
                         if ($value == 3) {
-                    ?>                        
-                            <td scope="row">{{$user->session}}</td>
-                            <td scope="row">{{isset($user->semester_name) ? $user->semester_name : null }}</td>
+                    ?>
+                            <td scope="row">{{ $user->session }}</td>
+                            <td scope="row">{{$user->semester_name}}</td>
                     <?php
                         }
                     ?>
-                    <td scope="row">{{$user->department_name}}</td>
+                    <?php
+                        if ($value == 2 || $value == 3) {
+                    ?>
+                            <td scope="row">{{$user->department_name}}</td>
+                    <?php
+                        }
+                    ?>
                     <td>
                         <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
                             <div class="text-center">
@@ -129,13 +139,14 @@
             e.preventDefault();
             let userId = $(this).data('id');
             let userType = $(this).data('user_type');
+            let addURL = null;
             
             if (userType == 1) {
-                $addURL = 'admin';
+                addURL = 'admin';
             } else if (userType == 2) {
-                $addURL = 'instructor';
+                addURL = 'instructor';
             } else if (userType == 3) {
-                $addURL = 'students';
+                addURL = 'students';
             }
 
             $.ajax({

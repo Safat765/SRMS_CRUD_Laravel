@@ -6,7 +6,7 @@
 
 <div class="table-responsive pt-2" id="studentList">
     <div class="bg-warning text-black text-center mx-5">
-        <h5>Total Students : {{ $totalStudent }}</h5>
+        <h5>Total Students : {{ $data['totalStudent'] }}</h5>
     </div>
     <a href="{{ URL::route('instructor.marks.index') }}" class="col-md-1 btn btn-danger">Back</a>
     <hr>
@@ -15,7 +15,7 @@
             <tr class="bg-info text-white">
                 <td scope="row" colspan="6" class="fw-bold fs-3 text-center text-info">
                     Students of Course :
-                    @foreach ($results as $result)
+                    @foreach ($data['results'] as $result)
                         {{ $result->course_name }}
                         <?php break; ?>
                     @endforeach
@@ -31,7 +31,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($results as $result)
+            @foreach ($data['results'] as $result)
                 <tr>
                     <td>{{ $result->username }}</td>
                     <td>{{ $result->registration_number }}</td>
@@ -40,7 +40,7 @@
                     <td>{{ $result->semester_name }}</td>
                     <td>
                         <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
-                            @if (!empty($marks[$result->user_id]))
+                            @if (!empty($data['marks'][$result->user_id]))
                                 {{ Form::open(['url' => '/instructor/marks/'.$result->user_id, 'method' => 'get']) }}
                                 {{ Form::hidden('examId', $result->exam_id) }}
                                     <div class="text-center">

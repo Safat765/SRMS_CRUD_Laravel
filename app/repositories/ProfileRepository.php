@@ -11,12 +11,12 @@ class ProfileRepository
         return DB::table('users')->where('user_id', $userId)->update($password);
     }
 
-    public function checkProfile($userID)
+    public function check($userID)
     {
         return DB::table('profiles')->where('user_id', $userID)->first();
     }
 
-    public function joinProfile($userID)
+    public function join($userID)
     {
         return DB::table('profiles')
             ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
@@ -27,7 +27,7 @@ class ProfileRepository
             ->where('profiles.user_id', $userID)
             ->first();
     }
-    public function joinProfileWithSemester($userID)
+    public function joinWithSemester($userID)
     {
         return DB::table('profiles')
             ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
@@ -51,22 +51,26 @@ class ProfileRepository
         return DB::table('semesters')->where('name', $semesterId)->first();
     }
 
-    public function updateProfile(array $data, $id)
+    public function update(array $data, $id)
     {
         return DB::table('profiles')->where('profile_id', $id)->update($data);
     }
     
-    public function existProfile($userID)
+    public function exist($userID)
     {
         return DB::table('profiles')
             ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
+            ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
             ->select(
                     'profiles.*', 
                     'profiles.user_id as profile_user_id', 
                     'departments.department_id', 
-                    'departments.name as department_name')                    
-            ->where('profiles.user_id', $userID)
-            ->first();
+                    'departments.name as department_name',
+                    'semesters.semester_id',
+                    'semesters.name as semester_name'
+                )
+                ->where('profiles.user_id', $userID)
+                ->first();
     }
     
     public function addName(array $data, $id)

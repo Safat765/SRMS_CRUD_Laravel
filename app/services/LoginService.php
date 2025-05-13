@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Session;
 
 class LoginService
 {
-    protected $userRepository;
+    private $userRepository;
     
     public function __construct(UserRepository $userRepository)
     {
@@ -24,15 +24,12 @@ class LoginService
     }
 
     public function dashboard(){
-        $repo = $this->userRepository;
-
-        return $repo->enrollCourse(Session::get('user_id'));
+        return $this->userRepository->enrollCourse(Session::get('user_id'));
     }
 
     public function loginPassword($username, $password)
     {
-        $repo = $this->userRepository;
-        $user = $repo->findPassword($username);
+        $user = $this->userRepository->findPassword($username);
         
         if (!password_verify($password, $user->password)) {
             return false;
@@ -43,11 +40,8 @@ class LoginService
     }
     
     public function loginUser($username, $password, $userDetails)
-    {
-        $repo = $this->userRepository;
-        $user = $repo->login($username, $password);
-        
-        if ($user) {
+    {        
+        if ($this->userRepository->login($username, $password)) {
             Session::put('username', $userDetails['username']);
             Session::put('user_id', $userDetails['user_id']);
             Session::put('email', $userDetails['email']);
@@ -56,7 +50,8 @@ class LoginService
             Session::put('password', $userDetails['password']);
             Session::put('user_type', $userDetails['user_type']);
             Session::put('status', $userDetails['status']);
-            return $user;
+            
+            return true;
         }
         return false;
     }

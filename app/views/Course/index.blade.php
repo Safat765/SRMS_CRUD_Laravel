@@ -20,7 +20,7 @@
             {{ Form::open([URL::route('admin.courses.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
-                    {{ Form::text('search', $search, [
+                    {{ Form::text('search', $data['search'], [
                     'class' => 'form-control',
                     'placeholder' => 'Search by courses name and credit',
                     'required' => true
@@ -36,7 +36,7 @@
         </div> 
     </div>
     <div class="bg-warning  text-black text-center mx-5">
-        <h5>Total Course : {{ $totalCourse }}</h5>
+        <h5>Total Course : {{ $data['totalCourse'] }}</h5>
     </div>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
@@ -48,12 +48,12 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($course as $courses)
+            @foreach ($data['course'] as $courses)
             <tr>
                 <td scope="row" class="p-3">{{$courses->name}}</td>
                 <td scope="row" class="p-3">{{$courses->credit}}</td>
                 <td scope="row" class="p-3">
-                    @if ($courses->status == $ACTIVE)
+                    @if ($courses->status == $data['ACTIVE'])
                     <a href="" data-id="{{ $courses->course_id }}">
                         <span class="badge bg-success" id="statusBtn" data-id="{{ $courses->course_id }}">Active</span>
                     </a>
@@ -92,7 +92,7 @@
         </tbody>
     </table>
     <div class="text-center">
-        {{ $course->links() }}
+        {{ $data['course']->links() }}
     </div>
 </div>
 

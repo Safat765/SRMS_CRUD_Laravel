@@ -128,7 +128,7 @@ class MarkRepository
         return DB::table('marks')->where('marks.student_id', $studentId)->where('marks.exam_id', $examId)->get();
     }
 
-    public function viewMarks($instructorId)
+    public function view($instructorId)
     {
         return DB::table('exams')
                 ->leftJoin('courses', 'exams.course_id', '=', 'courses.course_id')
@@ -159,6 +159,7 @@ class MarkRepository
                 )
                 ->where('exams.instructor_id', $instructorId)
                 ->orderBy('courses.course_id')
+                ->orderBy('marks.marks', 'desc')
                 ->get();
     }
 }

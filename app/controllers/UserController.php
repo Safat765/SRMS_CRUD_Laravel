@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\User;
-use App\Models\Department;
-use App\Models\Semester;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Input;
@@ -12,7 +9,7 @@ use App\Services\UserService;
 
 class UserController extends \BaseController
 {
-	protected $userService;
+	private $userService;
 
 	public function __construct(UserService $userService)
 	{
@@ -21,9 +18,8 @@ class UserController extends \BaseController
 
 	public function index()
 	{
-		$service = $this->userService;
 		$search = Input::get('search');
-		$data = $service->getAllUser($search);
+		$data = $this->userService->getAllUser($search);
 		
 		return View::make('user.index')->with($data);
 	}
@@ -35,33 +31,22 @@ class UserController extends \BaseController
 	
 	public function store()
 	{
-		$service = $this->userService;
-		$validator = $service->checkValidation(Input::all());
+		$validator = $this->userService->checkValidation(Input::all());
 		
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
 		
-		$user = $service->storeUser(Input::all());
+		$user = $this->userService->storeUser(Input::all());
 		if ($user) {
-			$profile = $service->createProfile(Input::all());
+			$profile = $this->userService->createProfile(Input::all());
 			
 			if (!$profile) {
-				return Response::json([
-					'status' => 'fail',
-					'message' => 'Failed to create profile'
-				], 500);
+				return Response::json(['status' => 'fail', 'message' => 'Failed to create profile'], 500);
 			}
-			return Response::json([
-				'status' => 'success',
-			], 200);
+			return Response::json(['status' => 'success'], 200);
 		} else {
-			return Response::json([
-				'status' => 'fail',
-				'message' => 'Failed to create user'
-			], 500);
+			return Response::json(['status' => 'fail', 'message' => 'Failed to create user'], 500);
 		}
 	}
 	
@@ -77,85 +62,63 @@ class UserController extends \BaseController
 	
 	public function update($id)
 	{
-		$service = $this->userService;
-		$user = $service->findUser($id);
+		$user = $this->userService->findUser($id);
 		
 		if (!$user) {
 			Session::flash('message', 'User not found');
 			return Redirect::back();
 		}
-		$validator = $service->updateValidation(Input::all(), $id);
+		$validator = $this->userService->updateValidation(Input::all(), $id);
 		
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
 		
-		$update = $service->updateUser(Input::all(), $id);
-		$result = $service->updateProfileDuringUserUpdate(Input::all());
+		$update = $this->userService->updateUser(Input::all(), $id);
+		$result = $this->userService->updateProfileDuringUserUpdate(Input::all());
 
 		if ($update || $result) {
-			return Response::json([
-				'status' => 'success'
-			]);
+			return Response::json(['status' => 'success'], 200);
 		} else {			
-			return Response::json([
-				'errors' => 'error'
-			]);
+			return Response::json(['status' => 'error'], 400);
 		}
 	}
 	
 	public function destroy($id)
 	{
-		$service = $this->userService;
-		$user = $service->findUser($id);
+		$user = $this->userService->findUser($id);
 		
 		if (!$user) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		}
-		$delete = $service->destroyUser($id);
+		$delete = $this->userService->destroyUser($id);
 		
 		if (!$delete) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		} else{
-			return Response::json([
-				'status' => 'success',
-			], 200);
+			return Response::json(['status' => 'success'], 200);
 		}		
 	}
 	
 	public function status($id)
 	{
-		$service = $this->userService;
-		$user = $service->findUser($id);
+		$user = $this->userService->findUser($id);
 		
 		if (!$user) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		}
-		$status = $service->statusUpdate($id);
+		$status = $this->userService->statusUpdate($id);
 		
 		if (!$status) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		} else {
-			return Response::json([
-				'status' => 'success',
-			]);
+			return Response::json(['status' => 'success'], 200);
 		}
 	}
 	
 	public function allStudents()
 	{
-		$service = $this->userService;
-		$result = $service->allStudents();
+		$result = $this->userService->allStudents();
 		$getResults = $result['getResults'];
 		$totalStudents = $result['totalStudents'];
 		
@@ -164,19 +127,13 @@ class UserController extends \BaseController
 	
 	public function semesterWise($id)
 	{
-		$service = $this->userService;
-		$result = $service->semesterWise($id);
+		$result = $this->userService->semesterWise($id);
 		$getResults = $result['getResults'];
 		
 		if ($getResults) {
-			return Response::json([
-				'status' => 'success',
-				'records' => $getResults
-			], 200);
+			return Response::json(['status' => 'success', 'records' => $getResults], 200);
 		} else {
-			return Response::json([
-				'status' => 'error'
-			], 400);
+			return Response::json(['status' => 'error'], 400);
 		}
 	}
 }

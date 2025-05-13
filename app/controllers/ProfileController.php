@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Profile;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -10,54 +9,40 @@ use App\Services\ProfileService;
 
 class ProfileController extends BaseController
 {
-	protected $profileService;
+	private $profileService;
 
 	public function __construct(ProfileService $profileService)
 	{
 		$this->profileService = $profileService;
 	}
-
-	public function index()
-	{
-		// Show all items
-	}
 				
 	public function create()
 	{
-		$service = $this->profileService;
-		$data = $service->createProfile();
-
-		return View::make("profile/changePassword")->with($data);
+		return View::make("profile/changePassword", ['data' => $this->profileService->create()]);
 	}
 				
 	public function store()
 	{
-		$service = $this->profileService;
-		$data = $service->checkValidation(Input::all());
+		$data = $this->profileService->checkValidation(Input::all());
 
 		if ($data->fails()) {
-			return Redirect::back()
-				->withErrors($data);
+			return Redirect::back()->withErrors($data);
 		}
 		$currentPassword = Session::get("password");
-		$verify = $service->checkPassword(Input::get("oldPassword"), $currentPassword);
 
-		if ($verify) {
-			$match = $service->matchPassword(Input::get("newPassword"), Input::get("oldPassword"));
+		if ($this->profileService->checkPassword(Input::get("oldPassword"), $currentPassword)) {
 			
-			if ($match) {
+			if ($this->profileService->matchPassword(Input::get("newPassword"), Input::get("oldPassword"))) {
 				Session::flash("message", "Previous password and New Password can not be same");
 
 				return Redirect::back();
 				die();
 			} else {
-				$update = $service->changePassword(Input::get("newPassword"));
 
-				if ($update) {
+				if ($this->profileService->changePassword(Input::get("newPassword"))) {
 					Session::flash("success", "Password Changed Successfully");
-					$addURL = $service->getURL();
 
-					return Redirect::to('/'.$addURL.'/dashboard');
+					return Redirect::to('/'.$this->profileService->getURL().'/dashboard');
 				} else {
 					Session::flash("message", "Failed to change password");
 
@@ -70,120 +55,75 @@ class ProfileController extends BaseController
 		}
 	}
 				
-	public function show($id)
-	{
-		//
-	}
-				
 	public function edit($userID)
 	{
-		$service = $this->profileService;
-		$profile = new Profile();
 		if (Session::get("user_type") == 3) {
-			$user = $service->joinProfileWithSemester($userID);
+			$user = $this->profileService->joinWithSemester($userID);
 		}
-		$user = $service->joinProfile($userID);
+		$user = $this->profileService->join($userID);
 
 		if ($user) {
-			return Response::json([
-				'status' => 'success',
-				'records' => $user
-			], 200);
+			return Response::json(['status' => 'success', 'records' => $user], 200);
 		} else {
-			return Response::json([
-				'status' => 'error'
-			], 404);
+			return Response::json(['status' => 'error'], 404);
 		}
 	}
 				
 	public function update($id)
 	{
-		$service = $this->profileService;
-		$addURL = $service->getURL();
-
-		$validator = $service->updateValidation(Input::all());
+		$validator = $this->profileService->updateValidation(Input::all());
 		
 		if ($validator->fails()) {
 			Session::flash('message', "validation fail");
-			return Redirect::back()
-			->withErrors($validator);
+			
+			return Redirect::back()->withErrors($validator);
 		}
-		$update = $service->updateProfile(Input::all(), $id);
 
-		if ($update) {
+		if ($this->profileService->updateProfile(Input::all(), $id)) {
 			Session::flash('success', 'Profile updated successfully');
-			return Redirect::to('/'.$addURL.'/profiles/show/profile');
+
+			return Redirect::to('/'.$this->profileService->getURL().'/profiles/show/profile');
 		} else {
 			Session::flash('message', 'Failed to update Profile');
+
 			return Redirect::back();
 		}
-	}
-				
-	public function destroy($id)
-	{
-		// Handle deletion
 	}
 
 	public function editProfile()
 	{
-		$service = $this->profileService;
-		$user = $service->existProfile(Session::get('user_id'));
-
-		return View::make("profile/editProfile")->with('user', $user);
+		return View::make("profile/editProfile", ['user' => $this->profileService->exist(Session::get('user_id'))]);
 	}
 
 	public function searchProfile($userID)
-	{
-		$service = $this->profileService;
+	{		
 		if ($userID == "") {
-			return Response::json([
-				"status"=> "error",
-				"message"=> "Registration Number not found"
-			], 404);
+			return Response::json(["status"=> "error", "message"=> "Registration Number not found"], 404);
 		}
-		$exist = $service->checkProfile($userID);
 
-		if ($exist) {			
-			return Response::json([
-				"status"=> "success"
-			],200);
+		if ($this->profileService->check($userID)) {			
+			return Response::json(['status' => 'success'], 200);
 		} else {
-			return Response::json([
-				"status"=> "error",
-				"message"=> "Profile Already exist"
-			],404);
+			return Response::json(['status' => 'error', 'message' => "Profile Already exist"], 404);
 		}
 	}
 
-	public function addNameProfile($id)
+	public function addName($id)
 	{
-		$service = $this->profileService;
-
 		if ($id == "") {
-			return Response::json([
-				"status"=> "error",
-				"message"=> "user Id not found"
-			], 404);
+			return Response::json(['status' => 'error', 'message' => "user Id not found"], 404);
 		}
 
-		$validator = $service->addNameValidation(Input::all());
+		$validator = $this->profileService->addNameValidation(Input::all());
 
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$update = $service->addName(Input::all(), $id);
 
-		if ($update) {
-			return Response::json([
-				'status' => 'success',
-			], 200);
+		if ($this->profileService->addName(Input::all(), $id)) {
+			return Response::json(['status' => 'success'], 200);
 		} else {
-			return Response::json([
-				'status' => 'fail',
-				'message' => 'Failed to create user'
-			], 500);
+			return Response::json(['status' => 'fail', 'message' => 'Failed to create user'], 500);
 		}
 	}
 }

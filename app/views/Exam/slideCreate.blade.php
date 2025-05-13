@@ -12,7 +12,7 @@
                             <div class="col-md-4">
                                 {{ Form::label('courseId', 'Course Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('courseId', 
-                                    ['' => 'Select course'] + $list['courses'],
+                                    ['' => 'Select course'] + $data['list']['courses'],
                                     Input::old('courseId', ''), [
                                         'class' => 'form-control shadow-lg courseId',
                                         'required' => true
@@ -35,7 +35,7 @@
                             <div class="col-md-4">
                                 {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('departmentId', 
-                                    ['' => 'Select Department'] + $list['department'],
+                                    ['' => 'Select Department'] + $data['list']['department'],
                                     Input::old('departmentId', ''), [
                                         'class' => 'form-control shadow-lg departmentId',
                                         'required' => true
@@ -50,7 +50,7 @@
                             <div class="col-md-6">
                                 {{ Form::label('semesterId', 'Semester Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('semesterId', 
-                                    ['' => 'Select Semester'] + $list['semester'],
+                                    ['' => 'Select Semester'] + $data['list']['semester'],
                                     Input::old('semesterId', ''), [
                                         'class' => 'form-control shadow-lg semesterId',
                                         'required' => true
@@ -77,10 +77,10 @@
                                 {{ Form::select('examType', 
                                     [
                                         '' => 'Select Exam type',
-                                        $examType['Mid'] => 'Mid',
-                                        $examType['Quiz'] => 'Quiz',
-                                        $examType['Viva'] => 'Viva',
-                                        $examType['Final'] => 'Final'
+                                        $data['examType']['Mid'] => 'Mid',
+                                        $data['examType']['Quiz'] => 'Quiz',
+                                        $data['examType']['Viva'] => 'Viva',
+                                        $data['examType']['Final'] => 'Final'
                                     ], 
                                     Input::old('examType'), [
                                         'class' => 'form-control shadow-lg examType',
@@ -104,7 +104,7 @@
                             <div class="col-md-4">
                                 {{ Form::label('instructorId', 'Instructor Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('instructorId', 
-                                    ['' => 'Select Instrutor'] + $list['instructor'],
+                                    ['' => 'Select Instrutor'] + $data['list']['instructor'],
                                     Input::old('instructorId', ''), [
                                         'class' => 'form-control shadow-lg instructorId',
                                         'required' => true

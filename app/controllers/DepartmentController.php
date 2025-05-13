@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Response;
 
 class DepartmentController extends BaseController
 {
-	protected $departmentService;
+	private $departmentService;
 	
 	public function __construct(DepartmentService $departmentService)
 	{
@@ -17,109 +17,69 @@ class DepartmentController extends BaseController
 	
 	public function index()
 	{
-		$service = $this->departmentService;
-		$search = Input::get('search');
-		$data = $service->getAllDepartment($search);
+		$record = Input::all();
 		
-		return View::make('department.index')->with($data);
-	}
-	
-	public function create()
-	{
-		//
+		return View::make('department.index', [
+			'data' => $this->departmentService->getAll(isset($record['search']) ? $record['search'] : '')
+		]);
 	}
 	
 	public function store()
 	{
-		$service = $this->departmentService;
-		$validator = $service->checkValidation(Input::all());
+		$validator = $this->departmentService->checkValidation(Input::all());
 		
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$result = $service->storeDepartment(Input::all());
+		$result = $this->departmentService->store(Input::all());
 		
 		if ($result) {
-			return Response::json([
-				'status' => 'success',
-			], 200);
+			return Response::json(['status' => 'success'], 200);
 		} else {
-			return Response::json([
-				'status' => 'error'
-			], 409);
+			return Response::json(['status' => 'error'], 409);
 		}
-	}
-	
-	public function show($id)
-	{
-		//
-	}
-	
-	public function edit($id)
-	{
-		//
 	}
 	
 	public function update($id)
 	{
-		$service = $this->departmentService;
-		$department = $service->checkDepartment($id);
+		$department = $this->departmentService->checkById($id);
 		
 		if (!$department) {
-			return Response::json([
-				'errors' => 'department not found'
-			], 404);
+			return Response::json(['errors' => 'department not found'], 404);
 		}
 		
-		$validator = $service->updateValidation(Input::all(), $id);
+		$validator = $this->departmentService->updateValidation(Input::all(), $id);
 		
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$exist = $service->checkDepartmentName(Input::get('name'));
+		$exist = $this->departmentService->checkByName(Input::get('name'));
 		
 		if ($exist) {
-			return Response::json([
-				'errors' => 'Department already exist'
-			]);
+			return Response::json(['errors' => 'Department already exist'], 409);
 		}
-		$update = $service->updateDepartment(Input::all(), $id);
+		$update = $this->departmentService->update(Input::all(), $id);
 		
 		if ($update) {
-			return Response::json([
-				'status' => 'success',
-			], 200);
+			return Response::json(['status' => 'success'], 200);
 		} else {
-			return Response::json([
-				'errors' => 'error'
-			]);
+			return Response::json(['errors' => 'error'], 409);
 		}
 	}
 	
 	public function destroy($id)
 	{
-		$service = $this->departmentService;
-		$department = $service->checkDepartment($id);
+		$department = $this->departmentService->checkById($id);
 		
 		if (!$department) {
-			Response::json([
-				'status' => 'error'
-			], 404);
+			return Response::json(['status' => 'error'], 404);
 		}
-		$delete = $service->destroyDepartment($id);
+		$delete = $this->departmentService->destroy($id);
 		
 		if (!$delete) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		} else{
-			return Response::json([
-				'status' => 'success',
-			]);
+			return Response::json(['status' => 'success'], 200);
 		}
 	}
 }

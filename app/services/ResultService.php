@@ -7,21 +7,20 @@ use Illuminate\Support\Facades\Session;
 
 class ResultService
 {
-    protected $resultRepository;
+    private $resultRepository;
 
     public function __construct(ResultRepository $resultRepository)
     {
         $this->resultRepository = $resultRepository;
     }
 
-    public function getAllResults()
+    public function getAll()
     {
-        $repo = $this->resultRepository;
 		$studentId = Session::get("user_id");
 		$requiredMinCredit = 9;
 		$requiredMinGPA = 3.00;
 
-        $semesters = $repo->getSemester($studentId);
+        $semesters = $this->resultRepository->getSemester($studentId);
 		$semestersInfo = [];
 
 		foreach ($semesters as $semester) {
@@ -30,7 +29,7 @@ class ResultService
 		$semesterWiseResult = [];
 
 		foreach ($semestersInfo as $semesterIds) {
-			$SWR = $repo->getData($studentId, $semesterIds);
+			$SWR = $this->resultRepository->getData($studentId, $semesterIds);
 			array_push($semesterWiseResult, $SWR);
 		}
 		$semesterGpas = [];
@@ -38,7 +37,7 @@ class ResultService
 
 		foreach ($semestersInfo as $semesterId)
 		{
-			$semesterData = $repo->getData($studentId, $semesterId);
+			$semesterData = $this->resultRepository->getData($studentId, $semesterId);
 			if (!isset($semesterGpas[$semesterId])) {
 				$semesterGpas[$semesterId] = [];
 			}
@@ -72,11 +71,11 @@ class ResultService
 		if ($lastCompleteCredits >= $requiredMinCredit && $lastSemesterGPA >= $requiredMinGPA) {
 			$updateSemester = $lastSemester + 1;
 			$updateSem = ['semester_id' => $updateSemester];
-			$repo->updateStudentsSemester($studentId, $updateSem);
+			$this->resultRepository->updateStudentsSemester($studentId, $updateSem);
 		}
 
-		$getInfo = $repo->showResult($studentId);
-		$records = $repo->results($studentId);
+		$getInfo = $this->resultRepository->showResult($studentId);
+		$records = $this->resultRepository->results($studentId);
 		$info = [];
 
 		foreach ($records as $record) {
@@ -102,27 +101,30 @@ class ResultService
 		$credit = array_sum($credit);
 		$gpa = array_sum($cgpSum);
 		$CGPA = $gpa / $credit;
-		$result = [
-			"CGPA"=> round($CGPA, 2),
-			"name"=> $name,
-			"session"=> $session,
-			"credit"=> $credit
-		];
 
-		return compact('result', 'getInfo', 'semesters', 'GPA', 'totalCredits');
+		return [
+			'result' => [
+				"CGPA"=> round($CGPA, 2),
+				"name"=> $name,
+				"session"=> $session,
+				"credit"=> $credit
+			],
+			'getInfo' => $getInfo,
+			'semesters' => $semesters,
+			'GPA' => $GPA,
+			'totalCredits' => $totalCredits
+		];
     }
 
     public function getSemesterWiseResult($studentId, $semesterId)
     {
-        $repo = $this->resultRepository;
-        return $repo->getResult($studentId, $semesterId);
+        return $this->resultRepository->getResult($studentId, $semesterId);
     }
 
     public function enrolledCourse()
     {
-        $repo = $this->resultRepository;
         $studentId = Session::get("user_id");
-        $records = $repo->results($studentId);
+        $records = $this->resultRepository->results($studentId);
 		$groupedResults = [];
 
 		foreach ($records as $result) {

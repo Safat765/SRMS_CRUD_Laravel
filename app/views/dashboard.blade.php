@@ -6,7 +6,6 @@
         <?php    
             use Illuminate\Support\Facades\Session;
         ?>  
-        <h1 class="text-center">Welcome {{ ucwords(Session::get('username')) }} </h1>    
         <?php
             if (Session::get('user_type') == '1') {
         ?>
@@ -81,7 +80,7 @@
                                      height: 350px;">
             </div>  
             <br>
-            @include('dashboard.instructor', ['results' => $results, 'totalCourse' => $totalCourse, 'marksResults' => $marksResults])
+            @include('dashboard.instructor', ['results' => $data['results'], 'totalCourse' => $data['totalCourse'], 'marksResults' => $data['marksResults']])
         <?php
             }
             else {
@@ -93,7 +92,7 @@
                                      text-shadow: 2px 2px 4px hsla(0, 9.70%, 93.90%, 0.98);
                                      height: 350px;">
             </div>  
-            @include('dashboard.student', ['totalEnrollCourse' => $totalEnrollCourse, 'courses' => $courses])
+            @include('dashboard.student', ['totalEnrollCourse' => $data['totalEnrollCourse'], 'courses' => $data['courses']])
         <?php
             }
         ?>

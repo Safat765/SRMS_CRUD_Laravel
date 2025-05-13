@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileService
 {
-    protected $profileRepository;
+    private $profileRepository;
 
     public function __construct(ProfileRepository $profileRepository)
     {
@@ -29,12 +29,16 @@ class ProfileService
         return $addURL;
     }
 
-    public function createProfile()
+    public function create()
     {
         $addURL = $this->getURL();
 		$pageName = "Change Password";			
 		$url = url('/' . $addURL . '/profiles');
-		return compact('url' ,'pageName');
+
+        return [
+            'url' => $url,
+            'pageName' => $pageName
+        ];
     }
 
     public function checkValidation(array $data)
@@ -66,14 +70,9 @@ class ProfileService
 
     public function changePassword($newPassword)
     {
-        $repo = $this->profileRepository;
         $updatePassword = Hash::make($newPassword);
-        $userId = Session::get('user_id');
-        $password = [
-            'password' => $updatePassword
-        ];
 
-        if ($repo->changePassword($password, $userId)) {
+        if ($this->profileRepository->changePassword(['password' => $updatePassword], Session::get('user_id'))) {
             Session::put("password", $updatePassword);
 
             return true;
@@ -81,18 +80,14 @@ class ProfileService
         return false;
     }
 
-    public function joinProfileWithSemester($userID)
+    public function joinWithSemester($userID)
     {
-        $repo = $this->profileRepository;
-
-        return $repo->joinProfileWithSemester($userID);
+        return $this->profileRepository->joinWithSemester($userID);
     }
 
-    public function joinProfile($userID)
+    public function join($userID)
     {
-        $repo = $this->profileRepository;
-
-        return $repo->joinProfile($userID);
+        return $this->profileRepository->join($userID);
     }
 
     public function updateValidation(array$data)
@@ -115,7 +110,6 @@ class ProfileService
 
     public function updateProfile(array $data, $id)
     {
-        $repo = $this->profileRepository;
         $firstName = $data['firstName'];
 		$middleName = $data['middleName'];
 		$lastName = $data['lastName'];
@@ -136,46 +130,40 @@ class ProfileService
             $semesterId = null;
             $departmentId = null;
         }
-        $semester = $repo->getSemesterId($semesterId);
+        $semester = $this->profileRepository->getSemesterId($semesterId);
         
         if (!$semester) {
             $semesterId = null;
         } else {
             $semesterId = $semester->semester_id;
         }
-        $department = $repo->getDepartmentId($departmentId);
+        $department = $this->profileRepository->getDepartmentId($departmentId);
         
         if (!$department) {
             $departmentId = null;
         } else {
             $departmentId = $department->department_id;
         }
-		$data = [
-			'profileId'=> $id,
-			'firstName'=> $firstName,
-			'middleName'=> $middleName,
-			'lastName'=> $lastName,
-			'registrationNumber'=> $registrationNumber,
-			'departmentId'=> $departmentId,
+
+		return $this->profileRepository->update([
+			'first_name'=> $firstName,
+			'middle_name'=> $middleName,
+			'last_name'=> $lastName,
+			'registration_number'=> $registrationNumber,
+			'department_id'=> $departmentId,
 			'session'=> $session,
-			'semesterId'=> $semesterId
-		];
-
-		return $repo->updateProfile($data, $id);
+			'semester_id'=> $semesterId
+		], $id);
     }
 
-    public function existProfile($userID)
+    public function exist($userID)
     {
-        $repo = $this->profileRepository;
-
-        return $repo->existProfile($userID);
+        return $this->profileRepository->exist($userID);
     }
 
-    public function checkProfile($userID)
+    public function check($userID)
     {
-        $repo = $this->profileRepository;
-
-        return $repo->checkProfile($userID);
+        return $this->profileRepository->check($userID);
     }
     
     public function addNameValidation(array $data)
@@ -193,13 +181,11 @@ class ProfileService
 
     public function addName(array $data, $id)
     {
-        $repo = $this->profileRepository;
-        $data = [
-            'firstName'=> $data['firstName'],
-            'middleName'=> $data['middleName'],
-            'lastName'=> $data['lastName']
-        ];
-        return $repo->addName($data, $id);
+        return $this->profileRepository->addName([
+            'first_name'=> $data['firstName'],
+            'middle_name'=> $data['middleName'],
+            'last_name'=> $data['lastName']
+        ], $id);
     }
 
 }

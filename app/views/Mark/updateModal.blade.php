@@ -117,7 +117,7 @@
                         $("#updateMarksModal").modal('hide');
                         $("#updateMarksModal").trigger("reset");
                         Swal.fire({
-                            title: "Marks updated successfully!",
+                            title: response.message,
                             icon: "success",
                             draggable: true
                         });

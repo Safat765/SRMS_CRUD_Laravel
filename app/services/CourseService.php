@@ -6,35 +6,38 @@ use App\Repositories\CourseRepository;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
+use App\Models\Course;
 
 class CourseService
 {
-    protected $courseRepository;
+    private $courseRepository;
 
     public function __construct(CourseRepository $courseRepository)
     {
         $this->courseRepository = $courseRepository;
     }
     
-    public function getAllCourse($search)
+    public function getAll($search)
     {
-        $repo = $this->courseRepository;
-        
-        $statusConstants = $repo->getStatusConstants();
+        $statusConstants = Course::getStatusConstants();
         $ACTIVE = $statusConstants['ACTIVE'];
 		$INACTIVE = $statusConstants['INACTIVE'];
 
         if ($search != '') {
-            $result = $repo->filter($search);
+            $result = $this->courseRepository->filter($search);
         } else {
-            $result = $repo->showAll();
+            $result = $this->courseRepository->showAll();
         }
         $totalCourse = $result['courseCount']->count();
-        $course = $result['course'];
+        $course = $result['coursePaginate'];
 
-        $data = compact('course', 'totalCourse', 'search', 'ACTIVE', 'INACTIVE');
-
-        return $data;
+        return [
+            'course' => $course,
+            'totalCourse' => $totalCourse,
+            'search' => $search,
+            'ACTIVE' => $ACTIVE,
+            'INACTIVE' => $INACTIVE
+        ];
     }
 
     public function checkValidation(array $data)
@@ -49,39 +52,31 @@ class CourseService
         ]);
     }
 
-    public function storeCourse(array $data)
-    {
-        $repo = $this->courseRepository;
-        $exist = $repo->searchName($data['name']);
-        
-        if ($exist) {
+    public function store(array $data)
+    {        
+        if ($this->courseRepository->searchName($data['name'])) {
             return false;
         } else {
-            $result = [
+            return $this->courseRepository->createCourse([
                 'name' => $data['name'],
                 'credit' => $data['credit'],
                 'created_by' => Session::get('user_id'),
                 'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
                 'updated_at' => ""
-            ];
-
-            return $repo->createCourse($result);
+            ]);
         }
     }
 
-    public function checkCourse($id)
+    public function findById($id)
     {
-        $repo = $this->courseRepository;
-        $course = $repo->find($id);
-
-        return $course;
+        return $this->courseRepository->find($id);
     }
 
     public function updateValidation(array $data, $id)
     {
         return Validator::make($data, [
             'name' => 'required|min:1|unique:courses,name,' . $id . ',course_id',
-			'credit' => 'required|numeric'
+			'credit' => 'required|numeric|min:1'
 		], [
 			'required' => 'The Course field is required.',
 			'min' => 'The Course must be at least :min characters.',
@@ -89,44 +84,36 @@ class CourseService
 		]);
     }
 
-    public function checkCourseName($name)
-    {
-        $repo = $this->courseRepository;
-        
-        return $repo->searchName($name);
+    public function findByNameAndCredit(array $data)
+    {        
+        return $this->courseRepository->search($data['name'], $data['credit']);
     }
 
-    public function updateCourse(array $data, $id)
+    public function update(array $data, $id)
     {
-        $repo = $this->courseRepository;
+        if ($this->courseRepository->find($id)) {
 
-        if ($repo->find($id)) {
-            $result = [
+            return $this->courseRepository->updateCourse([
                 'name' => $data['name'],
                 'credit' => $data['credit'],
                 'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-            ];
-
-            return $repo->updateCourse($result, $id);
+            ], $id);
         } else {
             return false;
         }
     }
 
-    public function destroyCourse($id)
+    public function destroy($id)
     {
-        $repo = $this->courseRepository;
-
-        return $repo->deleteCourse($id);
+        return $this->courseRepository->deleteCourse($id);
     }
 
-    public function statusUpdate($id)
+    public function status($id)
     {
-        $repo = $this->courseRepository;
-        $statusConstants = $repo->getStatusConstants();
+        $statusConstants = Course::getStatusConstants();
         $ACTIVE = $statusConstants['ACTIVE'];
 		$INACTIVE = $statusConstants['INACTIVE'];
-        $exist = $repo->find($id);
+        $exist = $this->courseRepository->find($id);
 
         if ($exist) {
             if ($exist->status == $ACTIVE) {
@@ -135,17 +122,15 @@ class CourseService
                 $status = $ACTIVE;
             }
 
-            return $repo->status($id, $status);
+            return $this->courseRepository->status($id, $status);
         } else {
             return false;
         }
     }
 
-    public function assignedCourse()
+    public function assignedTo()
     {
-        $repo = $this->courseRepository;
-
-        $courses = $repo->assignedCourse();
+        $courses = $this->courseRepository->assignedCourse();
 		$getCourses = [];
 		
 		foreach ($courses as $instructor) {
@@ -153,6 +138,5 @@ class CourseService
 		}
 
         return $getCourses;
-    }
-    
+    }    
 }

@@ -18,9 +18,9 @@
                                 <th>CGPA</th>
                             </tr>
                             <tr>
-                                <td>{{ $result['name'] }}</td>
+                                <td>{{ $data['result']['name'] }}</td>
                                 <td>{{ Session::get('registration_number') }}</td>
-                                <td>{{ $result['CGPA'] }}</td>
+                                <td>{{ $data['result']['CGPA'] }}</td>
                             </tr>
                             <tr>
                                 <th colspan="3" class="text-center fw-bold fs-5 text-warning">Course Information</th>

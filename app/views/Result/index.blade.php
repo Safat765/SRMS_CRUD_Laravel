@@ -7,7 +7,7 @@
         <thead>
             <tr>
                 <th scope="col" style="width: 50%;">Student Name</th>
-                <td scope="col" style="width: 50%;">{{ $result['name'] }}</td>
+                <td scope="col" style="width: 50%;">{{ $data['result']['name'] }}</td>
             </tr>
             <tr>
                 <th scope="col" style="width: 40%;">Registration Number</th>
@@ -15,15 +15,15 @@
             </tr>
             <tr>
                 <th scope="col" style="width: 50%;">Session</th>
-                <td scope="col" style="width: 50%;">{{ $result['session'] }}</td>
+                <td scope="col" style="width: 50%;">{{ $data['result']['session'] }}</td>
             </tr>
             <tr>
                 <th scope="col" style="width: 50%;">Total Credit</th>
-                <td scope="col" style="width: 50%;">{{ $result['credit'] }}</td>
+                <td scope="col" style="width: 50%;">{{ $data['result']['credit'] }}</td>
             </tr>
             <tr>
                 <th scope="col" style="width: 50%;">CGPA</th>
-                <td scope="col" style="width: 50%;">{{ $result['CGPA'] }}</td>
+                <td scope="col" style="width: 50%;">{{ $data['result']['CGPA'] }}</td>
             </tr>
         </thead>
     </table>
@@ -38,11 +38,11 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($semesters as $semester)
+            @foreach ($data['semesters'] as $semester)
                 <tr>
                     <td>{{ $semester->semester_name }}</td>
-                    <td>{{ $totalCredits[$semester->semester_id] }}</td>
-                    <td>{{ $GPA[$semester->semester_id] }}</td>
+                    <td>{{ $data['totalCredits'][$semester->semester_id] }}</td>
+                    <td>{{ $data['GPA'][$semester->semester_id] }}</td>
                     <td>
                         <div class="text-center">
                             {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
@@ -60,7 +60,7 @@
         </tbody>
     </table>
 </div>
-@include('result.semesterWise', ['result' => $result])
+@include('result.semesterWise', ['result' => $data['result']])
 @endsection
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

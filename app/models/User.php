@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Hash;
 
 class User extends Eloquent
 {
+	const USER_TYPE_ADMIN = 1;
+	const USER_TYPE_INSTRUCTOR = 2;
+	const USER_TYPE_STUDENT = 3;
+	
+	const STATUS_ACTIVE = 1;
+	const STATUS_INACTIVE = 0;
+	
 	/**
 	* The database table used by the model.
 	*
@@ -36,13 +43,6 @@ class User extends Eloquent
         'session',
         'department_id'
 	];
-	
-	const USER_TYPE_ADMIN = 1;
-	const USER_TYPE_INSTRUCTOR = 2;
-	const USER_TYPE_STUDENT = 3;
-	
-	const STATUS_ACTIVE = 1;
-	const STATUS_INACTIVE = 0;
 	
 	public function setPasswordAttribute($value)
 	{

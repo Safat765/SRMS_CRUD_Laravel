@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Mark;
-use App\Models\Result;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
@@ -11,7 +9,7 @@ use App\Services\MarkService;
 
 class MarkController extends BaseController
 {
-	protected $markService;
+	private $markService;
 
 	public function __construct(MarkService $markService)
 	{
@@ -19,67 +17,42 @@ class MarkController extends BaseController
 	}
 	
 	public function index()
-	{
-		$service = $this->markService;
-		$data = $service->getAllMarks();
-			
-		return View::make("mark.addMarks")->with($data);
+	{			
+		return View::make("mark.addMarks", ['data' => $this->markService->getAll()]);
 	}
 
 	public function courseView()
 	{
-		$service = $this->markService;
-		$data = $service->courseView();
-			
-		return View::make("mark.courseList")->with($data);
+		return View::make("mark.courseList", ['data' => $this->markService->getAll()]);
 	}
 				
 	public function createMark()
 	{
-		$service = $this->markService;
 		$data = Input::all();
-		$totalMarks = Input::get('totalMarks');
-		$givenMarks = Input::get('givenMark');
+		$totalMarks = isset($data['totalMarks']) ? $data['totalMarks'] : null;
+		$givenMarks = isset($data['givenMark']) ? $data['givenMark'] : null;
+		$username = isset($data['username']) ? $data['username'] : null;
+		$courseName = isset($data['courseName']) ? $data['courseName'] : null;
 
 		if (empty($givenMarks)) {
-			return Response::json([
-				'status' => 'error',
-				'message' => 'Enter the Marks first'
-			], 400);
+			return Response::json(['status' => 'error', 'message' => 'Enter the Marks first'], 400);
 		}
 
 		if ($totalMarks < $givenMarks) {
-			return Response::json([
-				'status' => 'error',
-				'message' => "Total marks must be within the range of 0 to $totalMarks"
-			], 400);
+			return Response::json(['status' => 'error', 'message' => "Total marks must be within the range of 0 to $totalMarks"], 400);
 		} elseif ($givenMarks < 0) {
-			return Response::json([
-				'status' => 'error',
-				'message' => "Marks cannot be negative"
-			], 400);
+			return Response::json(['status' => 'error', 'message' => "Marks cannot be negative"], 400);
 		}
-		$exist = $service->checkMarks($data);
 
-		if ($exist) {
-			return Response::json([
-				'status' => 'error',
-				'message' => 'Marks already assigned for this student.'
-			], 400);
+		if ($this->markService->checkMarks($data)) {
+			return Response::json(['status' => 'error', 'message' => 'Marks already assigned for this student.'], 400);
 		}
-		$result = $service->createMark($data);
 
-		if ($result) {
+		if ($this->markService->createMark($data)) {
 			$this->addResult($data['studentId']);
-			return Response::json([
-				'status' => 'success',
-				'message' => 'Marks added successfully for student - "'. $data['username'].'" for the course of "'. $data['courseName'].' and result also added"'
-			], 200);
+			return Response::json(['status' => 'success', 'message' => 'Marks added successfully for student - "'. $username .'" for the course of "'. $courseName .'" and result also added'], 200);
 		} else {
-			return Response::json([
-				'status' => 'error',
-				'message' => 'Marks not added'
-			], 500);
+			return Response::json(['status' => 'error', 'message' => 'Marks not added'], 500);
 		}
 	}
 
@@ -87,22 +60,14 @@ class MarkController extends BaseController
 	{
 		$this->markService->addResult($studentId);
 	}
-
-				
-	public function store()
-	{
-		// Handle form submission
-	}
 				
 	public function show($id)
 	{
-		$service = $this->markService;
-		$records = $service->showMarks(Input::all(), $id);
+		$records = $this->markService->show(Input::all(), $id);
 		$pageName = "View Marks";
 
 		if ($records) {
-			$data = compact('records', 'pageName');
-			return View::make('mark/View')->with($data);
+			return View::make('mark/View', ['records' => $records, 'pageName' => $pageName]);
 		} else {
 			Session::flash('message', 'Student not added');
 			return Redirect::to('instructor/marks');
@@ -110,107 +75,71 @@ class MarkController extends BaseController
 	}
 				
 	public function students($courseId, $semesterId)
-	{
-		$service = $this->markService;
-		$data = $service->students($courseId, $semesterId);
-		p($data['marks']);
-			
-		return View::make("mark.studentList")->with($data);
+	{			
+		return View::make("mark.studentList", ['data' => $this->markService->students($courseId, $semesterId)]);
 	}
 				
 	public function edit($studentId)
 	{
-		$service = $this->markService;
 		$records = Input::all();
-		$examId = Input::get('examId');
+		$examId = isset($records['examId']) ? $records['examId'] : null;
         
         if (empty($examId)) {
-            return Response::json([
-                'status' => 'error',
-                'message' => 'Exam ID is required'
-            ], 400);
+            return Response::json(['status' => 'error', 'message' => 'Exam ID is required'], 400);
         }
-		$mark = new Mark();
-		$records = $service->edit($records, $studentId);
+		$records = $this->markService->edit($records, $studentId);
 
 		if ($records) {
-			return Response::json([
-				'status' => 'success',
-				'records' => $records
-			], 200); 
+			return Response::json(['status' => 'success','records' => $records], 200); 
 		} else {
-			return Response::json([
-				'status' => 'error',
-				'message' => 'Student not found'
-			], 404);
+			return Response::json(['status' => 'error','message' => 'Student not found'], 404);
 		}
 	}
 				
 	public function update($id)
 	{
-		$service = $this->markService;
 		$records = Input::all();
-		$totalMarks = $records['totalMarks'];
-		$givenMarks = $records['givenMark'];
+		$totalMarks = isset($records['totalMarks']) ? $records['totalMarks'] : null;
+		$givenMarks = isset($records['givenMark']) ? $records['givenMark'] : null;
+		$username = isset($records['username']) ? $records['username'] : null;
+		$courseName = isset($records['courseName']) ? $records['courseName'] : null;
 
 		if ($totalMarks < $givenMarks) {
-			return Response::json([
-				'status'=> 'error',
-				'message'=> "Total marks must me within the range of 0 to $totalMarks"
-			]);
+			return Response::json(['status' => 'error', 'message' => "Total marks must me within the range of 0 to $totalMarks"], 400);
 		} elseif ($givenMarks < 0) {
-			return Response::json([
-				'status'=> 'error',
-				'message'=> "Total marks must me within the range of 0 to $totalMarks"
-			]);
+			return Response::json(['status' => 'error', 'message' => "Total marks must me within the range of 0 to $totalMarks"], 400);
 		} elseif (empty($givenMarks)) {
-			return Response::json([
-				'status'=> 'error',
-				'message'=> "Enter the Marks first"
-			]);
+			return Response::json(['status' => 'error', 'message' => "Enter the Marks first"], 400);
 		}
-		$exist = $service->checkExistMarks($id);
 
-		if (!$exist) {
-			return Response::json([
-				'status'=> 'error',
-				'message'=> 'Marks not assigned for this student. Assign the marks first'
-			]);
+		if (!$this->markService->checkExist($id)) {
+			return Response::json(['status' => 'error', 'message' => 'Marks not assigned for this student. Assign the marks first'], 400);
 		}
-		$result = $service->update($records, $id);
 
-		if ($result) {
-			Session::flash('success', 'Marks Updated successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
-			return Response::json([
-				'status'=> 'success',
-				'message'=> 'Marks Updated successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\""
-			]);
+		if ($this->markService->update($records, $id)) {
+			return Response::json(['status' => 'success', 'message' => 'Marks Updated successfully for - "'. $username."\" for the course of \"". $courseName."\""], 200);
 		} else {
-			Session::flash('message', 'Failes to update marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
-			return Response::json([
-				'status'=> 'error',
-				'message'=> 'Failes to update marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\""
-			]);
+			return Response::json(['status' => 'error', 'message' => 'Failes to update marks for - "'. $username."\" for the course of \"". $courseName."\""], 500);
 		}
 	}
 				
 	public function destroy($id)
 	{
-		$service = $this->markService;
 		$records = Input::all();
-		$exist = $service->checkExistMarksForDelete($id, $records['examId']);
-
-		if (!$exist) {
+		$examId = isset($records['examId']) ? $records['examId'] : null;
+		$username = isset($records['username']) ? $records['username'] : null;
+		$courseName = isset($records['courseName']) ? $records['courseName'] : null;
+		
+		if (!$this->markService->checkExistMarksForDelete($id, $examId)) {
 			Session::flash('message', 'Marks not assigned for this student. Assign the marks first');
 			return Redirect::to('instructor/marks');
 			die();
 		}
-		$result = $service->destroy($id, $records['examId']);
 
-		if ($result) {
-			Session::flash('success', 'Marks Deleted successfully for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
+		if ($this->markService->destroy($id, $examId)) {
+			Session::flash('success', 'Marks Deleted successfully for - "'. $username."\" for the course of \"". $courseName."\"");
 		} else {
-			Session::flash('message', 'Failes to Delete marks for - "'. $records['username']."\" for the course of \"". $records['courseName']."\"");
+			Session::flash('message', 'Failes to Delete marks for - "'. $username."\" for the course of \"". $courseName."\"");
 		}
 
 		return Redirect::to('/instructor/marks/all/students');
@@ -218,9 +147,8 @@ class MarkController extends BaseController
 
 	public function studentList()
 	{
-		$service = $this->markService;
-		$data = $service->studentList();
+		$data = $this->markService->studentList();
 
-		return View::make('mark/courseWiseStudent')->with($data);
+		return View::make('mark/courseWiseStudent', ['data' => $data]);
 	}
 }

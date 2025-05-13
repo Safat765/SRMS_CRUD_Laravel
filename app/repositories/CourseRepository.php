@@ -6,18 +6,15 @@ use Illuminate\Support\Facades\DB;
 
 
 class CourseRepository
-{
-    public function getStatusConstants()
-    {
-        return [
-            'ACTIVE' => Course::STATUS_ACTIVE,
-            'INACTIVE' => Course::STATUS_INACTIVE,
-        ];
-    }
-    
+{   
     public function searchName($name)
 	{
 		return Course::where('name', 'LIKE', $name)->exists();
+	}
+
+    public function search($name, $credit)
+	{
+		return Course::where('name', 'LIKE', $name)->where('credit', 'LIKE', $credit)->exists();
 	}
 
     public function createCourse(array $data)
@@ -29,17 +26,17 @@ class CourseRepository
 	{
 		$courseCount = Course::where('name', 'LIKE', '%' . $search . '%')
 							->orWhere('credit', 'LIKE', '%' . $search . '%');
-		$course = $courseCount->paginate(5);
+		$coursePaginate = $courseCount->orderBy('course_id', 'desc')->paginate(5);
 
-		return compact('course', 'courseCount');
+		return ['coursePaginate' => $coursePaginate, 'courseCount' => $courseCount];
 	}
 
     public function showAll()
 	{
 		$courseCount = Course::all();
-		$course = Course::paginate(5);	
+		$coursePaginate = Course::orderBy('course_id', 'desc')->paginate(5);	
 
-		return compact('course', 'courseCount');
+		return ['coursePaginate' => $coursePaginate, 'courseCount' => $courseCount];
 	}
 
     public function find($id)

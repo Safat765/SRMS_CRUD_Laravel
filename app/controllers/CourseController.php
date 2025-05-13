@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Response;
 
 class CourseController extends \BaseController
 {
-	protected $courseService;
+	private $courseService;
 	
 	public function __construct(CourseService $courseService)
 	{
@@ -20,24 +20,12 @@ class CourseController extends \BaseController
 	 */
 	public function index()
 	{
-		$service = $this->courseService;
-		$search = Input::get('search');
-		$data = $service->getAllCourse($search);
-
-		return View::make('course.index')->with($data);
+		$record = Input::all();
+		
+		return View::make('course.index', [
+			'data' => $this->courseService->getAll(isset($record['search']) ? $record['search'] : '')
+		]);
 	}
-
-
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
-	}
-
 
 	/**
 	 * Store a newly created resource in storage.
@@ -46,50 +34,19 @@ class CourseController extends \BaseController
 	 */
 	public function store()
 	{
-		$service = $this->courseService;
-		$validator = $service->checkValidation(Input::all());
+		$validator = $this->courseService->checkValidation(Input::all());
 
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$exist = $service->storeCourse(Input::all());
+		$exist = $this->courseService->store(Input::all());
 		
 		if ($exist) {
-			return Response::json([
-				'status' => 'success',
-			], 200);
+			return Response::json(['status' => 'success',], 200);
 		} else {
-			return Response::json([
-				'status' => 'error'
-			], 409);
+			return Response::json(['status' => 'error'], 409);
 		}
 	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
-
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
 
 	/**
 	 * Update the specified resource in storage.
@@ -99,38 +56,28 @@ class CourseController extends \BaseController
 	 */
 	public function update($id)
 	{
-		$service = $this->courseService;
-		$course = $service->checkCourse($id);
+		$course = $this->courseService->findById($id);
 
 		if (!$course) {
-			return Response::json([
-				'errors' => 'Course not found'
-			], 404);
+			return Response::json(['errors' => 'Course not found'], 404);
 		}
-		$validator = $service->updateValidation(Input::all(), $id);
+		
+		$validator = $this->courseService->updateValidation(Input::all(), $id);
 
 		if ($validator->fails()) {
-			return Response::json([
-				'errors' => $validator->errors()
-			], 422);
+			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$exist = $service->checkCourseName(Input::get('name'));
+		$exist = $this->courseService->findByNameAndCredit(Input::all());
 
 		if ($exist) {
-			return Response::json([
-				'errors' => 'Course already exist'
-			]);
+			return Response::json(['errors' => 'Course already exist'], 409);
 		}
-		$update = $service->updateCourse(Input::all(), $id);
+		$update = $this->courseService->update(Input::all(), $id);
 
 		if ($update) {
-			return Response::json([
-				'status' => 'success',
-			]);
+			return Response::json(['status' => 'success'], 200);
 		} else {
-			return Response::json([
-				'errors' => 'error'
-			]);
+			return Response::json(['errors' => 'error'], 409);
 		}
 	}
 
@@ -143,55 +90,40 @@ class CourseController extends \BaseController
 	 */
 	public function destroy($id)
 	{
-		$service = $this->courseService;
-		$course = $service->checkCourse($id);
+		$course = $this->courseService->findById($id);
 		
 		if (!$course) {
-			Response::json([
-				'status' => 'error'
-			], 404);
+			return Response::json(['status' => 'error'], 404);
 		}
-		$delete = $service->destroyCourse($id);
+		$delete = $this->courseService->destroy($id);
 		
 		if (!$delete) {
-			return Response::json([
-				'status' => 'error',
-			], 404);
+			return Response::json(['status' => 'error'], 404);
 		} else{
-			return Response::json([
-				'status' => 'success',
-			], 200);
+			return Response::json(['status' => 'success'], 200);
 		}
 	}
 	
 	public function status($id)
 	{
-		$service = $this->courseService;
-		$course = $service->checkCourse($id);
+		$course = $this->courseService->findById($id);
 		
 		if (!$course) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		}
-		$status = $service->statusUpdate($id);
+		$status = $this->courseService->status($id);
 		
 		if (!$status) {
-			return Response::json([
-				'status' => 'error',
-			]);
+			return Response::json(['status' => 'error'], 404);
 		} else {
-			return Response::json([
-				'status' => 'success',
-			]);
+			return Response::json(['status' => 'success'], 200);
 		}
 	}
 
 	public function assignedCourse()
 	{
-		$service = $this->courseService;
-		$getCourses = $service->assignedCourse();
+		$getCourses = $this->courseService->assignedTo();
 		
-		return View::make('course/assigned')->with(['getCourses' => $getCourses]);
+		return View::make('course/assigned', ['getCourses' => $getCourses]);		
 	}
 }

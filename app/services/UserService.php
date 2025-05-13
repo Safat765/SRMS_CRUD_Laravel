@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class UserService
 {
-    protected $userRepository;
+    private $userRepository;
 
     public function __construct(UserRepository $userRepository)
     {
@@ -17,9 +17,7 @@ class UserService
 
     public function getAllUser($search)
     {
-        $repo = $this->userRepository;
-
-        $statusConstants = $repo->getStatusConstants();
+        $statusConstants = $this->userRepository->getStatusConstants();
         $ACTIVE = $statusConstants['ACTIVE'];
 		$INACTIVE = $statusConstants['INACTIVE'];
         $ADMIN = $statusConstants['ADMIN'];
@@ -27,17 +25,17 @@ class UserService
         $STUDENT = $statusConstants['STUDENT'];
 		
 		if ($search != '') {
-			$data = $repo->filter($search);
+			$data = $this->userRepository->filter($search);
 		} else {
-			$data = $repo->showAll();
+			$data = $this->userRepository->showAll();
 		}
 			
         $totalUsers = $data['userCount']->count();
         $users = $data['users'];
 		$info = ['Admin' => $ADMIN, 'Instructor' => $INSTRUCTOR, 'Student' => $STUDENT, 'Active' => $ACTIVE, 'Inactive' => $INACTIVE];
 		$list = [
-			'department' => $repo->getDepartmentList(),
-			'semester' => $repo->getSemesterList()
+			'department' => $this->userRepository->getDepartmentList(),
+			'semester' => $this->userRepository->getSemesterList()
 		];
 
         return compact('users', 'totalUsers', 'search', 'info', 'list');
@@ -67,13 +65,12 @@ class UserService
 
     public function storeUser(array $data)
     {
-        $repo = $this->userRepository;
-        $exist = $repo->searchName($data['username']);
+        $exist = $this->userRepository->searchName($data['username']);
 
         if ($exist) {
             return false;
         } else {
-            $statusConstants = $repo->getStatusConstants();
+            $statusConstants = $this->userRepository->getStatusConstants();
             $ACTIVE = $statusConstants['ACTIVE'];
             $result = [
                 'username' => $data['username'],
@@ -85,13 +82,12 @@ class UserService
                 'phone_number' => $data['phoneNumber']
             ];
 
-            return $repo->createUser($result);
+            return $this->userRepository->createUser($result);
         }
     }
 
     public function createProfile(array $data)
-    {
-        $repo = $this->userRepository;        
+    {       
         $userType = $data['userType'];
         $userName = $data['username'];
         $registrationNumber = $data['registrationNumber'];
@@ -112,7 +108,7 @@ class UserService
             $semesterId = null;
             $departmentId = null;
         }
-        $userId = $repo->getUserId($userName);
+        $userId = $this->userRepository->getUserId($userName);
         
         if ($userId) {
             $result = [
@@ -128,7 +124,7 @@ class UserService
                 'updated_at' => ''
             ];
 
-            return $repo->createProfile($result);
+            return $this->userRepository->createProfile($result);
         } else {
             return false;
         }
@@ -136,8 +132,7 @@ class UserService
 
     public function findUser($id)
     {
-        $repo = $this->userRepository;
-        return $repo->find($id);
+        return $this->userRepository->find($id);
     }
 
     public function updateValidation(array $data, $id)
@@ -163,7 +158,6 @@ class UserService
 
     public function updateUser(array $data, $id)
     {
-        $repo = $this->userRepository;
         $result = [
             'username' => $data['username'],
             'email' => $data['email'],
@@ -172,7 +166,7 @@ class UserService
             'phone_number' => $data['phoneNumber'],
             'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
         ];
-        return $repo->updateUser($result, $id);
+        return $this->userRepository->updateUser($result, $id);
     }
 
     public function updateProfileDuringUserUpdate(array $data)
@@ -193,21 +187,19 @@ class UserService
 			$semesterId = null;
 			$departmentId = null;
 		}
-        $repo = $this->userRepository;
         $result = [
             'semester_id' => $semesterId,
             'department_id' => $departmentId,
             'session' => $session
         ];
-        return $repo->updateProfileDuringUserUpdate($userId, $result);
+
+        return $this->userRepository->updateProfileDuringUserUpdate($userId, $result);
     }
 
     public function destroyUser($id)
     {
-        $repo = $this->userRepository;
-
         if ($this->findUser($id)) {
-            return $repo->deleteUser($id);
+            return $this->userRepository->deleteUser($id);
         } else {
             return false;
         }
@@ -215,12 +207,10 @@ class UserService
 
     public function statusUpdate($id)
     {
-        $repo = $this->userRepository;
-
-        $statusConstants = $repo->getStatusConstants();
+        $statusConstants = $this->userRepository->getStatusConstants();
         $ACTIVE = $statusConstants['ACTIVE'];
 		$INACTIVE = $statusConstants['INACTIVE'];
-        $exist = $repo->find($id);
+        $exist = $this->userRepository->find($id);
 
         if ($exist) {
             if ($exist->status == $ACTIVE) {
@@ -229,7 +219,7 @@ class UserService
                 $status = $ACTIVE;
             }
 
-            return $repo->statusUpdate($id, $status);
+            return $this->userRepository->statusUpdate($id, $status);
         } else {
             return false;
         }
@@ -237,8 +227,7 @@ class UserService
 
     public function allStudents()
     {
-        $repo = $this->userRepository;
-		$students = $repo->allResults();
+		$students = $this->userRepository->allResults();
 		$totalStudents = count($students);
 		$getResults = [];
 		
@@ -251,8 +240,7 @@ class UserService
 
     public function semesterWise($id)
     {
-        $repo = $this->userRepository;
-		$students = $repo->semesterWise($id);
+		$students = $this->userRepository->semesterWise($id);
 		$getResults = [];
 		
 		foreach ($students as $student) {

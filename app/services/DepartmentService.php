@@ -9,112 +9,93 @@ use Illuminate\Support\Facades\Session;
 
 class DepartmentService
 {
-    protected $departmentRepository;
+    private $departmentRepository;
 
     public function __construct(DepartmentRepository $departmentRepository)
     {
         $this->departmentRepository = $departmentRepository;
     }
 
-    public function getAllDepartment($search)
+    public function getAll($search)
     {
-        $repo = $this->departmentRepository;
-        
         if ($search != '') {
-            $result = $repo->filter($search);
+            $result = $this->departmentRepository->filter($search);
         } else {
-			$result = $repo->showAll();
+			$result = $this->departmentRepository->showAll();
         }
         $totalDepartment = $result['departmentCount']->count();
-        $department = $result['department'];
+        $department = $result['departmentPaginate'];
 
-        $data = compact('department', 'totalDepartment', 'search');
-
-        return $data;
+        return [
+            'department' => $department,
+            'totalDepartment' => $totalDepartment,
+            'search' => $search
+        ];
     }
 
     public function checkValidation(array $data)
-    {        
-        $validator = Validator::make($data, [
-			'name' => 'required|min:3|unique:departments'
+    {
+        return Validator::make($data, [
+			'name' => 'required|min:2|unique:departments'
 		], [
 			'required' => 'The Department field is required.',
 			'min' => 'The Department must be at least :min characters.'
 		]);
-
-        return $validator;
     }
 
-    public function storeDepartment(array $data)
+    public function store(array $data)
     {
-        $repo = $this->departmentRepository;
         $name = $data['name'];
 
-        if ($repo->searchName($name)) {
+        if ($this->departmentRepository->searchName($name)) {
             return false;
         }
 
-        $result = [
+        return $this->departmentRepository->create([
             'name' => $name,
             'created_by' => Session::get('user_id'),
             'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
             'updated_at' => ""
-        ];
-        return $repo->createDepartment($result);
+        ]);
     }
 
-    public function checkDepartment($id)
+    public function checkById($id)
     {
-        $repo = $this->departmentRepository;
-        $department = $repo->find($id);
-
-        return $department;
+        return $this->departmentRepository->find($id);
     }
 
     public function updateValidation(array $data, $id)
     {
-        $validator = Validator::make($data, [
+        return Validator::make($data, [
             'name' => 'required|min:3|unique:departments,name,'.$id.',department_id'
         ], [
             'required' => 'The Department field is required.',
             'min' => 'The Department must be at least :min characters.'
         ]);
-        
-        return $validator;
     }
 
-    public function checkDepartmentName($name)
+    public function checkByName($name)
     {
-        $repo = $this->departmentRepository;
-        $exist = $repo->searchName($name);
-
-        return $exist;
+        return $this->departmentRepository->searchName($name);
     }
 
-    public function updateDepartment(array $data, $id)
+    public function update(array $data, $id)
     {
-        $repo = $this->departmentRepository;
-        
-        if ($repo->find($id)) {
-            $result = [
+        if ($this->departmentRepository->find($id)) {
+
+            return $this->departmentRepository->update([
                 'name' => $data['name'],
                 'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-            ];
-
-            return $repo->updateDepartment($result, $id);
+            ], $id);
         } else {
             return false;
         }
     }
 
-    public function destroyDepartment($id)
+    public function destroy($id)
     {
-        $repo = $this->departmentRepository;
-
-        if ($repo->find($id)) {
-            $delete = $repo->deleteDepartment($id);
-            
-            return $delete;
+        if ($this->departmentRepository->find($id)) {
+            return $this->departmentRepository->delete($id);
         } else {
             return false;
         }

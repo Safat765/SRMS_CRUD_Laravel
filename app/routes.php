@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Session;
 Route::get('/', 'LoginController@create');
 Route::resource('/login', 'LoginController');
 
-
 Route::group(['prefix' => 'admin'], function() {
     Route::get('/dashboard', [
         'as' => 'login.index',
@@ -42,7 +41,7 @@ Route::group(['prefix' => 'admin'], function() {
     Route::group(['prefix' => 'profiles'], function() {
             Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
             Route::get('/search/{id}', 'ProfileController@searchProfile');
-            Route::get('/add/{id}', 'ProfileController@addNameProfile');
+            Route::get('/add/{id}', 'ProfileController@addName');
     });
 });
 Route::group(['before'=> 'onlyInstructor'], function() {
@@ -62,7 +61,7 @@ Route::group(['before'=> 'onlyInstructor'], function() {
         Route::group(['prefix' => 'profiles'], function() {
                 Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
                 Route::get('/search/{id}', 'ProfileController@searchProfile');
-                Route::get('/add/{id}', 'ProfileController@addNameProfile');
+                Route::get('/add/{id}', 'ProfileController@addName');
         });
     });
 });
@@ -79,7 +78,7 @@ Route::group(['before'=> 'onlyStudents'], function() {
         Route::group(['prefix' => 'profiles'], function() {
             Route::get('/show/profile', ['as' => 'editProfile', 'uses' =>'ProfileController@editProfile']);
                 Route::get('/search/{id}', 'ProfileController@searchProfile');
-                Route::get('/add/{id}', 'ProfileController@addNameProfile');
+                Route::get('/add/{id}', 'ProfileController@addName');
         });
     });
 });

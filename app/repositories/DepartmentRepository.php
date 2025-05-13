@@ -11,7 +11,7 @@ class DepartmentRepository
 		return Department::where('name', 'LIKE', $name)->exists();
 	}
 
-    public function createDepartment(array $data)
+    public function create(array $data)
 	{
 		return DB::table('departments')->insert($data);
 	}
@@ -19,18 +19,23 @@ class DepartmentRepository
     public function filter($search)
 	{
 		$departmentCount = Department::where('name', 'LIKE', '%' . $search . '%');
-		$department = $departmentCount->paginate(5);
-		$data = compact('department', 'departmentCount');
+		$departmentPaginate = $departmentCount->orderBy('department_id', 'desc')->paginate(5);
 
-		return $data;
+		return [
+			'departmentPaginate' => $departmentPaginate,
+			'departmentCount' => $departmentCount
+		];
 	}
 
     public function showAll()
 	{
 		$departmentCount = Department::all();
-		$department = Department::paginate(5);
+		$departmentPaginate = Department::orderBy('department_id', 'desc')->paginate(5);
 
-		return compact('department', 'departmentCount');
+		return [
+			'departmentPaginate' => $departmentPaginate,
+			'departmentCount' => $departmentCount
+		];
 	}
 
     public function find($id)
@@ -38,12 +43,12 @@ class DepartmentRepository
 		return Department::find($id);
 	}
 	
-	public function updateDepartment(array $data, $department_id)
+	public function update(array $data, $department_id)
 	{
 		return DB::table('departments')->where('department_id', $department_id)->update($data);
 	}
 	
-	public function deleteDepartment($id)
+	public function delete($id)
 	{
 		return DB::table('departments')->where('department_id', $id)->delete();
 	}

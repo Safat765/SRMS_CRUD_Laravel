@@ -1,16 +1,12 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Auth\UserTrait;
-use Illuminate\Auth\UserInterface;
-use Illuminate\Auth\Reminders\RemindableTrait;
-use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Course extends Eloquent implements UserInterface, RemindableInterface {
-
-    use UserTrait, RemindableTrait;
-
+class Course extends Eloquent
+{
+	const STATUS_ACTIVE = 1;
+	const STATUS_INACTIVE = 0;
     /**
      * The database table used by the model.
      *
@@ -33,6 +29,11 @@ class Course extends Eloquent implements UserInterface, RemindableInterface {
 		'updated_at'
 	];
 
-	const STATUS_ACTIVE = 1;
-	const STATUS_INACTIVE = 0;
+    public static function getStatusConstants()
+    {
+        return [
+            'Active' => self::STATUS_ACTIVE,
+            'Inactive' => self::STATUS_INACTIVE,
+        ];
+    }
 }

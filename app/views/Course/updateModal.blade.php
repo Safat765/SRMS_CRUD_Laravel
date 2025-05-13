@@ -1,5 +1,5 @@
-<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/admin/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true" >
+    <form id="courseUpdateModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -40,7 +40,7 @@
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -68,6 +68,8 @@
             let name1 = $('#name1').val();
             let credit1 = $('#credit1').val();
 
+            console.log(id, name1, credit1);
+
             if (!id && !name1 && !credit1) {
                 Swal.fire({
                     icon: "error",
@@ -86,7 +88,7 @@
                 {
                     if (response.status === 'success') {
                         $("#updateModal").modal('hide');
-                        $("#courseUpdate").trigger("reset");
+                        $('#courseUpdateModal')[0].reset();
                         $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
                             position: "top-end",
@@ -99,6 +101,14 @@
                 },
                 error :function (err)
                 {
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.errors,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
@@ -108,8 +118,10 @@
         });
         $(document).on('click', '.close', function(e) {
             e.preventDefault();
-            $("#exampleModal").trigger("reset");
             $('.errorMsgContainer').text("");
+            $('#courseCreateModal')[0].reset();
+            $('#courseUpdateModal')[0].reset();
+            $('#updateModal').modal('hide');
         });
     });
 </script>

@@ -7,7 +7,7 @@ use App\Services\ResultService;
 
 class ResultController extends BaseController
 {
-	protected $resultService;
+	private $resultService;
 
 	public function __construct(ResultService $resultService)
 	{
@@ -16,65 +16,22 @@ class ResultController extends BaseController
 
 	public function index()
 	{
-		$service = $this->resultService;
-		$data = $service->getAllResults();
-
-		return View::make('result/index')->with($data);
+		return View::make('result/index', ['data' => $this->resultService->getAll()]);
 	}
 
 	public function semeterWise($semesterId)
 	{
-		$service = $this->resultService;
-		$studentId = Input::get('studentId');
-		$data = $service->getSemesterWiseResult($studentId, $semesterId);
+		$data = $this->resultService->getSemesterWiseResult(Input::get('studentId'), $semesterId);
 
 		if ($data) {
-			return Response::json([
-				'status' => 'success',
-				'records' => $data
-			], 200);
+			return Response::json(['status' => 'success', 'records' => $data], 200);
 		} else {
-			return Response::json([
-				'status' => 'error'
-			], 400);
+			return Response::json(['status' => 'error'], 400);
 		}
 	}
 	
 	public function enrolledCourse()
 	{
-		$service = $this->resultService;
-		$groupedResults = $service->enrolledCourse();
-
-		return View::make('result/enrollCourse')->with(['groupedResults' => $groupedResults]);
-	}
-				
-	public function create()
-	{
-		// Show create form
-	}
-				
-	public function store()
-	{
-		// Handle form submission
-	}
-				
-	public function show($id)
-	{
-		// Show single item
-	}
-				
-	public function edit($id)
-	{
-		// Show edit form
-	}
-				
-	public function update($id)
-	{
-		// Handle update
-	}
-				
-	public function destroy($id)
-	{
-		// Handle deletion
+		return View::make('result/enrollCourse', ['groupedResults' => $this->resultService->enrolledCourse()]);
 	}
 }

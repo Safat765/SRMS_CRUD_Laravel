@@ -22,7 +22,7 @@
             {{ Form::open([URL::route('admin.exams.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
-                    {{ Form::text('search', $search, [
+                    {{ Form::text('search', $data['search'], [
                     'class' => 'form-control',
                     'placeholder' => 'Search by Exam Title or credit',
                     'required' => true
@@ -38,10 +38,10 @@
         </div>     
     </div>
     <div id="createForm" style="display: none;">
-        @include('exam.slideCreate', ['examType' => $examType])
+        @include('exam.slideCreate', ['examType' => $data['examType'], 'list' => $data['list']])
     </div>
     <div class="bg-warning  text-black text-center mx-5">
-        <h5>Total Exam : {{ $totalExams }}</h5>
+        <h5>Total Exam : {{ $data['totalExams'] }}</h5>
     </div>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
@@ -58,7 +58,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($exams as $exam)
+            @foreach ($data['exams'] as $exam)
             <tr>
                 <td scope="row" class="p-3">{{$exam->exam_title}}</td>
                 <td scope="row" class="p-3">{{ $exam->course_name }}</td>
@@ -112,8 +112,10 @@
             @endforeach
         </tbody>
     </table>
-    
-    @include('exam.updateModal', ['examType' => $examType, 'list' => $list])
+    <div class="text-center">
+        {{ $data['exams']->links() }}
+    </div>
+    @include('exam.updateModal', ['examType' => $data['examType'], 'list' => $data['list']])
 </div>
 
 @endsection

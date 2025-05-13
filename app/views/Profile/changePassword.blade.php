@@ -8,10 +8,10 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="text-center fw-bold text-info">{{ $pageName }}</h4>
+                    <h4 class="text-center fw-bold text-info">{{ $data['pageName'] }}</h4>
                 </div>
                 <div class="card-body bg-light">
-                    {{ Form::open(['url' => $url, 'method' => 'post', 'novalidate' => true]) }}
+                    {{ Form::open(['url' => $data['url'], 'method' => 'post', 'novalidate' => true]) }}
                     <div class="row mb-3">
                         <div class="col-md-6">
                             {{ Form::label('oldPassword', 'Previous Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>

@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\User;
-use App\Models\Mark;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Redirect;
@@ -12,8 +10,8 @@ use App\Services\MarkService;
 
 class LoginController extends BaseController
 {
-	protected $loginService;
-	protected $markService;
+	private $loginService;
+	private $markService;
 
 	public function __construct(LoginService $loginService, MarkService $markService)
 	{
@@ -23,18 +21,22 @@ class LoginController extends BaseController
 
 	public function index()
 	{
-		$service = $this->loginService;
-		$markService = $this->markService;
 		$studentId = Session::get("user_id");
-		$results = $markService->assignedCourses($studentId);
+		$results = $this->markService->assignedCourses($studentId);
 		$totalCourse = count($results);
-		$marksResults = $markService->viewMarks($studentId);
+		$marksResults = $this->markService->view($studentId);
 
-		$courses = $service->dashboard();
+		$courses = $this->loginService->dashboard();
 		$totalEnrollCourse = count($courses);
-		$data = compact('results', 'totalCourse', 'marksResults', 'courses', 'totalEnrollCourse');
+		$data = [
+			'results' => $results,
+			'totalCourse' => $totalCourse,
+			'marksResults' => $marksResults,
+			'courses' => $courses,
+			'totalEnrollCourse' => $totalEnrollCourse
+		];
 
-		return View::make("dashboard")->with($data);
+		return View::make("dashboard", ['data' => $data]);
 	}
 				
 	public function create()
@@ -44,18 +46,15 @@ class LoginController extends BaseController
 				
 	public function store()
 	{
-		$service = $this->loginService;
-		$validator = $service->loginValidation(Input::all());
+		$validator = $this->loginService->loginValidation(Input::all());
 		
 		if ($validator->fails()) {
-			return Redirect::back()
-			->withErrors($validator)
-			->withInput(Input::except('password'));
+			return Redirect::back()->withErrors($validator)->withInput(Input::except('password'));
 		}
 		
 		$username = Input::get('username');
 		$password = Input::get('password');
-		$loginPassword = $service->loginPassword($username, $password);
+		$loginPassword = $this->loginService->loginPassword($username, $password);
 		if (!$loginPassword) {
 			Session::flash('message', 'Incorrect Password');
 			return Redirect::to('login/create');
@@ -63,7 +62,7 @@ class LoginController extends BaseController
 
 		$password = $loginPassword['password'];
 		$userDetails = $loginPassword['user'];
-		$userExists = $service->loginUser($username, $password, $userDetails);
+		$userExists = $this->loginService->loginUser($username, $password, $userDetails);
 		
 		if ($userExists) {
 
@@ -87,25 +86,5 @@ class LoginController extends BaseController
 			return Redirect::to('login/create');
 			die();
 		}
-	}
-				
-	public function show($id)
-	{
-		// Show single item
-	}
-				
-	public function edit($id)
-	{
-		// Show edit form
-	}
-				
-	public function update($id)
-	{
-		// Handle update
-	}
-				
-	public function destroy($id)
-	{
-		// Handle deletion
 	}
 }

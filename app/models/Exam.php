@@ -1,16 +1,10 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Auth\UserTrait;
-use Illuminate\Auth\UserInterface;
-use Illuminate\Auth\Reminders\RemindableTrait;
-use Illuminate\Auth\Reminders\RemindableInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
-class Exam extends Eloquent implements UserInterface, RemindableInterface {
-	
-	use UserTrait, RemindableTrait;
-	
+class Exam extends Eloquent
+{
 	const EXAM_TYPE_MID = 1;
 	const EXAM_TYPE_QUIZ = 2;
 	const EXAM_TYPE_VIVA = 3;
@@ -40,4 +34,13 @@ class Exam extends Eloquent implements UserInterface, RemindableInterface {
 	* @var string
 	*/
 	protected $primaryKey = 'exam_id';
+    public static function getExamTypeConstants()
+    {
+        return [
+            'Mid' => self::EXAM_TYPE_MID,
+            'Quiz' => self::EXAM_TYPE_QUIZ,
+            'Viva' => self::EXAM_TYPE_VIVA,
+            'Final' => self::EXAM_TYPE_FINAL
+        ];
+    }
 }

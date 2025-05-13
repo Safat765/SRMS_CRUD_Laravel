@@ -10,97 +10,85 @@ use Carbon\Carbon;
 
 class MarkService
 {
-    protected $markRepository;
-    protected $resultRepository;
-
+    private $markRepository;
+    private $resultRepository;
+    
     public function __construct(MarkRepository $markRepository, ResultRepository $resultRepository)
     {
         $this->markRepository = $markRepository;
         $this->resultRepository = $resultRepository;
     }
-
+    
     public function addResult($studentId)
     {
-        $repo = $this->resultRepository;
-        $records = $repo->results($studentId);
-		$info = [];
-		foreach ($records as $record) {
-			array_push($info, $record->gpa);
-		}
-		
-		$cgpSum = [];
-		$credit = [];
-		foreach ($records as $record) {
-			array_push($credit, $record->credit);
-			$totalGpa = $record->gpa * $record->credit;
-			array_push($cgpSum, $totalGpa);
-		}
-
-		$credit = array_sum($credit);
-		$gpa = array_sum($cgpSum);
-		$CGPA = $gpa / $credit;
-
-		$get = $repo->resultExistonNot($studentId);
-		if ($get) {
+        $records = $this->resultRepository->results($studentId);
+        $info = [];
+        foreach ($records as $record) {
+            array_push($info, $record->gpa);
+        }
+        
+        $cgpSum = [];
+        $credit = [];
+        foreach ($records as $record) {
+            array_push($credit, $record->credit);
+            $totalGpa = $record->gpa * $record->credit;
+            array_push($cgpSum, $totalGpa);
+        }
+        
+        $credit = array_sum($credit);
+        $gpa = array_sum($cgpSum);
+        $CGPA = $gpa / $credit;
+        
+        $get = $this->resultRepository->resultExistonNot($studentId);
+        if ($get) {
             $result = [
                 'cgpa' => $CGPA
             ];
-			$repo->updateResult($studentId, $result);
-		} else {
+            $this->resultRepository->updateResult($studentId, $result);
+        } else {
             $result = [
                 'student_id' => $studentId,
                 'cgpa' => $CGPA
             ];
-			$repo->createResult($result);
-		}
+            $this->resultRepository->createResult($result);
+        }
     }
-
-    public function getAllMarks()
+    
+    public function getAll()
     {
-        $repo = $this->markRepository;
-		$results = $repo->assignedCourses(Session::get("user_id"));
-		$totalCourse = count($results);
-		$userType = Session::get("user_type");
-		
-        return compact('userType', 'results', 'totalCourse');
-    }
-
-    public function courseView()
-    {
-        $repo = $this->markRepository;
-        $results = $repo->assignedCourses(Session::get("user_id"));
+        $results = $this->markRepository->assignedCourses(Session::get("user_id"));
         $totalCourse = count($results);
-        $userType = Session::get("user_type");
-
-        return compact('userType', 'results', 'totalCourse');
+        
+        return [
+            'userType' => Session::get("user_type"),
+            'results' => $results,
+            'totalCourse' => $totalCourse
+        ];
     }
-
+    
     public function checkMarks(array $data)
     {
-        $repo = $this->markRepository;
-        return $repo->existOrNot($data['studentId'], $data['examId']);
+        return $this->markRepository->existOrNot($data['studentId'], $data['examId']);
     }
-
+    
     public function createMark(array $data)
-    {
-        $repo = $this->markRepository;
+    {        
+        $totalMarks = $data['totalMarks'];
+        $givenMarks = $data['givenMark'];
         
-		$totalMarks = $data['totalMarks'];
-		$givenMarks = $data['givenMark'];
-
         $percentage = ($givenMarks / $totalMarks) * 100;
-
-		if ($percentage >= 90) $gpa = 4.00;
-		elseif ($percentage >= 85) $gpa = 3.75;
-		elseif ($percentage >= 80) $gpa = 3.50;
-		elseif ($percentage >= 75) $gpa = 3.25;
-		elseif ($percentage >= 70) $gpa = 3.00;
-		elseif ($percentage >= 65) $gpa = 2.75;
-		elseif ($percentage >= 60) $gpa = 2.50;
-		elseif ($percentage >= 50) $gpa = 2.25;
-		else $gpa = 0.00;
-
-        $result = [
+        
+        if ($percentage >= 90) $gpa = 4.00;
+        elseif ($percentage >= 85) $gpa = 3.75;
+        elseif ($percentage >= 80) $gpa = 3.50;
+        elseif ($percentage >= 75) $gpa = 3.25;
+        elseif ($percentage >= 70) $gpa = 3.00;
+        elseif ($percentage >= 65) $gpa = 2.75;
+        elseif ($percentage >= 60) $gpa = 2.50;
+        elseif ($percentage >= 50) $gpa = 2.25;
+        else $gpa = 0.00;
+        
+        return $this->markRepository->createMarks([
             'student_id' => $data['studentId'],
             'exam_id' => $data['examId'],
             'course_id' => $data['courseId'],
@@ -108,122 +96,108 @@ class MarkService
             'marks' => $givenMarks,
             'gpa' => $gpa,
             'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-        ];
-
-        return $repo->createMarks($result);
+        ]);
     }
-
-    public function showMarks(array $data, $studentId)
+    
+    public function show(array $data, $studentId)
     {
-        $repo = $this->markRepository;
-
-        return $repo->editMarks($studentId, $data['examId']);
+        return $this->markRepository->editMarks($studentId, $data['examId']);
     }
-
+    
     public function students($courseId, $semesterId)
     {
-        $repo = $this->markRepository;
-        $results = $repo->getStudents(Session::get("user_id"), $semesterId, $courseId);
+        $results = $this->markRepository->getStudents(Session::get("user_id"), $semesterId, $courseId);
         $userId = [];
-
+        
         foreach ($results as $result) {
             array_push($userId, $result->user_id);
         }
-
-		foreach ($results as $result) {
-			$examId = $result->exam_id;
-			break;
-		}
+        
+        foreach ($results as $result) {
+            $examId = $result->exam_id;
+            break;
+        }
         $totalStudent = count($results);
         $marks = [];
-
+        
         foreach ($userId as $studentId) {
-            $getMark = $repo->getMarks($studentId, $examId);
+            $getMark = $this->markRepository->getMarks($studentId, $examId);
             $marks[$studentId] = $getMark;
         }
-
-        return compact('results', 'totalStudent', 'marks', 'userId');
+        
+        return [
+            'results' => $results,
+            'totalStudent' => $totalStudent,
+            'marks' => $marks,
+            'userId' => $userId
+        ];
     }
-
+    
     public function edit(array $data, $studentId)
     {
-        $repo = $this->markRepository;
-
-        return $repo->editMarks($studentId, $data['examId']);
+        return $this->markRepository->editMarks($studentId, $data['examId']);
     }
-
-    public function checkExistMarks($id)
+    
+    public function checkExist($id)
     {
-        $repo = $this->markRepository;
-
-        return $repo->marksExistOrNot($id);
+        return $this->markRepository->marksExistOrNot($id);
     }
-
+    
     public function update(array $data, $id)
     {
-        $repo = $this->markRepository;
-		$totalMarks = $data['totalMarks'];
-		$givenMarks = $data['givenMark'];
-
+        $totalMarks = $data['totalMarks'];
+        $givenMarks = $data['givenMark'];
+        
         $percentage = ($givenMarks / $totalMarks) * 100;
-
-		if ($percentage >= 90) $gpa = 4.00;
-		elseif ($percentage >= 85) $gpa = 3.75;
-		elseif ($percentage >= 80) $gpa = 3.50;
-		elseif ($percentage >= 75) $gpa = 3.25;
-		elseif ($percentage >= 70) $gpa = 3.00;
-		elseif ($percentage >= 65) $gpa = 2.75;
-		elseif ($percentage >= 60) $gpa = 2.50;
-		elseif ($percentage >= 50) $gpa = 2.25;
-		else $gpa = 0.00;
-
-        $result = [
+        
+        if ($percentage >= 90) $gpa = 4.00;
+        elseif ($percentage >= 85) $gpa = 3.75;
+        elseif ($percentage >= 80) $gpa = 3.50;
+        elseif ($percentage >= 75) $gpa = 3.25;
+        elseif ($percentage >= 70) $gpa = 3.00;
+        elseif ($percentage >= 65) $gpa = 2.75;
+        elseif ($percentage >= 60) $gpa = 2.50;
+        elseif ($percentage >= 50) $gpa = 2.25;
+        else $gpa = 0.00;
+        
+        return $this->markRepository->updateMarks($id, [
             'marks' => $givenMarks,
             'gpa' => $gpa,
             'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-        ];
-		
-        return $repo->updateMarks($id, $result);
+        ]);
     }
-
+    
     public function checkExistMarksForDelete($id, $examId)
     {
-        $repo = $this->markRepository;
-
-        return $repo->marksExistOrNotForDelete($id, $examId);
+        return $this->markRepository->marksExistOrNotForDelete($id, $examId);
     }
-
+    
     public function destroy($id, $examId)
     {
-        $repo = $this->markRepository;
-
-        return $repo->deleteMarks($id, $examId);
+        return $this->markRepository->deleteMarks($id, $examId);
     }
-
+    
     public function studentList()
     {
-        $repo = $this->markRepository;
-        $results = $repo->viewMarks(Session::get("user_id"));
-		$groupedResults = [];
+        $results = $this->markRepository->view(Session::get("user_id"));
+        $groupedResults = [];
         
-		foreach ($results as $result) {
-			$groupedResults[$result->course_name][] = $result;
-		}
-
-		return compact('results', 'groupedResults');
+        foreach ($results as $result) {
+            $groupedResults[$result->course_name][] = $result;
+        }
+        
+        return [
+            'groupedResults' => $groupedResults
+        ];
     }
-
+    
     public function assignedCourses($studentId)
     {
-        $repo = $this->markRepository;
-
-        return $repo->assignedCourses($studentId);
+        return $this->markRepository->assignedCourses($studentId);
     }
-
-    public function viewMarks($studentId)
+    
+    public function view($studentId)
     {
-        $repo = $this->markRepository;
-        
-        return $repo->viewMarks($studentId);
+        return $this->markRepository->view($studentId);
     }
 }
