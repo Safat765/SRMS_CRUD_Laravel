@@ -16,7 +16,7 @@ class SemesterService
         $this->semesterRepository = $semesterRepository;
     }
     
-    public function getAllSemester($search)
+    public function getAll($search)
     {
         if ($search != '') {
             $result = $this->semesterRepository->filter($search);
@@ -24,10 +24,13 @@ class SemesterService
             $result = $this->semesterRepository->showAll();
         }
         $totalSemester = $result['semesterCount']->count();
-        $semester = $result['semester'];
-		$data = compact('semester', 'totalSemester', 'search');
+        $semester = $result['semesterPaginate'];
 
-		return $data;
+		return [
+            'semester' => $semester,
+            'totalSemester' => $totalSemester,
+            'search' => $search
+        ];
     }
 
     public function checkValidation(array $data)
@@ -40,25 +43,21 @@ class SemesterService
 		]);
     }
 
-    public function storeSemester(array $data)
+    public function store(array $data)
     {
-        $exist = $this->semesterRepository->searchName($data['name']);
-        
-        if ($exist) {
+        if ($this->semesterRepository->searchName($data['name'])) {
             return false;
         } else {
-            $result = [
+            return $this->semesterRepository->create([
                 'name' => $data['name'],
                 'created_by' => Session::get('user_id'),
                 'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
                 'updated_at' => ""
-            ];
-
-            return $this->semesterRepository->createSemester($result);
+            ]);
         }
     }
 
-    public function checkSemester($id)
+    public function checkById($id)
     {
         return $this->semesterRepository->find($id);
     }
@@ -73,12 +72,12 @@ class SemesterService
         ]);
     }
 
-    public function checkSemesterName($name)
+    public function checkName($name)
     {
         return $this->semesterRepository->searchName($name);
     }
 
-    public function updateSemester(array $data, $id)
+    public function update(array $data, $id)
     {
         if ($this->semesterRepository->find($id)) {
             $result = [
@@ -86,16 +85,16 @@ class SemesterService
                 'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
             ];
             
-            return $this->semesterRepository->updateSemester($result, $id);
+            return $this->semesterRepository->update($result, $id);
         } else {
             return false;
         }
     }
 
-    public function destroySemester($id)
+    public function destroy($id)
     {
         if ($this->semesterRepository->find($id)) {
-            return $this->semesterRepository->deleteSemester($id);
+            return $this->semesterRepository->delete($id);
         } else {
             return false;
         }

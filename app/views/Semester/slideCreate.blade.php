@@ -73,11 +73,9 @@
                         $("#semesterForm").trigger("reset");
                         $('.semesterUpdate').load(location.href + ' .semesterUpdate');
                         Swal.fire({
-                            position: "top-end",
                             icon: "success",
-                            title: `${name} Department added successfully`,
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "success",
+                            text: `'${name}' Semester added successfully`
                         });
                     }
                 },
@@ -86,6 +84,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

@@ -37,7 +37,8 @@ class ProfileRepository
                     'semesters.name as semester_name', 
                     'semesters.semester_id', 
                     'departments.department_id', 
-                    'departments.name as department_name')                    
+                    'departments.name as department_name'
+                )                    
             ->where('profiles.user_id', $userID)
             ->first();
     }
@@ -59,7 +60,7 @@ class ProfileRepository
     public function exist($userID)
     {
         return DB::table('profiles')
-            ->join('departments', 'profiles.department_id', '=', 'departments.department_id')
+            ->leftJoin('departments', 'profiles.department_id', '=', 'departments.department_id')
             ->leftJoin('semesters', 'profiles.semester_id', '=', 'semesters.semester_id')
             ->select(
                     'profiles.*', 
@@ -69,8 +70,8 @@ class ProfileRepository
                     'semesters.semester_id',
                     'semesters.name as semester_name'
                 )
-                ->where('profiles.user_id', $userID)
-                ->first();
+            ->where('profiles.user_id', $userID)
+            ->first();
     }
     
     public function addName(array $data, $id)

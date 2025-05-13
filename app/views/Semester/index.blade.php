@@ -22,7 +22,7 @@
             {{ Form::open([URL::route('admin.semesters.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
-                    {{ Form::text('search', $search, [
+                    {{ Form::text('search', $data['search'], [
                     'class' => 'form-control',
                     'placeholder' => 'Search by Semester name',
                     'required' => true
@@ -41,7 +41,7 @@
         @include('semester.slideCreate')
     </div>
     <div class="bg-warning  text-black text-center mx-5">
-        <h5>Total Semester : {{ $totalSemester }}</h5>
+        <h5>Total Semester : {{ $data['totalSemester'] }}</h5>
     </div>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
@@ -51,7 +51,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($semester as $semesters)
+            @foreach ($data['semester'] as $semesters)
             <tr>
                 <td scope="row" class="p-3">{{$semesters->name}}</td>
                 <td class="d-flex justify-content-center gap-2 p-3">
@@ -83,7 +83,7 @@
         </tbody>
     </table>
     <div class="text-center">
-        {{ $semester->links() }}
+        {{ $data['semester']->links() }}
     </div>
     @include('semester.updateModal')
 </div>
@@ -109,11 +109,9 @@
                         if (response.status === 'success') {
                             $('#semesterIndex').load(location.href + ' #semesterIndex');
                             Swal.fire({
-                                position: "top-end",
                                 icon: "success",
-                                title: "Semester deleted successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "success",
+                                text: `'${name}' Semester deleted successfully`
                             });
                         }
                     },
@@ -121,11 +119,9 @@
                         alert("Error deleting user. Please try again.");
                         $('#semesterIndex').load(location.href + ' #semesterIndex');
                         Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "Semester deleted faild",
-                            showConfirmButton: false,
-                            timer: 1500
+                            icon: "error",
+                            title: "Oops...",
+                            text: xhr.responseJSON.message
                         });
                     }
                 });

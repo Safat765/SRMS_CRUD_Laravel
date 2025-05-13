@@ -42,18 +42,17 @@ class ExamController extends \BaseController
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
 		$data = Input::all();
-		$createdBy = Session::get('user_id');
 		$exist = $this->examService->searchExamByName($data);
 
 		if ($exist) {
-			return Response::json(['status' => 'error'], 403);
+			return Response::json(['status' => 'error', 'message' => 'Exam already exists'], 403);
 		} else {
-			$create = $this->examService->store($data, $createdBy);
+			$create = $this->examService->store($data, Session::get('user_id'));
 			
 			if ($create) {
-				return Response::json(['status' => 'success'], 200);
+				return Response::json(['status' => 'success', 'message' => 'Exam created successfully'], 200);
 			} else {
-				return Response::json(['status' => 'error'], 409);
+				return Response::json(['status' => 'error', 'message' => 'Failed to create exam'], 409);
 			}
 		}
 	}	
@@ -66,9 +65,7 @@ class ExamController extends \BaseController
 	*/
 	public function update($id)
 	{
-		$examFind = $this->examService->find($id);
-
-		if (!$examFind) {
+		if (!$this->examService->find($id)) {
 			return Response::json(['status' => 'error', 'message' => 'Exam not found'], 404);
 		}
 		$validator = $this->examService->updateValidation(Input::all());
@@ -76,9 +73,8 @@ class ExamController extends \BaseController
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$update = $this->examService->update(Input::all(), $id);
 
-		if ($update) {
+		if ($this->examService->update(Input::all(), $id)) {
 			return Response::json(['status' => 'success', 'message' => 'Exam updated successfully'], 200);
 		} else {
 			return Response::json(['status' => 'error', 'message' => 'Failed to update exam'], 500);
@@ -93,14 +89,11 @@ class ExamController extends \BaseController
 	*/
 	public function destroy($id)
 	{
-		$examFind = $this->examService->find($id);
-		
-		if (!$examFind) {
+		if (!$this->examService->find($id)) {
 			return Response::json(['status' => 'error', 'message' => 'Exam not found'], 404);
 		}
-		$delete = $this->examService->destroy($id);
 		
-		if (!$delete) {
+		if (!$this->examService->destroy($id)) {
 			return Response::json(['status' => 'error', 'message' => 'Failed to delete exam'], 400);
 		} else{
 			return Response::json(['status' => 'success', 'message' => 'Exam deleted successfully'], 200);

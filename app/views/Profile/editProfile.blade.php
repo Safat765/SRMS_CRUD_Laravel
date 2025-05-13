@@ -31,11 +31,10 @@
         </thead>
         <tbody>
             <?php
-                    $colValue = 6;
                     if (empty($user->first_name) && empty($user->last_name)) {
                     
             ?>
-                <td scope="row" colspan={{ $colValue }}><h3>Add name first</h3>
+                <td scope="row" colspan="6"><h3>Add name first</h3>
                     {{ Form::button('Add Profile', [
                         'class' => 'btn btn-success btn-sm',
                         'id' => 'addProfile',

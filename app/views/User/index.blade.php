@@ -22,7 +22,7 @@
             {{ Form::open([URL::route('admin.users.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
-                    {{ Form::text('search', $search, [
+                    {{ Form::text('search', $data['search'], [
                     'class' => 'form-control',
                     'placeholder' => 'Search by Username or Email',
                     'required' => true
@@ -38,10 +38,10 @@
         </div>     
     </div>
     <div id="createForm" style="display: none;">
-        @include('user.slideCreate', ['info' => $info])
+        @include('user.slideCreate', ['info' => $data['info'], 'list' => $data['list']])
     </div>
     <div class="bg-warning  text-black text-center mx-5">
-        <h5>Total User : {{ $totalUsers }}</h5>
+        <h5>Total User : {{ $data['totalUsers'] }}</h5>
     </div>
     <table class="table table-striped table-bordered table-hover text-center" id="userTable" style="font-size: 15px;">
         <thead>
@@ -56,17 +56,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($users as $user)
+            @foreach ($data['users'] as $user)
             <tr>
                 <td scope="row" class="p-3">{{$user->username}}</td>
                 <td scope="row" class="p-3">{{$user->email}}</td>
                 <td scope="row" class="p-3"> 
-                    {{ $user->user_type == $info['Admin'] ? 'Admin' : ($user->user_type == $info['Instructor'] ? 'Instructor' : 'Student') }}</td>
+                    {{ $user->user_type == $data['info']['Admin'] ? 'Admin' : ($user->user_type == $data['info']['Instructor'] ? 'Instructor' : 'Student') }}</td>
                 </td>
                 <td scope="row" class="p-3">{{$user->registration_number}}</td>
                 <td scope="row" class="p-3">{{$user->phone_number}}</td>
                 <td scope="row" class="p-3">
-                    @if ($user->status == $info['Active'])
+                    @if ($user->status == $data['info']['Active'])
                     <a href="" data-id="{{ $user->user_id }}">
                         <span class="badge bg-success" id="userStatusBtn" data-id="{{ $user->user_id }}">Active</span>
                     </a>
@@ -113,10 +113,10 @@
     </table>
     
     <div class="text-center">
-        {{ $users->links() }}
+        {{ $data['users']->links() }}
     </div>
 
-    @include('user.updateModal', ['info' => $info, 'list' => $list])
+    @include('user.updateModal', ['info' => $data['info'], 'list' => $data['list']])
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

@@ -28,14 +28,15 @@ class ExamRepository
 
     public function getInstructorList()
     {
-        return User::where('user_type', 2)->lists('username', 'user_id');
+        return User::where('user_type', User::USER_TYPE_INSTRUCTOR)->lists('username', 'user_id');
     }
     
 	public function searchName($courseId, $departmentID, $semesterID, $examType) {
 		return Exam::where('exam_type', 'LIKE', $examType)
 			->where('course_id', 'LIKE', $courseId)
 			->where('department_id', 'LIKE', $departmentID)
-			->where('semester_id', 'LIKE', $semesterID)->exists();
+			->where('semester_id', 'LIKE', $semesterID)
+			->exists();
 	}
 	
 	public function create(array $data)

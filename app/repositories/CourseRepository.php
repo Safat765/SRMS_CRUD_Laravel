@@ -17,7 +17,7 @@ class CourseRepository
 		return Course::where('name', 'LIKE', $name)->where('credit', 'LIKE', $credit)->exists();
 	}
 
-    public function createCourse(array $data)
+    public function create(array $data)
 	{
 		return DB::table('courses')->insert($data);
 	}
@@ -44,12 +44,12 @@ class CourseRepository
 		return Course::find($id);
 	}
 	
-	public function updateCourse(array $data, $course_id)
+	public function update(array $data, $course_id)
 	{
 		return DB::table('courses')->where('course_id', $course_id)->update($data);
 	}
 	
-	public function deleteCourse($id)
+	public function delete($id)
 	{
 		return DB::table('courses')->where('course_id', $id)->delete();
 	}

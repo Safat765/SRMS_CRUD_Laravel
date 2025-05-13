@@ -20,8 +20,6 @@ class CourseService
     public function getAll($search)
     {
         $statusConstants = Course::getStatusConstants();
-        $ACTIVE = $statusConstants['ACTIVE'];
-		$INACTIVE = $statusConstants['INACTIVE'];
 
         if ($search != '') {
             $result = $this->courseRepository->filter($search);
@@ -35,8 +33,8 @@ class CourseService
             'course' => $course,
             'totalCourse' => $totalCourse,
             'search' => $search,
-            'ACTIVE' => $ACTIVE,
-            'INACTIVE' => $INACTIVE
+            'ACTIVE' => $statusConstants['ACTIVE'],
+            'INACTIVE' => $statusConstants['INACTIVE']
         ];
     }
 
@@ -57,7 +55,7 @@ class CourseService
         if ($this->courseRepository->searchName($data['name'])) {
             return false;
         } else {
-            return $this->courseRepository->createCourse([
+            return $this->courseRepository->create([
                 'name' => $data['name'],
                 'credit' => $data['credit'],
                 'created_by' => Session::get('user_id'),
@@ -93,7 +91,7 @@ class CourseService
     {
         if ($this->courseRepository->find($id)) {
 
-            return $this->courseRepository->updateCourse([
+            return $this->courseRepository->update([
                 'name' => $data['name'],
                 'credit' => $data['credit'],
                 'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
@@ -105,19 +103,18 @@ class CourseService
 
     public function destroy($id)
     {
-        return $this->courseRepository->deleteCourse($id);
+        return $this->courseRepository->delete($id);
     }
 
     public function status($id)
     {
         $statusConstants = Course::getStatusConstants();
         $ACTIVE = $statusConstants['ACTIVE'];
-		$INACTIVE = $statusConstants['INACTIVE'];
         $exist = $this->courseRepository->find($id);
 
         if ($exist) {
             if ($exist->status == $ACTIVE) {
-                $status = $INACTIVE;
+                $status = $statusConstants['INACTIVE'];
             } else {
                 $status = $ACTIVE;
             }

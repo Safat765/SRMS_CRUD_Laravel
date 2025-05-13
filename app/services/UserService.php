@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -15,14 +17,9 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    public function getAllUser($search)
+    public function getAll($search)
     {
-        $statusConstants = $this->userRepository->getStatusConstants();
-        $ACTIVE = $statusConstants['ACTIVE'];
-		$INACTIVE = $statusConstants['INACTIVE'];
-        $ADMIN = $statusConstants['ADMIN'];
-        $INSTRUCTOR = $statusConstants['INSTRUCTOR'];
-        $STUDENT = $statusConstants['STUDENT'];
+        $statusConstants = User::getStatusConstants();
 		
 		if ($search != '') {
 			$data = $this->userRepository->filter($search);
@@ -31,14 +28,24 @@ class UserService
 		}
 			
         $totalUsers = $data['userCount']->count();
-        $users = $data['users'];
-		$info = ['Admin' => $ADMIN, 'Instructor' => $INSTRUCTOR, 'Student' => $STUDENT, 'Active' => $ACTIVE, 'Inactive' => $INACTIVE];
-		$list = [
-			'department' => $this->userRepository->getDepartmentList(),
-			'semester' => $this->userRepository->getSemesterList()
-		];
+        $users = $data['usersPaginated'];
 
-        return compact('users', 'totalUsers', 'search', 'info', 'list');
+        return [
+            'users' => $users,
+            'totalUsers' => $totalUsers,
+            'search' => $search,
+            'info' => [
+                'Admin' => $statusConstants['ADMIN'],
+                'Instructor' => $statusConstants['INSTRUCTOR'],
+                'Student' => $statusConstants['STUDENT'],
+                'Active' => $statusConstants['ACTIVE'],
+                'Inactive' => $statusConstants['INACTIVE']
+            ],
+            'list' => [
+                'department' => $this->userRepository->getDepartmentList(),
+                'semester' => $this->userRepository->getSemesterList()
+            ]
+        ];
     }
 
     public function checkValidation(array $data)
@@ -63,34 +70,28 @@ class UserService
 		]);
     }
 
-    public function storeUser(array $data)
+    public function store(array $data)
     {
-        $exist = $this->userRepository->searchName($data['username']);
-
-        if ($exist) {
+        if ($this->userRepository->searchName($data['username'])) {
             return false;
         } else {
-            $statusConstants = $this->userRepository->getStatusConstants();
-            $ACTIVE = $statusConstants['ACTIVE'];
-            $result = [
+            $statusConstants = User::getStatusConstants();
+
+            return $this->userRepository->create([
                 'username' => $data['username'],
                 'email' => $data['email'],
-                'password' => $data['password'],
+                'password' => Hash::make($data['password']),
                 'user_type' => $data['userType'],
-                'status' => $ACTIVE,
+                'status' => $statusConstants['ACTIVE'],
                 'registration_number' => $data['registrationNumber'],
                 'phone_number' => $data['phoneNumber']
-            ];
-
-            return $this->userRepository->createUser($result);
+            ]);
         }
     }
 
-    public function createProfile(array $data)
+    public function create(array $data)
     {       
         $userType = $data['userType'];
-        $userName = $data['username'];
-        $registrationNumber = $data['registrationNumber'];
         $firstName = null;
         $middleName = null;
         $lastName = null;
@@ -108,29 +109,28 @@ class UserService
             $semesterId = null;
             $departmentId = null;
         }
-        $userId = $this->userRepository->getUserId($userName);
+        $userId = $this->userRepository->getId($data['username']);
         
         if ($userId) {
-            $result = [
+
+            return $this->userRepository->createProfile([
                 'user_id' => $userId, 
                 'first_name' => $firstName, 
                 'middle_name' => $middleName,  
                 'last_name' => $lastName, 
-                'registration_number' => $registrationNumber, 
+                'registration_number' => $data['registrationNumber'], 
                 'session' => $session, 
                 'department_id' => $departmentId,
                 'semester_id' => $semesterId,
                 'created_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s'),
                 'updated_at' => ''
-            ];
-
-            return $this->userRepository->createProfile($result);
+            ]);
         } else {
             return false;
         }
     }
 
-    public function findUser($id)
+    public function find($id)
     {
         return $this->userRepository->find($id);
     }
@@ -156,23 +156,21 @@ class UserService
 		]);
     }
 
-    public function updateUser(array $data, $id)
+    public function update(array $data, $id)
     {
-        $result = [
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'registration_number' => $data['registrationNumber'],
-            'user_type' => $data['userType'],
-            'phone_number' => $data['phoneNumber'],
-            'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
-        ];
-        return $this->userRepository->updateUser($result, $id);
+        return $this->userRepository->update([
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'registration_number' => $data['registrationNumber'],
+                'user_type' => $data['userType'],
+                'phone_number' => $data['phoneNumber'],
+                'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
+            ], $id);
     }
 
     public function updateProfileDuringUserUpdate(array $data)
     {
 		$userType = $data['userType'];
-		$userId = $data['userId'];
 
 		if ($userType == 3) {
 			$session = $data['session'];
@@ -187,19 +185,18 @@ class UserService
 			$semesterId = null;
 			$departmentId = null;
 		}
-        $result = [
+
+        return $this->userRepository->updateProfileDuringUserUpdate($data['userId'], [
             'semester_id' => $semesterId,
             'department_id' => $departmentId,
             'session' => $session
-        ];
-
-        return $this->userRepository->updateProfileDuringUserUpdate($userId, $result);
+        ]);
     }
 
-    public function destroyUser($id)
+    public function destroy($id)
     {
-        if ($this->findUser($id)) {
-            return $this->userRepository->deleteUser($id);
+        if ($this->find($id)) {
+            return $this->userRepository->delete($id);
         } else {
             return false;
         }
@@ -207,14 +204,13 @@ class UserService
 
     public function statusUpdate($id)
     {
-        $statusConstants = $this->userRepository->getStatusConstants();
+        $statusConstants = User::getStatusConstants();
         $ACTIVE = $statusConstants['ACTIVE'];
-		$INACTIVE = $statusConstants['INACTIVE'];
         $exist = $this->userRepository->find($id);
 
         if ($exist) {
             if ($exist->status == $ACTIVE) {
-                $status = $INACTIVE;
+                $status = $statusConstants['INACTIVE'];
             } else {
                 $status = $ACTIVE;
             }
@@ -235,7 +231,7 @@ class UserService
 			$getResults[$student->department_name][] = $student;
 		}
 
-		return compact('getResults', 'totalStudents');
+		return ['getResults' => $getResults, 'totalStudents' => $totalStudents];
     }
 
     public function semesterWise($id)
@@ -247,6 +243,6 @@ class UserService
 			$getResults[$student->semester_name][] = $student;
 		}
 
-		return compact('getResults');
+		return ['getResults' => $getResults];
     }
 }

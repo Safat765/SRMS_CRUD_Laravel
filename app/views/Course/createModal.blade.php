@@ -85,13 +85,11 @@
                     if (response.status === 'success') {
                         $("#exampleModal").modal('hide');
                         $("#courseCreate").trigger("reset");
-                        $('.courseIndex').load(location.href + ' .courseIndex')
+                        $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "User created successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "Good job!",
+                            text: "Course created successfully",
+                            icon: "success"
                         });
                     }
                 },
@@ -100,6 +98,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

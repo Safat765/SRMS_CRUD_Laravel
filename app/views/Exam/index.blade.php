@@ -139,22 +139,28 @@
                         if (response.status === 'success') {
                             $('.examUpdate').load(location.href + ' .examUpdate');
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "Exam deleted successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "Exam deleted successfully",
+                                icon: "success"
                             });
                         }
                     },
                     error: function (xhr) {
                         console.error(xhr.responseText);
-                        alert("Error deleting exam. Please try again.");
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Error deleting exam. Please try again."
+                        });
                         $('.examUpdate').load(location.href + ' .examUpdate')
                     }
                 });
             } else {
-                console.log("Cenceled deleting.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Cenceled deleting."
+                });
             }
         });
         $(document).on("click", "#createExam", function(e) {

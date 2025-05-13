@@ -9,17 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
-    public function getStatusConstants()
-    {
-        return [
-            'ACTIVE' => 1,
-            'INACTIVE' => 0,
-            'ADMIN' => 1,
-            'INSTRUCTOR' => 2,
-            'STUDENT' => 3
-        ];
-    }
-
     public function getDepartmentList()
     {
         return Department::lists('name', 'department_id');
@@ -46,7 +35,7 @@ class UserRepository
 		return User::where('username', $username)->exists();
 	}
 	
-	public function createUser($data)
+	public function create(array $data)
 	{
 		return DB::table('users')->insert($data);
 	}
@@ -55,10 +44,9 @@ class UserRepository
 	{
 		$userCount = User::where('username', 'LIKE', '%' . $search . '%')
 							->orWhere('email', 'LIKE', '%' . $search . '%');
-		$users = $userCount->paginate(5);
-		$data = compact('users', 'userCount');
+		$usersPaginated = $userCount->paginate(5);
 		
-		return $data;
+		return ['usersPaginated' => $usersPaginated, 'userCount' => $userCount];
 	}
 	
 	public function showAll()
@@ -72,8 +60,9 @@ class UserRepository
 						'profiles.session'
 					)
 					->orderBy('users.user_id', 'desc');
-		$users = $userCount->paginate(5);	
-		return compact('users', 'userCount');
+		$usersPaginated = $userCount->paginate(5);
+		
+		return ['usersPaginated' => $usersPaginated, 'userCount' => $userCount];
 	}
 	
 	public function find($id)
@@ -81,7 +70,7 @@ class UserRepository
 		return User::find($id);
 	}
 	
-	public function updateUser(array $data, $userId)
+	public function update(array $data, $userId)
 	{
 		return DB::table('users')
 				->where('user_id', $userId)
@@ -93,7 +82,7 @@ class UserRepository
 		return DB::table('profiles')->where('user_id', $userId)->update($data);
 	}
 	
-	public function deleteUser($id)
+	public function delete($id)
 	{
 		return DB::table('users')->where('user_id', $id)->delete();
 	}
@@ -103,7 +92,7 @@ class UserRepository
 		return DB::table('users')->where('user_id', $id)->update(['status' => $status]);
 	}
 
-	public function getUserId($username)
+	public function getId($username)
 	{
 		$user = User::where('username', $username)->first();
 		
@@ -117,13 +106,13 @@ class UserRepository
 
 	public function enrollCourse($studentId) {
 		return DB::table('marks')
-					->join('courses', 'marks.course_id', '=', 'courses.course_id')
-					->select(
-						'courses.name',
-						'courses.credit'
-					)
-					->where('marks.student_id', $studentId)
-					->get();
+			->join('courses', 'marks.course_id', '=', 'courses.course_id')
+			->select(
+				'courses.name',
+				'courses.credit'
+			)
+			->where('marks.student_id', $studentId)
+			->get();
 	}
 
 	public function allResults()

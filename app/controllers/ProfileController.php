@@ -10,42 +10,43 @@ use App\Services\ProfileService;
 class ProfileController extends BaseController
 {
 	private $profileService;
-
+	
 	public function __construct(ProfileService $profileService)
 	{
 		$this->profileService = $profileService;
 	}
-				
+	
 	public function create()
 	{
 		return View::make("profile/changePassword", ['data' => $this->profileService->create()]);
 	}
-				
+	
 	public function store()
 	{
 		$data = $this->profileService->checkValidation(Input::all());
-
-		if ($data->fails()) {
+		
+		if ($data->fails()) {			
 			return Redirect::back()->withErrors($data);
 		}
-		$currentPassword = Session::get("password");
 
+		$currentPassword = Session::get("password");
+		
 		if ($this->profileService->checkPassword(Input::get("oldPassword"), $currentPassword)) {
 			
 			if ($this->profileService->matchPassword(Input::get("newPassword"), Input::get("oldPassword"))) {
 				Session::flash("message", "Previous password and New Password can not be same");
-
+				
 				return Redirect::back();
 				die();
 			} else {
-
+				
 				if ($this->profileService->changePassword(Input::get("newPassword"))) {
 					Session::flash("success", "Password Changed Successfully");
-
+					
 					return Redirect::to('/'.$this->profileService->getURL().'/dashboard');
 				} else {
 					Session::flash("message", "Failed to change password");
-
+					
 					return Redirect::back();
 				}
 			}
@@ -54,21 +55,26 @@ class ProfileController extends BaseController
 			return Redirect::back();
 		}
 	}
-				
+	
+	public function show($id)
+	{
+		return View::make("profile/editProfile", ['user' => $this->profileService->exist($id)]);
+	}
+	
 	public function edit($userID)
 	{
 		if (Session::get("user_type") == 3) {
 			$user = $this->profileService->joinWithSemester($userID);
 		}
 		$user = $this->profileService->join($userID);
-
+		
 		if ($user) {
 			return Response::json(['status' => 'success', 'records' => $user], 200);
 		} else {
 			return Response::json(['status' => 'error'], 404);
 		}
 	}
-				
+	
 	public function update($id)
 	{
 		$validator = $this->profileService->updateValidation(Input::all());
@@ -78,48 +84,39 @@ class ProfileController extends BaseController
 			
 			return Redirect::back()->withErrors($validator);
 		}
-
-		if ($this->profileService->updateProfile(Input::all(), $id)) {
-			Session::flash('success', 'Profile updated successfully');
-
-			return Redirect::to('/'.$this->profileService->getURL().'/profiles/show/profile');
+		
+		if ($this->profileService->update(Input::all(), $id)) {
+			return Redirect::to('/'.$this->profileService->getURL().'/profiles/'.$id);
 		} else {
-			Session::flash('message', 'Failed to update Profile');
-
 			return Redirect::back();
 		}
 	}
-
-	public function editProfile()
-	{
-		return View::make("profile/editProfile", ['user' => $this->profileService->exist(Session::get('user_id'))]);
-	}
-
-	public function searchProfile($userID)
+	
+	public function search($userID)
 	{		
 		if ($userID == "") {
 			return Response::json(["status"=> "error", "message"=> "Registration Number not found"], 404);
 		}
-
-		if ($this->profileService->check($userID)) {			
+		
+		if ($this->profileService->check($userID)) {
 			return Response::json(['status' => 'success'], 200);
 		} else {
 			return Response::json(['status' => 'error', 'message' => "Profile Already exist"], 404);
 		}
 	}
-
+	
 	public function addName($id)
 	{
 		if ($id == "") {
 			return Response::json(['status' => 'error', 'message' => "user Id not found"], 404);
 		}
-
+		
 		$validator = $this->profileService->addNameValidation(Input::all());
-
+		
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
-
+		
 		if ($this->profileService->addName(Input::all(), $id)) {
 			return Response::json(['status' => 'success'], 200);
 		} else {

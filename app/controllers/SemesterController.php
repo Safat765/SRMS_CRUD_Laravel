@@ -13,20 +13,12 @@ class SemesterController extends BaseController
 	{
 		$this->semesterService = $semesterService;
 	}
-				
+
 	public function index()
 	{
-		$search = Input::get('search');
-		$data = $this->semesterService->getAllSemester($search);
+		return View::make('semester/index', ['data' => $this->semesterService->getAll(Input::get('search'))]);
+	}
 
-		return View::make('semester/index')->with($data);
-	}
-				
-	public function create()
-	{
-		//
-	}
-				
 	public function store()
 	{
 		$validator = $this->semesterService->checkValidation(Input::all());
@@ -34,21 +26,18 @@ class SemesterController extends BaseController
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$exist = $this->semesterService->storeSemester(Input::all());
 		
-		if ($exist) {
+		if ($this->semesterService->store(Input::all())) {
 			return Response::json(['status' => 'success', 'message'=> 'Semester created successfully'], 200);
 		} else {
 			return Response::json(['status' => 'error', 'message'=> 'Semester already exist'], 403);
 		}
 	}
-				
+
 	public function update($id)
 	{
-		$semester = $this->semesterService->checkSemester($id);
-		
-		if (!$semester) {			
-			return Response::json(['status' => 'error'], 404);
+		if (!$this->semesterService->checkById($id)) {			
+			return Response::json(['status' => 'error', 'message' => 'Semester not found'], 404);
 		}
 		
 		$validator = $this->semesterService->updateValidation(Input::all(), $id);
@@ -56,28 +45,28 @@ class SemesterController extends BaseController
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$update = $this->semesterService->updateSemester(Input::all(), $id);
+
+		if ($this->semesterService->checkName(Input::get('name'))) {
+			return Response::json(['status' => 'error', 'message'=> 'Semester already exist'], 403);
+		}
 		
-		if ($update) {
-			return Response::json(['status' => 'success'], 200);
+		if ($this->semesterService->update(Input::all(), $id)) {
+			return Response::json(['status' => 'success', 'message' => 'Semester updated successfully'], 200);
 		} else {
-			return Response::json(['status' => 'error'], 400);
+			return Response::json(['status' => 'error', 'message' => 'Semester update failed'], 400);
 		}
 	}
-				
+
 	public function destroy($id)
 	{
-		$semester = $this->semesterService->checkSemester($id);
-		
-		if (!$semester) {
-			return Response::json(['status' => 'error'], 404);
+		if (!$this->semesterService->checkById($id)) {
+			return Response::json(['status' => 'error', 'message' => 'Semester not found'], 404);
 		}
-		$delete = $this->semesterService->destroySemester($id);
 		
-		if (!$delete) {
-			return Response::json(['status' => 'error'], 404);
+		if (!$this->semesterService->destroy($id)) {
+			return Response::json(['status' => 'error', 'message' => 'Semester delete failed'], 404);
 		} else{
-			return Response::json(['status' => 'success'], 200);
+			return Response::json(['status' => 'success', 'message' => 'Semester deleted successfully'], 200);
 		}
 	}
 }

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Session;
 use App\Services\LoginService;
 use App\Services\MarkService;
 
-
 class LoginController extends BaseController
 {
 	private $loginService;
@@ -28,15 +27,15 @@ class LoginController extends BaseController
 
 		$courses = $this->loginService->dashboard();
 		$totalEnrollCourse = count($courses);
-		$data = [
-			'results' => $results,
-			'totalCourse' => $totalCourse,
-			'marksResults' => $marksResults,
-			'courses' => $courses,
-			'totalEnrollCourse' => $totalEnrollCourse
-		];
 
-		return View::make("dashboard", ['data' => $data]);
+		return View::make("dashboard", ['data' => [
+				'results' => $results,
+				'totalCourse' => $totalCourse,
+				'marksResults' => $marksResults,
+				'courses' => $courses,
+				'totalEnrollCourse' => $totalEnrollCourse
+			]
+		]);
 	}
 				
 	public function create()

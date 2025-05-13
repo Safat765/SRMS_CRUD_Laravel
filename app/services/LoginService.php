@@ -36,7 +36,7 @@ class LoginService
         }
         $password = $user->password;
 
-        return compact('password', 'user');
+        return ['password' => $password, 'user' => $user];
     }
     
     public function loginUser($username, $password, $userDetails)

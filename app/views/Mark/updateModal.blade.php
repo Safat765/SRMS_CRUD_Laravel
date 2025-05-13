@@ -117,19 +117,27 @@
                         $("#updateMarksModal").modal('hide');
                         $("#updateMarksModal").trigger("reset");
                         Swal.fire({
-                            title: response.message,
-                            icon: "success",
-                            draggable: true
+                            title: "Good job!",
+                            text: "Marks updated successfully!",
+                            icon: "success"
                         });
                     }
                 },                
                 error: function(response) {
                     try {
                         if (response.responseJSON.status === 'error') {
-                            alert(response.responseJSON.message);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: response.responseJSON.message
+                            });
                         }
                     } catch (e) {
-                        alert("An unexpected error occurred.");
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "An unexpected error occurred."
+                        });
                     }
                 }
             });

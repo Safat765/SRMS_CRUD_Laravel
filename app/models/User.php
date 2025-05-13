@@ -43,9 +43,15 @@ class User extends Eloquent
         'session',
         'department_id'
 	];
-	
-	public function setPasswordAttribute($value)
-	{
-		$this->attributes['password'] = Hash::make($value);
-	}
+
+    public static function getStatusConstants()
+    {
+        return [
+            'ACTIVE' => self::STATUS_ACTIVE,
+            'INACTIVE' => self::STATUS_INACTIVE,
+            'ADMIN' => self::USER_TYPE_ADMIN,
+            'INSTRUCTOR' => self::USER_TYPE_INSTRUCTOR,
+            'STUDENT' => self::USER_TYPE_STUDENT
+        ];
+    }
 }

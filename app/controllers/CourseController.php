@@ -36,14 +36,13 @@ class CourseController extends \BaseController
 	{
 		$validator = $this->courseService->checkValidation(Input::all());
 
-		if ($validator->fails()) {
+		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$exist = $this->courseService->store(Input::all());
 		
-		if ($exist) {
+		if ($this->courseService->store(Input::all())) {			
 			return Response::json(['status' => 'success',], 200);
-		} else {
+		} else {			
 			return Response::json(['status' => 'error'], 409);
 		}
 	}
@@ -56,27 +55,23 @@ class CourseController extends \BaseController
 	 */
 	public function update($id)
 	{
-		$course = $this->courseService->findById($id);
-
-		if (!$course) {
+		if (!$this->courseService->findById($id)) {			
 			return Response::json(['errors' => 'Course not found'], 404);
 		}
 		
 		$validator = $this->courseService->updateValidation(Input::all(), $id);
 
-		if ($validator->fails()) {
+		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
 		}
-		$exist = $this->courseService->findByNameAndCredit(Input::all());
 
-		if ($exist) {
+		if ($this->courseService->findByNameAndCredit(Input::all())) {			
 			return Response::json(['errors' => 'Course already exist'], 409);
 		}
-		$update = $this->courseService->update(Input::all(), $id);
 
-		if ($update) {
+		if ($this->courseService->update(Input::all(), $id)) {			
 			return Response::json(['status' => 'success'], 200);
-		} else {
+		} else {			
 			return Response::json(['errors' => 'error'], 409);
 		}
 	}
@@ -89,41 +84,33 @@ class CourseController extends \BaseController
 	 * @return Response
 	 */
 	public function destroy($id)
-	{
-		$course = $this->courseService->findById($id);
-		
-		if (!$course) {
+	{		
+		if (!$this->courseService->findById($id)) {			
 			return Response::json(['status' => 'error'], 404);
 		}
-		$delete = $this->courseService->destroy($id);
 		
-		if (!$delete) {
-			return Response::json(['status' => 'error'], 404);
-		} else{
+		if ($this->courseService->destroy($id)) {			
 			return Response::json(['status' => 'success'], 200);
+		} else {			
+			return Response::json(['status' => 'error'], 404);
 		}
 	}
 	
 	public function status($id)
 	{
-		$course = $this->courseService->findById($id);
-		
-		if (!$course) {
+		if (!$this->courseService->findById($id)) {			
 			return Response::json(['status' => 'error'], 404);
 		}
-		$status = $this->courseService->status($id);
 		
-		if (!$status) {
+		if (!$this->courseService->status($id)) {			
 			return Response::json(['status' => 'error'], 404);
-		} else {
+		} else {			
 			return Response::json(['status' => 'success'], 200);
 		}
 	}
 
 	public function assignedCourse()
-	{
-		$getCourses = $this->courseService->assignedTo();
-		
-		return View::make('course/assigned', ['getCourses' => $getCourses]);		
+	{		
+		return View::make('course/assigned', ['getCourses' => $this->courseService->assignedTo()]);		
 	}
 }

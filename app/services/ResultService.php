@@ -70,8 +70,7 @@ class ResultService
 
 		if ($lastCompleteCredits >= $requiredMinCredit && $lastSemesterGPA >= $requiredMinGPA) {
 			$updateSemester = $lastSemester + 1;
-			$updateSem = ['semester_id' => $updateSemester];
-			$this->resultRepository->updateStudentsSemester($studentId, $updateSem);
+			$this->resultRepository->updateStudentsSemester($studentId, ['semester_id' => $updateSemester]);
 		}
 
 		$getInfo = $this->resultRepository->showResult($studentId);
@@ -87,7 +86,6 @@ class ResultService
 			
 			$name = $record->full_name;
 			$session = $record->session;
-			$semester_name = $record->semester_name;
 			break;
 		}
 		$cgpSum = [];
@@ -123,8 +121,7 @@ class ResultService
 
     public function enrolledCourse()
     {
-        $studentId = Session::get("user_id");
-        $records = $this->resultRepository->results($studentId);
+        $records = $this->resultRepository->results(Session::get("user_id"));
 		$groupedResults = [];
 
 		foreach ($records as $result) {
@@ -132,7 +129,6 @@ class ResultService
 		}
 
         return $groupedResults;
-
     }
 }
 

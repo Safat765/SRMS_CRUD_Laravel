@@ -21,10 +21,7 @@ class DepartmentRepository
 		$departmentCount = Department::where('name', 'LIKE', '%' . $search . '%');
 		$departmentPaginate = $departmentCount->orderBy('department_id', 'desc')->paginate(5);
 
-		return [
-			'departmentPaginate' => $departmentPaginate,
-			'departmentCount' => $departmentCount
-		];
+		return ['departmentPaginate' => $departmentPaginate, 'departmentCount' => $departmentCount];
 	}
 
     public function showAll()
@@ -32,10 +29,7 @@ class DepartmentRepository
 		$departmentCount = Department::all();
 		$departmentPaginate = Department::orderBy('department_id', 'desc')->paginate(5);
 
-		return [
-			'departmentPaginate' => $departmentPaginate,
-			'departmentCount' => $departmentCount
-		];
+		return ['departmentPaginate' => $departmentPaginate, 'departmentCount' => $departmentCount];
 	}
 
     public function find($id)

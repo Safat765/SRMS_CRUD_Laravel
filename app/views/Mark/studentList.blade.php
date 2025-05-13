@@ -157,12 +157,21 @@
                         $('#updateMarksId').val(data.mark_id);
 
                         $('#updateMarksModal').modal('show');
+
+                        Swal.fire({
+                            title: "Good job!",
+                            text: "Marks updated successfully!",
+                            icon: "success"
+                        });
                     }
                 },
                 error:function(xhr)
                 {
-                    console.log(xhr.responseText);
-                    alert('Something went wrong while fetching student marks!');
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Something went wrong while fetching student marks!"
+                    });
                 }
             });
         });

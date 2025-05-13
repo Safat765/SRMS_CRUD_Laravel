@@ -26,11 +26,7 @@ class DepartmentService
         $totalDepartment = $result['departmentCount']->count();
         $department = $result['departmentPaginate'];
 
-        return [
-            'department' => $department,
-            'totalDepartment' => $totalDepartment,
-            'search' => $search
-        ];
+        return ['department' => $department, 'totalDepartment' => $totalDepartment, 'search' => $search];
     }
 
     public function checkValidation(array $data)
@@ -82,7 +78,6 @@ class DepartmentService
     public function update(array $data, $id)
     {
         if ($this->departmentRepository->find($id)) {
-
             return $this->departmentRepository->update([
                 'name' => $data['name'],
                 'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')

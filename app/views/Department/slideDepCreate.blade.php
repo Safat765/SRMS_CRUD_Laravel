@@ -73,11 +73,9 @@
                         $("#departmentForm").trigger("reset");
                         $('.departmentUpdate').load(location.href + ' .departmentUpdate')
                         Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: `${name} Department added successfully`,
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "Good job!",
+                            text: `'${name}' Department added successfully`,
+                            icon: "success"
                         });
                     }
                 },
@@ -86,6 +84,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

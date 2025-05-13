@@ -32,12 +32,11 @@ class ProfileService
     public function create()
     {
         $addURL = $this->getURL();
-		$pageName = "Change Password";			
 		$url = url('/' . $addURL . '/profiles');
 
         return [
             'url' => $url,
-            'pageName' => $pageName
+            'pageName' => "Change Password"
         ];
     }
 
@@ -108,7 +107,7 @@ class ProfileService
 		]);
     }
 
-    public function updateProfile(array $data, $id)
+    public function update(array $data, $id)
     {
         $firstName = $data['firstName'];
 		$middleName = $data['middleName'];
@@ -158,7 +157,12 @@ class ProfileService
 
     public function exist($userID)
     {
-        return $this->profileRepository->exist($userID);
+        $exist = $this->profileRepository->exist($userID);
+        if ($exist) {
+            return $exist;
+        } else {
+            return false;
+        }
     }
 
     public function check($userID)

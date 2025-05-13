@@ -11,7 +11,7 @@ class SemesterRepository
 		return Semester::where('name', 'LIKE', $name)->exists();
 	}
 
-    public function createSemester($data)
+    public function create($data)
 	{
         return DB::table('semesters')->insert($data);
 	}
@@ -19,17 +19,17 @@ class SemesterRepository
     public function filter($search)
 	{
 		$semesterCount = Semester::where('name', 'LIKE', '%' . $search . '%');
-		$semester = $semesterCount->orderBy('semester_id', 'desc')->paginate(5);
+		$semesterPaginate = $semesterCount->orderBy('semester_id', 'desc')->paginate(5);
         
-		return compact('semester', 'semesterCount');
+		return ['semesterPaginate' => $semesterPaginate, 'semesterCount' => $semesterCount];
 	}
 
     public function showAll()
 	{
 		$semesterCount = Semester::all();
-		$semester = Semester::orderBy('semester_id', 'desc')->paginate(5);		
+		$semesterPaginate = Semester::orderBy('semester_id', 'desc')->paginate(5);		
 
-		return compact('semester', 'semesterCount');
+		return ['semesterPaginate' => $semesterPaginate, 'semesterCount' => $semesterCount];
 	}
 
     public function find($id)
@@ -37,12 +37,12 @@ class SemesterRepository
 		return Semester::find($id);
 	}
 	
-	public function updateSemester(array $data, $semester_id)
+	public function update(array $data, $semester_id)
 	{		
 		return Semester::where('semester_id', $semester_id)->update($data);
 	}
 	
-	public function deleteSemester($id)
+	public function delete($id)
 	{
 		return Semester::where('semester_id', $id)->delete();
 	}

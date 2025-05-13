@@ -91,23 +91,18 @@
                         $('#courseUpdateModal')[0].reset();
                         $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "Course updated successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "Good job!",
+                            text: "Course updated successfully",
+                            icon: "success"
                         });
                     }
                 },
                 error :function (err)
                 {
                     Swal.fire({
-                        position: "top-end",
                         icon: "error",
                         title: "Oops...",
-                        text: err.responseJSON.errors,
-                        showConfirmButton: false,
-                        timer: 1500
+                        text: err.responseJSON.errors
                     });
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {

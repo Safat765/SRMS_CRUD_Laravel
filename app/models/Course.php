@@ -32,8 +32,8 @@ class Course extends Eloquent
     public static function getStatusConstants()
     {
         return [
-            'Active' => self::STATUS_ACTIVE,
-            'Inactive' => self::STATUS_INACTIVE,
+            'ACTIVE' => self::STATUS_ACTIVE,
+            'INACTIVE' => self::STATUS_INACTIVE,
         ];
     }
 }

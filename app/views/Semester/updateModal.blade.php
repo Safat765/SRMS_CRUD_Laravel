@@ -64,11 +64,9 @@
                         $("#updateSemesterModal").modal('hide');
                         $("#semesterUpdate").trigger("reset");
                         Swal.fire({
-                            position: "top-end",
                             icon: "success",
-                            title: "Semester Updated successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "success",
+                            text: `'${semesterName}' Semester updated successfully`
                         });
                     }
                 },
@@ -77,6 +75,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

@@ -121,11 +121,9 @@
                     if (response.status === 'success') {
                         $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "Course deleted successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "Good job!",
+                            text: "Course deleted successfully",
+                            icon: "success"
                         });
                     }
                 },
@@ -134,6 +132,11 @@
                     if (err.status === 'error') {
                         console.log(err.status);
                     }
+                    Swal.fire({
+                        title: "Oops...",
+                        text: err.responseJSON.message,
+                        icon: "error"
+                    });
                 }
             });
         });
@@ -153,28 +156,22 @@
                         $('.courseIndex').load(location.href + ' .courseIndex')
                         if (status === 'Active') {
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "Course Inactivated successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "Course Inactivated successfully",
+                                icon: "success"
                             });
                         } else {
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "Course Activated successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "Course Activated successfully",
+                                icon: "success"
                             });
                         }
                     } else {
                         Swal.fire({
-                            position: "top-end",
                             icon: "error",
-                            title: "Error changing status. Please try again.",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "Oops...",
+                            text: "Error changing status. Please try again."
                         });
                     }
                 },
@@ -183,6 +180,11 @@
                     if (err.status === 'error') {
                         console.log(err.status);
                     }
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
+                    });
                 }
             });
         });

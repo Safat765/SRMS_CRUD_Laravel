@@ -64,10 +64,9 @@ class MarkController extends BaseController
 	public function show($id)
 	{
 		$records = $this->markService->show(Input::all(), $id);
-		$pageName = "View Marks";
 
 		if ($records) {
-			return View::make('mark/View', ['records' => $records, 'pageName' => $pageName]);
+			return View::make('mark/View', ['records' => $records, 'pageName' => "View Marks"]);
 		} else {
 			Session::flash('message', 'Student not added');
 			return Redirect::to('instructor/marks');
@@ -147,8 +146,6 @@ class MarkController extends BaseController
 
 	public function studentList()
 	{
-		$data = $this->markService->studentList();
-
-		return View::make('mark/courseWiseStudent', ['data' => $data]);
+		return View::make('mark/courseWiseStudent', ['data' => $this->markService->studentList()]);
 	}
 }

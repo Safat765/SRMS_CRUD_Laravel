@@ -1,5 +1,5 @@
 <div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/users', 'method' => 'post', 'novalidate' => true, 'id' => 'courseUpdate']) }}
+    <form id="courseUpdate">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -39,11 +39,11 @@
                             {{ Form::select('userType',
                                 [
                                     '' => 'Select user type',
-                                    $info['Admin'] => 'Admin', 
-                                    $info['Instructor'] => 'Instructor', 
-                                    $info['Student']=> 'Student'
+                                    $data['info']['Admin'] => 'Admin', 
+                                    $data['info']['Instructor'] => 'Instructor', 
+                                    $data['info']['Student']=> 'Student'
                                 ], 
-                                isset($user->user_type) ? $user->user_type : null, [
+                                isset($data['user']->user_type) ? $data['user']->user_type : null, [
                                     'class' => 'form-control shadow-lg userType',
                                     'required' => true
                                 ],
@@ -55,8 +55,8 @@
                         <div class="col-md-4" id="userDepartmentDiv" style="display: none;">
                             {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('departmentId', 
-                                ['' => 'Select Department'] + $list['department'],
-                                Input::old('departmentId', ''), [
+                                ['' => 'Select Department'] + $data['list']['department'],
+                                isset($data['user']->department_id) ? $data['user']->department_id : null, [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'userDepartmentId',
                                     'required' => true
@@ -69,8 +69,8 @@
                         <div class="col-md-4" id="userSemesterName" style="display: none;">
                             {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('semesterId', 
-                                ['' => 'Select Semester'] + $list['semester'],
-                                Input::old('semesterId', ''), [
+                                ['' => 'Select Semester'] + $data['list']['semester'],
+                                isset($data['user']->semester_id) ? $data['user']->semester_id : null, [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'userSemesterId',
                                     'required' => true
@@ -119,7 +119,7 @@
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

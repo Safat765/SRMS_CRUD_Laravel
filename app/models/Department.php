@@ -18,6 +18,7 @@ class Department extends Eloquent
      * @var string
      */
     protected $primaryKey = 'department_id';
+    
 	protected $fillable = [
 		'name',
         'created_by'

@@ -98,8 +98,7 @@ class ExamService
 			'examType' => 'required|in:1,2,3,4',
 			'marks' => 'required|numeric',
 			'instructorId' => 'required'
-		],
-		[
+		], [
 			'required' => 'The :attribute field is required.',
 			'numeric' => 'The :attribute must be a number.',
 			'in' => 'Please select a valid :attribute.'

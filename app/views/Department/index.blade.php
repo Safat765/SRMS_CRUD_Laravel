@@ -110,22 +110,28 @@
                         if (response.status === 'success') {
                             $('.departmentUpdate').load(location.href + ' .departmentUpdate');
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "Department deleted successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "Department deleted successfully",
+                                icon: "success"
                             });
                         }
                     },
                     error: function (xhr) {
                         console.error(xhr.responseText);
-                        alert("Error deleting user. Please try again.");
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Error deleting user. Please try again."
+                        });
                         $('.departmentUpdate').load(location.href + ' .departmentUpdate')
                     }
                 });
             } else {
-                console.log("Cenceled deleting '"+ name +"'");
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Cenceled deleting '"+ name +"'"
+                });
             }
         });
         $(document).on("click", "#createDepartment", function(e) {

@@ -156,18 +156,26 @@
                         $("#createMarksModal").modal('hide');
                         $("#marksForm").trigger("reset");
                         Swal.fire({
-                            title: "Marks added successfully!",
-                            icon: "success",
-                            draggable: true
+                            title: "Good job!",
+                            text: "Marks added successfully!",
+                            icon: "success"
                         });
                     }
                 },                
                 error: function(xhr, status, error) {
                     try {
                         var response = JSON.parse(xhr.responseText);
-                        alert(response.message); 
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: response.message
+                        });
                     } catch (e) {
-                        alert("An unexpected error occurred."); 
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "An unexpected error occurred."
+                        });
                     }
                 }
             });
