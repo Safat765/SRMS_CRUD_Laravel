@@ -6,6 +6,7 @@ use App\Repositories\ProfileRepository;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class ProfileService
 {
@@ -19,11 +20,11 @@ class ProfileService
     public function getURL()
     {
         $userType = Session::get('user_type');
-		if ($userType == 1) {
+		if ($userType == User::USER_TYPE_ADMIN) {
 		  $addURL = 'admin';
-		} elseif ($userType == 2) {
+		} elseif ($userType == User::USER_TYPE_INSTRUCTOR) {
 		  $addURL = 'instructor';
-		} elseif ($userType == 3) {
+		} elseif ($userType == User::USER_TYPE_STUDENT) {
 		  $addURL = 'students';
 		}
         return $addURL;
@@ -116,11 +117,11 @@ class ProfileService
 		$departmentId = $data['departmentId'];
 		$userType = Session::get('user_type');
 
-        if ($userType == 3) {
+        if ($userType == User::USER_TYPE_STUDENT) {
             $session = $data['session'];
             $semesterId = $data['semesterId'];
             $departmentId = $data['departmentId'];
-        } elseif ($userType == 2) {
+        } elseif ($userType == User::USER_TYPE_INSTRUCTOR) {
             $session = null;
             $semesterId = null;
             $departmentId = $data['departmentId'];

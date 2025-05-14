@@ -96,11 +96,11 @@ class UserService
         $middleName = null;
         $lastName = null;
         
-        if ($userType == 3) {
+        if ($userType == User::USER_TYPE_STUDENT) {
             $session = $data['session'];
             $semesterId = $data['semesterId'];
             $departmentId = $data['departmentId'];
-        } elseif ($userType == 2) {
+        } elseif ($userType == User::USER_TYPE_INSTRUCTOR) {
             $session = null;
             $semesterId = null;
             $departmentId = $data['departmentId'];
@@ -172,11 +172,11 @@ class UserService
     {
 		$userType = $data['userType'];
 
-		if ($userType == 3) {
+		if ($userType == User::USER_TYPE_STUDENT) {
 			$session = $data['session'];
 			$semesterId = $data['semesterId'];
 			$departmentId = $data['departmentId'];
-		} elseif ($userType == 2) {
+		} elseif ($userType == User::USER_TYPE_INSTRUCTOR) {
 			$session = null;
 			$semesterId = null;
 			$departmentId = $data['departmentId'];

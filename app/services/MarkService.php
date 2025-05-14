@@ -183,7 +183,7 @@ class MarkService
         $groupedResults = [];
         
         foreach ($results as $result) {
-            $groupedResults[$result->course_name][] = $result;
+            $groupedResults[$result->course_name. " - ". $result->semester_name][] = $result;
         }
         
         return [
