@@ -30,20 +30,23 @@ class ResultRepository
             ->groupBy('marks.mark_id')
             ->get();
     }
+
 	public function resultExistonNot($studentId)
     {
         return DB::table('results')->where('student_id', $studentId)->exists();
     }
-	public function createResult($result)
+
+	public function create($result)
 	{
         return DB::table('results')->insert($result);
     }
-	public function updateResult($studentId, $result)
+
+	public function update($studentId, $result)
 	{
         return DB::table('results')->where('student_id', $studentId)->update($result);
     }
 
-    public function showResult($studentId)
+    public function show($studentId)
     {
         return DB::table('results')->where('student_id', $studentId)->first();
     }
@@ -81,7 +84,7 @@ class ResultRepository
             ->get();
     }
 
-    public function getResult($studentId, $semesterId)
+    public function get($studentId, $semesterId)
     {
         return DB::table('results')
             ->join('marks', 'results.student_id', '=', 'marks.student_id')

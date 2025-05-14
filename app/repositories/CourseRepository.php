@@ -4,7 +4,6 @@ namespace App\Repositories;
 use App\Models\Course;
 use Illuminate\Support\Facades\DB;
 
-
 class CourseRepository
 {   
     public function searchName($name)

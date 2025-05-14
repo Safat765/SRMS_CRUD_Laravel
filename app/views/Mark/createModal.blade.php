@@ -22,7 +22,7 @@
                                 'class' => 'form-control shadow-lg',
                                 'id' => 'givenMark',
                                 'required' => true
-                                ], Input::old('givenMark')
+                                ], null
                             )}}
                         </div>
                         <div class="col-md-6">
@@ -146,7 +146,7 @@
 
             $.ajax({
                 url : `/instructor/marks/go`,
-                type : 'post',
+                type : 'POST',
                 data : {totalMarks : totalMarks, username : username, courseName: courseName, givenMark : givenMark, studentId : studentId, examId : examId, semesterId : semesterId, courseId : courseId},
                 success : function (response)
                 {

@@ -6,7 +6,7 @@
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
             <tr>
-                <td scope="row" colspan="2" class="fw-bold fs-3 text-info">{{ ucwords(Session::get('username')) }}'s Enrolled Course</td>
+                <td scope="row" colspan="2" class="fw-bold fs-3 text-info">{{ ucwords(Illuminate\Support\Facades\Session::get('username')) }}'s Enrolled Course</td>
             </tr>
             <tr>
                 <th scope="col">Course</th>

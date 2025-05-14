@@ -11,7 +11,7 @@
             </tr>
             <tr>
                 <th scope="col" style="width: 40%;">Registration Number</th>
-                <td scope="col" style="width: 40%;">{{ Session::get('registration_number') }}</td>
+                <td scope="col" style="width: 40%;">{{ Illuminate\Support\Facades\Session::get('registration_number') }}</td>
             </tr>
             <tr>
                 <th scope="col" style="width: 50%;">Session</th>
@@ -50,7 +50,7 @@
                                 'id' => 'courseWiseResult',
                                 'data-id' => $semester->semester_id,
                                 'data-name' => $semester->semester_name,
-                                'data-studentid' => Session::get('user_id'),
+                                'data-studentid' => Illuminate\Support\Facades\Session::get('user_id'),
                                 'type' => 'submit'
                             ])}}
                         </div>
@@ -98,7 +98,11 @@
                     $('#semesterWiseCourseModal').modal('show');
                 },
                 error: function(xhr, status, error) {
-                    console.log('Error:', xhr.status, error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: xhr.responseJSON.message
+                    });
                 }
             });
         });

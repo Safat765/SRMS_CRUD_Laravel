@@ -7,146 +7,149 @@
                 </div>
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
-                    {{ Form::open(['url' => '/users', 'method' => 'post', 'novalidate' => true, 'id' => 'userCreateForm']) }}
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            {{ Form::label('username', 'Username', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('username', Input::old('username'), 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter username',
-                                'id' => 'username',
-                                'required' => true
-                                ]
-                            )}}
-                        </div>
-                        <div class="col-md-3">
-                            {{ Form::label('email', 'Email', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('email', Input::old('email'), 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter email',
-                                'id' => 'email',
-                                'required' => true
-                                ]
-                            )}}
-                        </div>
-                        <div class="col-md-3">
-                            {{ Form::label('password', 'Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::password('password', 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter password',
-                                'id' => 'password',
-                                'required' => true
-                                ]
-                            )}}
-                        </div>
-                        <div class="col-md-3">
-                            <span id="matchPassword"></span>
-                            {{ Form::label('confirmPassword', 'Confirm Password', ['class' => 'form-label']) }}
-                                <span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::password('confirmPassword', 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter Confirm Password',
-                                'id' => 'confirmPassword',
-                                'required' => true
-                                ]
-                            )}}
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            {{ Form::label('userType', 'User Type', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::select('userType', 
-                                [
-                                    '' => 'Select user type',
-                                    $info['Admin'] => 'Admin', 
-                                    $info['Instructor'] => 'Instructor', 
-                                    $info['Student']=> 'Student'
-                                ], 
-                                Input::old('userType'), [
+                    <form id="userCreateForm">
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                {{ Form::hidden('adminUserType', App\Models\User::USER_TYPE_ADMIN, ['id' => 'userAdminUserType']) }}
+                                {{ Form::hidden('instructorUserType', App\Models\User::USER_TYPE_INSTRUCTOR, ['id' => 'userInstructorUserType']) }}
+                                {{ Form::hidden('studentUserType', App\Models\User::USER_TYPE_STUDENT, ['id' => 'userStudentUserType']) }}
+                                {{ Form::label('username', 'Username', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::text('username', null, 
+                                    [
                                     'class' => 'form-control shadow-lg',
-                                    'id' => 'userType',
+                                    'placeholder' => 'Enter username',
+                                    'id' => 'username',
                                     'required' => true
-                                ],
-                                [
-                                    '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
-                                ]
-                            )}}
-                        </div>
-                        <div class="col-md-4" id = 'sessionName' style="display: none;">
-                            {{ Form::label('session', 'Session', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> (Only for students)</span>
-                            {{ Form::text('session', Input::old('session'), 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter Session',
-                                'id' => 'session',
-                                'required' => true
-                                ]) 
-                            }}
-                        </div>
-                        <div class="col-md-4" id="semesterName" style="display: none;">
-                            {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::select('semesterId', 
-                                ['' => 'Select Semester'] + $list['semester'],
-                                Input::old('semesterId', ''), [
+                                    ]
+                                )}}
+                            </div>
+                            <div class="col-md-3">
+                                {{ Form::label('email', 'Email', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::text('email', null,
+                                    [
                                     'class' => 'form-control shadow-lg',
-                                    'id' => 'semesterId',
+                                    'placeholder' => 'Enter email',
+                                    'id' => 'email',
                                     'required' => true
-                                ]
-                                
-                            )}}
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            {{ Form::label('registrationNumber', 'Registration Number', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('registrationNumber', Input::old('registrationNumber'), 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter registration number',
-                                'id' => 'registrationNumber',
-                                'required' => true
-                                ]) 
-                            }}
-                        </div>                        
-                        <div class="col-md-4">
-                            {{ Form::label('phoneNumber', 'Phone Number', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('phoneNumber', Input::old('phoneNumber'), 
-                                [
-                                'class' => 'form-control shadow-lg',
-                                'placeholder' => 'Enter phone number',
-                                'id' => 'phoneNumber',
-                                'required' => true
-                                ]
-                            )}}
-                        </div>
-                        <div class="col-md-4" id="departmentDiv" style="display: none;">
-                            {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::select('departmentId', 
-                                ['' => 'Select Department'] + $list['department'],
-                                Input::old('departmentId', ''), [
+                                    ]
+                                )}}
+                            </div>
+                            <div class="col-md-3">
+                                {{ Form::label('password', 'Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::password('password', null,
+                                    [
                                     'class' => 'form-control shadow-lg',
-                                    'id' => 'departmentId',
+                                    'placeholder' => 'Enter password',
+                                    'id' => 'password',
                                     'required' => true
-                                ],
+                                    ]
+                                )}}
+                            </div>
+                            <div class="col-md-3">
+                                <span id="matchPassword"></span>
+                                {{ Form::label('confirmPassword', 'Confirm Password', ['class' => 'form-label']) }}
+                                    <span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::password('confirmPassword', null,
+                                    [
+                                    'class' => 'form-control shadow-lg',
+                                    'placeholder' => 'Enter Confirm Password',
+                                    'id' => 'confirmPassword',
+                                    'required' => true
+                                    ]
+                                )}}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                {{ Form::label('userType', 'User Type', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::select('userType', 
+                                    [
+                                        '' => 'Select user type',
+                                        $info['Admin'] => 'Admin', 
+                                        $info['Instructor'] => 'Instructor', 
+                                        $info['Student']=> 'Student'
+                                    ], 
+                                    null, [
+                                        'class' => 'form-control shadow-lg',
+                                        'id' => 'userType',
+                                        'required' => true
+                                    ],
+                                    [
+                                        '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
+                                    ]
+                                )}}
+                            </div>
+                            <div class="col-md-4" id = 'sessionName' style="display: none;">
+                                {{ Form::label('session', 'Session', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> (Only for students)</span>
+                                {{ Form::text('session', Input::old('session'), 
+                                    [
+                                    'class' => 'form-control shadow-lg',
+                                    'placeholder' => 'Enter Session',
+                                    'id' => 'session',
+                                    'required' => true
+                                    ]) 
+                                }}
+                            </div>
+                            <div class="col-md-4" id="semesterName" style="display: none;">
+                                {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::select('semesterId', 
+                                    ['' => 'Select Semester'] + $list['semester'],
+                                    null, [
+                                        'class' => 'form-control shadow-lg',
+                                        'id' => 'semesterId',
+                                        'required' => true
+                                    ]
+                                    
+                                )}}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                {{ Form::label('registrationNumber', 'Registration Number', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::text('registrationNumber', null, 
+                                    [
+                                    'class' => 'form-control shadow-lg',
+                                    'placeholder' => 'Enter registration number',
+                                    'id' => 'registrationNumber',
+                                    'required' => true
+                                    ]) 
+                                }}
+                            </div>                        
+                            <div class="col-md-4">
+                                {{ Form::label('phoneNumber', 'Phone Number', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::text('phoneNumber', null, 
+                                    [
+                                    'class' => 'form-control shadow-lg',
+                                    'placeholder' => 'Enter phone number',
+                                    'id' => 'phoneNumber',
+                                    'required' => true
+                                    ]
+                                )}}
+                            </div>
+                            <div class="col-md-4" id="departmentDiv" style="display: none;">
+                                {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::select('departmentId', 
+                                    ['' => 'Select Department'] + $list['department'],
+                                    null, [
+                                        'class' => 'form-control shadow-lg',
+                                        'id' => 'departmentId',
+                                        'required' => true
+                                    ],
+                                    [
+                                        '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
+                                    ]
+                                )}}
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            {{ Form::submit('Create', 
                                 [
-                                    '' => ['disabled' => 'disabled', 'selected' => 'selected', 'hidden' => 'hidden']
+                                'class' => 'btn btn-primary btn-block submitCreate',
+                                'id' => 'submitCreate'
                                 ]
                             )}}
                         </div>
-                    </div>
-                    <div class="d-grid gap-2">
-                        {{ Form::submit('Create', 
-                            [
-                            'class' => 'btn btn-primary btn-block submitCreate',
-                            'id' => 'submitCreate'
-                            ]
-                        )}}
-                    </div>
-                    {{ Form::close() }}
+                    </form>
                 </div>
             </div>
         </div>
@@ -186,14 +189,17 @@
             let userType = $('#userType').val();
             let semesterId = $('#semesterId').val();
             let session = $('#session').val();
+            let admin = $('#userAdminUserType').val();
+            let instructor = $('#userInstructorUserType').val();
+            let student = $('#userStudentUserType').val();
 
-            if (userType == 3) {
+            if (userType == student) {
                 if (session == "" && semesterId == "") {
                     $('#sessionName').show();
                     $('#semesterName').show();
                     $('#departmentDiv').show();
                 }
-            } else if (userType == 2) {
+            } else if (userType == instructor) {
                 $('#submitCreate').prop('disabled', false);
                 $('#sessionName').hide();
                 $('#semesterName').hide();
@@ -270,12 +276,10 @@
                         });
                         $('#userIndex').load(location.href + ' #userIndex');
                         $('.errorMsgContainer').text("");
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "User created successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                        Swal.fire({                            
+                            title: "Good job!",
+                            text: "User created successfully",
+                            icon: "success"
                         });
                     }
                 },
@@ -284,6 +288,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

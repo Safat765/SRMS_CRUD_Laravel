@@ -44,13 +44,13 @@ class MarkService
             $result = [
                 'cgpa' => $CGPA
             ];
-            $this->resultRepository->updateResult($studentId, $result);
+            $this->resultRepository->update($studentId, $result);
         } else {
             $result = [
                 'student_id' => $studentId,
                 'cgpa' => $CGPA
             ];
-            $this->resultRepository->createResult($result);
+            $this->resultRepository->create($result);
         }
     }
     
@@ -101,7 +101,7 @@ class MarkService
     
     public function show(array $data, $studentId)
     {
-        return $this->markRepository->editMarks($studentId, $data['examId']);
+        return $this->markRepository->edit($studentId, $data['examId']);
     }
     
     public function students($courseId, $semesterId)
@@ -121,7 +121,7 @@ class MarkService
         $marks = [];
         
         foreach ($userId as $studentId) {
-            $getMark = $this->markRepository->getMarks($studentId, $examId);
+            $getMark = $this->markRepository->get($studentId, $examId);
             $marks[$studentId] = $getMark;
         }
         
@@ -135,7 +135,7 @@ class MarkService
     
     public function edit(array $data, $studentId)
     {
-        return $this->markRepository->editMarks($studentId, $data['examId']);
+        return $this->markRepository->edit($studentId, $data['examId']);
     }
     
     public function checkExist($id)
@@ -160,7 +160,7 @@ class MarkService
         elseif ($percentage >= 50) $gpa = 2.25;
         else $gpa = 0.00;
         
-        return $this->markRepository->updateMarks($id, [
+        return $this->markRepository->update($id, [
             'marks' => $givenMarks,
             'gpa' => $gpa,
             'updated_at' => Carbon::now('Asia/Dhaka')->format('Y-m-d H:i:s')
@@ -174,7 +174,7 @@ class MarkService
     
     public function destroy($id, $examId)
     {
-        return $this->markRepository->deleteMarks($id, $examId);
+        return $this->markRepository->delete($id, $examId);
     }
     
     public function studentList()

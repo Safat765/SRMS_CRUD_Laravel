@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('admin.courses.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.courses.index'), 'method' => 'GET']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -114,7 +114,7 @@
             let courseId = $(this).data('id');
             $.ajax({
                 url : `/admin/courses/${courseId}`,
-                type : 'delete',
+                type : 'DELETE',
                 data : {id : courseId},
                 success : function (response)
                 {
@@ -129,9 +129,6 @@
                 },
                 error :function (err)
                 {
-                    if (err.status === 'error') {
-                        console.log(err.status);
-                    }
                     Swal.fire({
                         title: "Oops...",
                         text: err.responseJSON.message,
@@ -145,10 +142,9 @@
             let courseId = $(this).data('id');
 
             let status = $("#statusBtn").text().trim();
-            console.log(courseId, status);
             $.ajax({
                 url : `/admin/courses/status/${courseId}`,
-                type : 'get',
+                type : 'GET',
                 data : {id : courseId},
                 success : function (response)
                 {
@@ -177,13 +173,10 @@
                 },
                 error :function (err)
                 {
-                    if (err.status === 'error') {
-                        console.log(err.status);
-                    }
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.responseJSON.message
+                        text: "Error changing status. Please try again."
                     });
                 }
             });

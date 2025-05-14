@@ -157,7 +157,6 @@
                         $('#updateMarksId').val(data.mark_id);
 
                         $('#updateMarksModal').modal('show');
-
                         Swal.fire({
                             title: "Good job!",
                             text: "Marks updated successfully!",

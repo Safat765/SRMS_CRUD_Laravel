@@ -7,13 +7,13 @@
                 </div>
                 <div class="errorMsgContainer p-2 text-center"></div>
                 <div class="card-body bg-light">
-                    {{ Form::open(['url' => '/admin/departments', 'method' => 'post', 'novalidate' => true]) }}   
+                    <form>
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 {{ Form::label('courseId', 'Course Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('courseId', 
                                     ['' => 'Select course'] + $list['courses'],
-                                    Input::old('courseId', ''), [
+                                    null, [
                                         'class' => 'form-control shadow-lg courseId',
                                         'required' => true
                                     ],
@@ -36,7 +36,7 @@
                                 {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('departmentId', 
                                     ['' => 'Select Department'] + $list['department'],
-                                    Input::old('departmentId', ''), [
+                                    null, [
                                         'class' => 'form-control shadow-lg departmentId',
                                         'required' => true
                                     ],
@@ -51,7 +51,7 @@
                                 {{ Form::label('semesterId', 'Semester Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('semesterId', 
                                     ['' => 'Select Semester'] + $list['semester'],
-                                    Input::old('semesterId', ''), [
+                                    null, [
                                         'class' => 'form-control shadow-lg semesterId',
                                         'required' => true
                                     ],
@@ -82,7 +82,7 @@
                                         $examType['Viva'] => 'Viva',
                                         $examType['Final'] => 'Final'
                                     ], 
-                                    Input::old('examType'), [
+                                    null, [
                                         'class' => 'form-control shadow-lg examType',
                                         'required' => true
                                     ],
@@ -105,7 +105,7 @@
                                 {{ Form::label('instructorId', 'Instructor Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::select('instructorId', 
                                     ['' => 'Select Instrutor'] + $list['instructor'],
-                                    Input::old('instructorId', ''), [
+                                    null, [
                                         'class' => 'form-control shadow-lg instructorId',
                                         'required' => true
                                     ],
@@ -122,7 +122,7 @@
                                 ]
                             )}}
                         </div>
-                    {{ Form::close() }}
+                    </form>
                 </div>
             </div>
         </div>
@@ -162,7 +162,7 @@
 
             $.ajax({
                 url : "{{ URL::route('admin.exams.store') }}",
-                type : 'post',
+                type : 'POST',
                 data : {courseId : courseId, examTitle : examTitle, departmentId : departmentId, semesterId : semesterId, credit : credit, examType: examType, marks : marks, instructorId : instructorId},
                 success : function (response)
                 {

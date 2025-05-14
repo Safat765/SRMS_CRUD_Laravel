@@ -94,6 +94,9 @@
                                 'data-department_id' => $user->department_id,
                                 'data-semester_id' => $user->semester_id,
                                 'data-session' => $user->session,
+                                'data-admin_user_type' => $info['Admin'],
+                                'data-instructor_user_type' => $info['Instructor'],
+                                'data-student_user_type' => $info['Student']
                             ])}}
                         </div>
                         <div class="text-center">
@@ -132,7 +135,7 @@
             if (confirm("Are you sure you want to delete '" + username + "' ?")) {
                 $.ajax({
                     url: `/admin/users/${userId}`,
-                    type: 'delete',
+                    type: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}'
                     },
@@ -140,33 +143,37 @@
                         if (response.status === 'success') {
                             $('#userIndex').load(location.href + ' #userIndex');
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "User deleted successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "User deleted successfully",
+                                icon: "success"
                             });
                             $('#userForm').load(location.href + ' #userForm');
                         }
                     },
                     error: function (xhr) {
-                        console.error(xhr.responseText);
-                        alert("Error deleting user. Please try again.");
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Error deleting user. Please try again."
+                        });
                         $('.userIndex').load(location.href + ' .userIndex')
                     }
                 });
             } else {
-                console.log("Cenceled deleting '"+ username +"'");
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Cenceled deleting '" + username + "'."
+                });
             }
         });
         $(document).on('click', '#userStatusBtn', function(e) {
             e.preventDefault();
             let userId = $(this).data('id');
             let status = $("#userStatusBtn").text().trim();
-            console.log(userId, status);
             $.ajax({
                 url : `/admin/users/status/${userId}`,
-                type : 'get',
+                type : 'GET',
                 data : {id : userId},
                 success : function (response)
                 {
@@ -175,35 +182,33 @@
                         $('#userTable').load(location.href + ' #userTable')
                         if (status === 'Active') {
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "User Inactivated successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "User Inactivated successfully",
+                                icon: "success"
                             });
                         } else {
                             Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "User Activated successfully",
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: "Good job!",
+                                text: "User Activated successfully",
+                                icon: "success"
                             });
                         }
                     } else {
                         Swal.fire({
-                            position: "top-end",
                             icon: "error",
-                            title: "Error changing status. Please try again.",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "Oops...",
+                            text: "Error changing status. Please try again."
                         });
                     }
                 },
                 error :function (err)
                 {
                     if (err.status === 'error') {
-                        console.log(err.status);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: err.responseJSON.message
+                        });
                     }
                 }
             });

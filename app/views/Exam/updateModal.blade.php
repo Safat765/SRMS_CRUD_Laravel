@@ -193,7 +193,7 @@
 
             $.ajax({
                 url : `/admin/exams/${examId}`,
-                type : 'put',
+                type : 'PUT',
                 data : $('#formExam').serialize(),
                 success : function (response) {
                     if (response.status === 'success') {

@@ -29,8 +29,11 @@
                     {{ Form::button('Add Profile', [
                         'class' => 'btn btn-success btn-sm',
                         'id' => 'addProfile',
-                        'data-id' => Session::get('user_id'),
-                        'data-user_type' => Session::get('user_type'),
+                        'data-id' => Illuminate\Support\Facades\Session::get('user_id'),
+                        'data-user_type' => Illuminate\Support\Facades\Session::get('user_type'),
+                        'data-admin_user_type' => App\Models\User::USER_TYPE_ADMIN,
+                        'data-instructor_user_type' => App\Models\User::USER_TYPE_INSTRUCTOR,
+                        'data-student_user_type' => App\Models\User::USER_TYPE_STUDENT,
                         'type' => 'button'
                     ])}}
                 </td>
@@ -58,7 +61,10 @@
                                     'class' => 'btn btn-success btn-sm',
                                     'id' => 'editProfile',
                                     'data-user_id' => $user->user_id,
-                                    'data-user_type' => Session::get('user_type'),
+                                    'data-user_type' => Illuminate\Support\Facades\Session::get('user_type'),
+                                    'data-admin_user_type' => App\Models\User::USER_TYPE_ADMIN,
+                                    'data-instructor_user_type' => App\Models\User::USER_TYPE_INSTRUCTOR,
+                                    'data-student_user_type' => App\Models\User::USER_TYPE_STUDENT,
                                     'type' => 'submit'
                                 ])}}
                             </div>
@@ -88,13 +94,16 @@
             e.preventDefault();
             let profileId = $(this).data('user_id');
             let userType = $(this).data('user_type');
+            let admin = $(this).data('admin_user_type');
+            let instructor = $(this).data('instructor_user_type');
+            let student = $(this).data('student_user_type');
             let addURL = null;
             
-            if (userType == 1) {
+            if (userType == admin) {
                 addURL = 'admin';
-            } else if (userType == 2) {
+            } else if (userType == instructor) {
                 addURL = 'instructor';
-            } else if (userType == 3) {
+            } else if (userType == student) {
                 addURL = 'students';
             }
 
@@ -111,9 +120,11 @@
                     }
                 },
                 error: function(response) {
-                    if (response.status === 'error') {
-                        console.log('error');
-                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: response.message
+                    })
                 }
             });
         });
@@ -122,13 +133,16 @@
             e.preventDefault();
             let userId = $(this).data('id');
             let userType = $(this).data('user_type');
+            let admin = $(this).data('admin_user_type');
+            let instructor = $(this).data('instructor_user_type');
+            let student = $(this).data('student_user_type');
             let addURL = null;
             
-            if (userType == 1) {
+            if (userType == admin) {
                 addURL = 'admin';
-            } else if (userType == 2) {
+            } else if (userType == instructor) {
                 addURL = 'instructor';
-            } else if (userType == 3) {
+            } else if (userType == student) {
                 addURL = 'students';
             }
 
@@ -141,9 +155,11 @@
                     }
                 },
                 error: function(response) {
-                    if (response.status === 'error') {
-                        console.log('error');
-                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: response.message
+                    })
                 }
             });
         });

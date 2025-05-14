@@ -73,7 +73,7 @@ class ResultService
 			$this->resultRepository->updateStudentsSemester($studentId, ['semester_id' => $updateSemester]);
 		}
 		
-		$getInfo = $this->resultRepository->showResult($studentId);
+		$getInfo = $this->resultRepository->show($studentId);
 		$records = $this->resultRepository->results($studentId);
 		$info = [];
 		
@@ -116,7 +116,7 @@ class ResultService
 	
 	public function getSemesterWiseResult($studentId, $semesterId)
 	{
-		return $this->resultRepository->getResult($studentId, $semesterId);
+		return $this->resultRepository->get($studentId, $semesterId);
 	}
 	
 	public function enrolledCourse()

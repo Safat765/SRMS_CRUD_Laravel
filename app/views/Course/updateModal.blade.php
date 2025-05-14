@@ -68,8 +68,6 @@
             let name1 = $('#name1').val();
             let credit1 = $('#credit1').val();
 
-            console.log(id, name1, credit1);
-
             if (!id && !name1 && !credit1) {
                 Swal.fire({
                     icon: "error",

@@ -18,12 +18,12 @@
                             {{ Form::hidden('examId', null, ['id' => 'updateExamId']) }}
                             {{ Form::hidden('studentId', null, ['id' => 'updateStudentId']) }}
                             {{ Form::label('givenMark', 'Mark', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                            {{ Form::text('givenMark', '', 
+                            {{ Form::text('givenMark', null, 
                                 [
                                 'class' => 'form-control shadow-lg',
                                 'id' => 'updateGivenMark',
                                 'required' => true
-                                ], Input::old('givenMark')
+                                ]
                             )}}
                         </div>
                         <div class="col-md-6">

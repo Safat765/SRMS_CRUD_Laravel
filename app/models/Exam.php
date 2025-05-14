@@ -34,6 +34,7 @@ class Exam extends Eloquent
 	* @var string
 	*/
 	protected $primaryKey = 'exam_id';
+	
     public static function getExamTypeConstants()
     {
         return [

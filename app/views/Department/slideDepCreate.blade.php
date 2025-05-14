@@ -65,7 +65,7 @@
 
             $.ajax({
                 url : "{{ URL::route('admin.departments.store') }}",
-                type : 'post',
+                type : 'POST',
                 data : {name : name},
                 success : function (response) {
                     if (response.status === 'success') {

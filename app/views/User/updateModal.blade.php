@@ -13,6 +13,9 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             {{ Form::hidden('userId', null, ['class' => 'userId', 'id' => 'userId']) }}
+                            {{ Form::hidden('adminUserType', App\Models\User::USER_TYPE_ADMIN, ['id' => 'userUpdateAdminUserType']) }}
+                            {{ Form::hidden('instructorUserType', App\Models\User::USER_TYPE_INSTRUCTOR, ['id' => 'userUpdateInstructorUserType']) }}
+                            {{ Form::hidden('studentUserType', App\Models\User::USER_TYPE_STUDENT, ['id' => 'userUpdateStudentUserType']) }}
                             {{ Form::label('username', 'Username', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::text('username', null, 
                                 [
@@ -145,12 +148,15 @@
             let session = $(this).data('session');
             let semesterId = $(this).data('semester_id');
             let departmentId = $(this).data('department_id');
+            let admin = $(this).data('admin_user_type');
+            let instructor = $(this).data('instructor_user_type');
+            let student = $(this).data('student_user_type');
 
-            if (userType == 3) {
+            if (userType == student) {
                 $('#userDepartmentDiv').show();
                 $('#userSemesterName').show();
                 $('#userSessionName').show();
-            } else if (userType == 2) {
+            } else if (userType == instructor) {
                 $('#userDepartmentDiv').show();
             }
 
@@ -176,8 +182,11 @@
             let session = $('#userSession').val();
             let semesterId = $('#userSemesterId').val();
             let departmentId = $('#userDepartmentId').val();
+            let admin = $('#userUpdateAdminUserType').val();
+            let instructor = $('#userUpdateInstructorUserType').val();
+            let student = $('#userUpdateStudentUserType').val();
 
-            if (userType == 1) {
+            if (userType == admin) {
                 if (!username && !email && !userType && !registrationNumber && !phoneNumber) {
                     Swal.fire({
                         icon: "error",
@@ -186,7 +195,7 @@
                     });
                     return;
                 }
-            } else if (userType == 3) {
+            } else if (userType == instructor) {
                 if (!username && !email && !userType && !session && !semesterId && !registrationNumber && !phoneNumber && !departmentId) {
                     Swal.fire({
                         icon: "error",
@@ -213,18 +222,15 @@
                 data : {userId : userId, username : username, email : email, userType : userType, registrationNumber : registrationNumber, phoneNumber : phoneNumber, session : session, semesterId : semesterId, departmentId : departmentId},
                 success : function (response)
                 {
-                    console.log(response.status);
                     if (response.status === 'success') {
                         $('.userIndex').load(location.href + ' .userIndex')
                         $("#updateUserModal").modal('hide');
                         $("#courseUpdate").trigger("reset");
                         $('.courseIndex').load(location.href + ' .courseIndex');
                         Swal.fire({
-                            position: "top-end",
                             icon: "success",
-                            title: "User update successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                            title: "success",
+                            text: `'${username}' User updated successfully`
                         });
                     }
                 },
@@ -233,6 +239,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('admin.exams.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.exams.index'), 'method' => 'GET']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -65,11 +65,11 @@
                 <td scope="row" class="p-3">{{$exam->department_name}}</td>
                 <td scope="row" class="p-3">{{$exam->semester_name}}</td>
                 <td scope="row" class="p-3">
-                    @if($exam->exam_type == 1)
+                    @if($exam->exam_type == App\Models\Exam::EXAM_TYPE_MID)
                         Mid
-                    @elseif($exam->exam_type == 2)
+                    @elseif($exam->exam_type == App\Models\Exam::EXAM_TYPE_QUIZ)
                         Quiz
-                    @elseif($exam->exam_type == 3)
+                    @elseif($exam->exam_type == App\Models\Exam::EXAM_TYPE_VIVA)
                         Viva
                     @else
                         Final Term
@@ -131,7 +131,7 @@
             if (confirm("Are you sure you want to delete?")) {
                 $.ajax({
                     url: `/admin/exams/${id}`,
-                    type: 'delete',
+                    type: 'DELETE',
                     data: {
                         _token: '{{ csrf_token() }}'
                     },

@@ -22,7 +22,7 @@ class MarkRepository
         return Mark::where('student_id', 'LIKE', $studentId)->where('exam_id', 'LIKE', $examId)->exists();
     }
 
-    public function updateMarks($marksId, $data)
+    public function update($marksId, $data)
     {
         return DB::table('marks')->where('mark_id', $marksId)->update($data);
     }
@@ -32,7 +32,7 @@ class MarkRepository
         return DB::table('marks')->insert($data);
     }
 
-    public function deleteMarks($studentId, $examId)
+    public function delete($studentId, $examId)
     {
         return DB::table('marks')->where('student_id', $studentId)->where('exam_id', $examId)->delete();
     }
@@ -89,7 +89,7 @@ class MarkRepository
             ->get();
     }
 
-    public function editMarks($studentId, $examId)
+    public function edit($studentId, $examId)
     {
         return DB::table('marks')
                 ->join('exams', 'marks.exam_id', '=', 'exams.exam_id')
@@ -116,7 +116,7 @@ class MarkRepository
                 ->get();
     }
 
-    public function getMarks($studentId, $examId)
+    public function get($studentId, $examId)
     {
         return DB::table('marks')->where('marks.student_id', $studentId)->where('marks.exam_id', $examId)->get();
     }

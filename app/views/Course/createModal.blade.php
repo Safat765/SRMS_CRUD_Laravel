@@ -7,39 +7,27 @@
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="errorMsgContainer">
-
-                    </div>
+                    <div class="errorMsgContainer"></div>
                     <div class="row mb-3">
                             <div class="col-md-6">
                                 {{ Form::label('name', 'Course name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                                {{ Form::text('name', Input::old('name'), 
+                                {{ Form::text('name', null, 
                                     [
                                     'class' => 'form-control shadow-lg name',
                                     'placeholder' => 'Enter Course name',
                                     'required' => true
                                     ]
                                 )}}
-                                @if($errors->has('name'))
-                                <span class="text-danger small d-block mt-1">
-                                    {{ $errors->first('name') }}
-                                </span>
-                                @endif
                             </div>                        
                             <div class="col-md-6">
                                 {{ Form::label('credit', 'Credit', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                                {{ Form::text('credit', Input::old('credit'), 
+                                {{ Form::text('credit', null, 
                                     [
                                     'class' => 'form-control shadow-lg credit',
                                     'placeholder' => 'Enter Credit',
                                     'required' => true
                                     ]
                                 )}}
-                                @if($errors->has('email'))
-                                <span class="text-danger small d-block mt-1">
-                                    {{ $errors->first('credit') }}
-                                </span>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -78,7 +66,7 @@
 
             $.ajax({
                 url : "{{ URL::route('admin.courses.store') }}",
-                type : 'post',
+                type : 'POST',
                 data : {name : name, credit : credit},
                 success : function (response)
                 {

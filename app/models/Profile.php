@@ -18,6 +18,7 @@ class Profile extends Eloquent
      * @var string
      */
     protected $primaryKey = 'profile_id';
+    
     protected $fillable = [
         'user_id',
         'first_name',

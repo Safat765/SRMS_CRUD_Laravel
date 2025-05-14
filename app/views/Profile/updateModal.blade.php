@@ -1,5 +1,5 @@
 <div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseCreate']) }}
+    <form id="updateProfileForm">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -11,8 +11,11 @@
 
                     </div>
                     <div class="row mb-3">
-                            {{ Form::hidden('userId', Session::get('user_id'), ['id' => 'updateUserId']) }}
-                            {{ Form::hidden('userType', Session::get('user_type'), ['id' => 'updateUserType']) }}
+                            {{ Form::hidden('userId', Illuminate\Support\Facades\Session::get('user_id'), ['id' => 'updateUserId']) }}
+                            {{ Form::hidden('userType', Illuminate\Support\Facades\Session::get('user_type'), ['id' => 'updateUserType']) }}
+                            {{ Form::hidden('adminUserType', App\Models\User::USER_TYPE_ADMIN, ['id' => 'updateAdminUserType']) }}
+                            {{ Form::hidden('instructorUserType', App\Models\User::USER_TYPE_INSTRUCTOR, ['id' => 'updateInstructorUserType']) }}
+                            {{ Form::hidden('studentUserType', App\Models\User::USER_TYPE_STUDENT, ['id' => 'updateStudentUserType']) }}
                             <div class="col-md-6">
                                 {{ Form::label('firstName', 'First name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::text('firstName', null, 
@@ -55,7 +58,7 @@
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -75,6 +78,9 @@
             let userId = $('#updateUserId').val();
             let userType = $('#updateUserType').val();
             let addURL = '';
+            let admin = $('#updateAdminUserType').val();
+            let instructor = $('#updateInstructorUserType').val();
+            let student = $('#updateStudentUserType').val();
 
             if (!firstName && !middleName && !lastName) {
                 Swal.fire({
@@ -86,17 +92,17 @@
             }
             $('.errorMsgContainer').html("");
             
-            if (userType == 1) {
+            if (userType == admin) {
                 addURL = 'admin';
-            } else if (userType == 2) {
+            } else if (userType == instructor) {
                 addURL = 'instructor';
-            } else if (userType == 3) {
+            } else if (userType == student) {
                 addURL = 'students';
             }
 
             $.ajax({
                 url : `/${addURL}/profiles/add/${userId}`,
-                type : 'get',
+                type : 'GET',
                 data : {firstName : firstName, middleName : middleName, lastName : lastName},
                 success : function (response)
                 {
@@ -104,12 +110,10 @@
                         $("#updateProfileModal").modal('hide');
                         $("#updateProfileModal").trigger("reset");
                         $('#editProfileForm').load(location.href + ' #editProfileForm');
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "User Updated successfully",
-                            showConfirmButton: false,
-                            timer: 1500
+                        Swal.fire({                            
+                            title: "Good job!",
+                            text: "Profile updated successfully",
+                            icon: "success"
                         });
                     }
                 },
@@ -118,6 +122,11 @@
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
+                    });
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.responseJSON.message
                     });
                 }
             });

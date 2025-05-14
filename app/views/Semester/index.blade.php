@@ -19,7 +19,7 @@
             </div>  
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('admin.semesters.index'), 'method' => 'get']) }}
+            {{ Form::open([URL::route('admin.semesters.index'), 'method' => 'GET']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [
@@ -53,7 +53,7 @@
         <tbody>
             @foreach ($semester as $semesters)
             <tr>
-                <td scope="row" class="p-3">{{$semesters->name}}</td>
+                <td scope="row" class="p-3">{{ $semesters->name }}</td>
                 <td class="d-flex justify-content-center gap-2 p-3">
                     <div class="d-flex gap-2" style="display: inline-block;">
                         <div class="text-center">
@@ -126,7 +126,11 @@
                     }
                 });
             } else {
-                console.log("Cenceled deleting '"+ name +"'");
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Cenceled deleting '" + name + "'."
+                });
             }
         });
         $(document).on("click", "#createSemester", function(e) {

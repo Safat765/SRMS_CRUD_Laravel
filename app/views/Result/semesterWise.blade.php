@@ -19,7 +19,7 @@
                             </tr>
                             <tr>
                                 <td>{{ $result['name'] }}</td>
-                                <td>{{ Session::get('registration_number') }}</td>
+                                <td>{{ Illuminate\Support\Facades\Session::get('registration_number') }}</td>
                                 <td>{{ $result['CGPA'] }}</td>
                             </tr>
                             <tr>

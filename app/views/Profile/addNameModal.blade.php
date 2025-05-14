@@ -1,5 +1,5 @@
 <div class="modal fade" id="createProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    {{ Form::open(['url' => '/courses', 'method' => 'post', 'novalidate' => true, 'id' => 'courseCreate']) }}
+    <form>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -11,8 +11,11 @@
 
                     </div>
                     <div class="row mb-3">
-                            {{ Form::hidden('userId', Session::get('user_id'), ['id' => 'profileUserId']) }}
-                            {{ Form::hidden('userType', Session::get('user_type'), ['id' => 'profileUserType']) }}
+                            {{ Form::hidden('userId', Illuminate\Support\Facades\Session::get('user_id'), ['id' => 'profileUserId']) }}
+                            {{ Form::hidden('userType', Illuminate\Support\Facades\Session::get('user_type'), ['id' => 'profileUserType']) }}
+                            {{ Form::hidden('adminUserType', App\Models\User::USER_TYPE_ADMIN, ['id' => 'adminUserType']) }}
+                            {{ Form::hidden('instructorUserType', App\Models\User::USER_TYPE_INSTRUCTOR, ['id' => 'instructorUserType']) }}
+                            {{ Form::hidden('studentUserType', App\Models\User::USER_TYPE_STUDENT, ['id' => 'studentUserType']) }}
                             <div class="col-md-6">
                                 {{ Form::label('firstName', 'First name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                                 {{ Form::text('firstName', null, 
@@ -55,7 +58,7 @@
                 </div>
             </div>
         </div>
-    {{ Form::close() }}
+    </form>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -75,6 +78,9 @@
             let userId = $('#profileUserId').val();
             let userType = $('#profileUserType').val();
             let addURL = '';
+            let admin = $('#adminUserType').val();
+            let instructor = $('#instructorUserType').val();
+            let student = $('#studentUserType').val();
 
             if (!firstName && !middleName && !lastName) {
                 Swal.fire({
@@ -86,11 +92,11 @@
             }
             $('.errorMsgContainer').html("");
             
-            if (userType == 1) {
+            if (userType == admin) {
                 addURL = 'admin';
-            } else if (userType == 2) {
+            } else if (userType == instructor) {
                 addURL = 'instructor';
-            } else if (userType == 3) {
+            } else if (userType == student) {
                 addURL = 'students';
             }
 
