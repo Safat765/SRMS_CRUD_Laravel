@@ -58,13 +58,13 @@
         <tbody>
             @foreach ($data['users'] as $user)
             <tr>
-                <td scope="row" class="p-3">{{$user->username}}</td>
-                <td scope="row" class="p-3">{{$user->email}}</td>
+                <td scope="row" class="p-3">{{ $user->username }}</td>
+                <td scope="row" class="p-3">{{ $user->email }}</td>
                 <td scope="row" class="p-3"> 
-                    {{ $user->user_type == $data['info']['Admin'] ? 'Admin' : ($user->user_type == $data['info']['Instructor'] ? 'Instructor' : 'Student') }}</td>
+                    {{ $user->user_type == $data['info']['Admin'] ? 'Admin' : ($user->user_type == $data['info']['Instructor'] ? 'Instructor' : 'Student') }}
                 </td>
-                <td scope="row" class="p-3">{{$user->registration_number}}</td>
-                <td scope="row" class="p-3">{{$user->phone_number}}</td>
+                <td scope="row" class="p-3">{{ $user->registration_number }}</td>
+                <td scope="row" class="p-3">{{ $user->phone_number }}</td>
                 <td scope="row" class="p-3">
                     @if ($user->status == $data['info']['Active'])
                     <a href="" data-id="{{ $user->user_id }}">
