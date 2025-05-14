@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Input;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,13 +24,9 @@ use Illuminate\Support\Facades\Input;
 App::before(function($request)
 { 
 	$publicRoutes = ['/admin/dashboard', 'login/create', 'logout', '/instructor/dashboard', '/students/dashboard', 'login'];
-
-    // Get the current path (e.g., /profile, /login)
     $path = $request->path();
 
-    // Check if the user is logged in and if the route requires authentication
     if (!in_array($path, $publicRoutes) && !Session::has('user_id')) {
-        // Redirect to login page if the user is not logged in and the route is protected
         return Redirect::to('login/create')->with('message', 'You need to log in first.');
     }
 });
@@ -107,18 +104,15 @@ Route::filter('csrf', function()
 	}
 });
 
-// In app/filters.php
 Route::filter('onlyInstructor', function()
 {
-    if (!Session::has('user_type') || Session::get('user_type') != 2) {
-        // Redirect with error message if not instructor
+    if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_INSTRUCTOR) {
         return Redirect::to('/instructor/dashboard')->with('message', "Only instructors can access this section <br> You are not allow to access this page");
     }
 });
 Route::filter('onlyStudents', function()
 {
-    if (!Session::has('user_type') || Session::get('user_type') != 3) {
-        // Redirect with error message if not instructor
+    if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_STUDENT) {
         return Redirect::to('/students/dashboard')->with('message', "Only students can access this section <br> You are not allow to access this page");
     }
 });
