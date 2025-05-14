@@ -7,9 +7,7 @@
                     <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="errorMsgContainer">
-
-                    </div>
+                    <div class="errorMsgContainer"></div>
                     <div class="row mb-3">
                             <div class="col-md-12">
                                 {{ Form::hidden('semesterId', null, ['class' => 'semesterId', 'id' => 'semesterId']) }}
