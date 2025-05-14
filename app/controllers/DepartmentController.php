@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Response;
 
-
 class DepartmentController extends BaseController
 {
 	private $departmentService;

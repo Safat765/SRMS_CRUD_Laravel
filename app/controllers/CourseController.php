@@ -22,9 +22,7 @@ class CourseController extends \BaseController
 	{
 		$record = Input::all();
 		
-		return View::make('course.index', [
-			'data' => $this->courseService->getAll(isset($record['search']) ? $record['search'] : '')
-		]);
+		return View::make('course.index', $this->courseService->getAll(isset($record['search']) ? $record['search'] : ''));
 	}
 
 	/**
@@ -38,12 +36,12 @@ class CourseController extends \BaseController
 
 		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-		
-		if ($this->courseService->store(Input::all())) {			
-			return Response::json(['status' => 'success',], 200);
-		} else {			
-			return Response::json(['status' => 'error'], 409);
+		} else {		
+			if ($this->courseService->store(Input::all())) {			
+				return Response::json(['status' => 'success', 'message' => 'Course created successfully'], 200);
+			} else {			
+				return Response::json(['status' => 'error', 'message' => 'Course not created'], 409);
+			}
 		}
 	}
 
@@ -55,24 +53,24 @@ class CourseController extends \BaseController
 	 */
 	public function update($id)
 	{
+		$data = Input::all();
+
 		if (!$this->courseService->findById($id)) {			
-			return Response::json(['errors' => 'Course not found'], 404);
-		}
-		
-		$validator = $this->courseService->updateValidation(Input::all(), $id);
-
-		if ($validator->fails()) {			
-			return Response::json(['errors' => $validator->errors()], 422);
-		}
-
-		if ($this->courseService->findByNameAndCredit(Input::all())) {			
-			return Response::json(['errors' => 'Course already exist'], 409);
-		}
-
-		if ($this->courseService->update(Input::all(), $id)) {			
-			return Response::json(['status' => 'success'], 200);
+			return Response::json(['status' => 'error', 'message' => 'Course not found'], 404);
 		} else {			
-			return Response::json(['errors' => 'error'], 409);
+			$validator = $this->courseService->updateValidation($data, $id);
+
+			if ($validator->fails()) {			
+				return Response::json(['status' => $validator->errors()], 422);
+			} elseif ($this->courseService->findByNameAndCredit($data)) {			
+				return Response::json(['status' => 'error', 'message' => 'Course already exist'], 409);
+			} else {
+				if ($this->courseService->update($data, $id)) {			
+					return Response::json(['status' => 'success', 'message' => 'Course updated successfully'], 200);
+				} else {			
+					return Response::json(['status' => 'error', 'message' => 'Course not updated'], 409);
+				}
+			}
 		}
 	}
 
@@ -86,26 +84,26 @@ class CourseController extends \BaseController
 	public function destroy($id)
 	{		
 		if (!$this->courseService->findById($id)) {			
-			return Response::json(['status' => 'error'], 404);
-		}
-		
-		if ($this->courseService->destroy($id)) {			
-			return Response::json(['status' => 'success'], 200);
-		} else {			
-			return Response::json(['status' => 'error'], 404);
+			return Response::json(['status' => 'error', 'message' => 'Course not found'], 404);
+		} else {		
+			if ($this->courseService->destroy($id)) {			
+				return Response::json(['status' => 'success', 'message' => 'Course deleted successfully'], 200);
+			} else {			
+				return Response::json(['status' => 'error', 'message' => 'Course not deleted'], 404);
+			}
 		}
 	}
 	
 	public function status($id)
 	{
 		if (!$this->courseService->findById($id)) {			
-			return Response::json(['status' => 'error'], 404);
-		}
-		
-		if (!$this->courseService->status($id)) {			
-			return Response::json(['status' => 'error'], 404);
-		} else {			
-			return Response::json(['status' => 'success'], 200);
+			return Response::json(['status' => 'error', 'message' => 'Course not found'], 404);
+		} else {		
+			if (!$this->courseService->status($id)) {			
+				return Response::json(['status' => 'error', 'message' => 'Course not updated'], 404);
+			} else {			
+				return Response::json(['status' => 'success', 'message' => 'Course updated successfully'], 200);
+			}
 		}
 	}
 

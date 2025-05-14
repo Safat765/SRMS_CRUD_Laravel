@@ -102,7 +102,7 @@
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.responseJSON.errors
+                        text: err.responseJSON.message
                     });
                     let error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
