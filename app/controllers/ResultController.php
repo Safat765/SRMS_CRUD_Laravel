@@ -16,7 +16,7 @@ class ResultController extends BaseController
 
 	public function index()
 	{
-		return View::make('result/index', ['data' => $this->resultService->getAll()]);
+		return View::make('result/index', $this->resultService->getAll());
 	}
 
 	public function semeterWise($semesterId)
@@ -24,14 +24,14 @@ class ResultController extends BaseController
 		$data = $this->resultService->getSemesterWiseResult(Input::get('studentId'), $semesterId);
 
 		if ($data) {
-			return Response::json(['status' => 'success', 'records' => $data], 200);
+			return Response::json(['status' => 'success', 'message' => 'Result fetched successfully', 'records' => $data], 200);
 		} else {
-			return Response::json(['status' => 'error'], 400);
+			return Response::json(['status' => 'error', 'message' => 'Result not found'], 400);
 		}
 	}
 	
 	public function enrolledCourse()
 	{
-		return View::make('result/enrollCourse', ['groupedResults' => $this->resultService->enrolledCourse()]);
+		return View::make('result/enrollCourse', $this->resultService->enrolledCourse());
 	}
 }

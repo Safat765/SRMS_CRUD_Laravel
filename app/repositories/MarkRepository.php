@@ -27,7 +27,7 @@ class MarkRepository
         return DB::table('marks')->where('mark_id', $marksId)->update($data);
     }
 	
-	public function createMarks($data)
+	public function create($data)
 	{
         return DB::table('marks')->insert($data);
     }

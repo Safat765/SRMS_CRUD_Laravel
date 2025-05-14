@@ -25,8 +25,7 @@ class UserService
 			$data = $this->userRepository->filter($search);
 		} else {
 			$data = $this->userRepository->showAll();
-		}
-			
+		}			
         $totalUsers = $data['userCount']->count();
         $users = $data['usersPaginated'];
 

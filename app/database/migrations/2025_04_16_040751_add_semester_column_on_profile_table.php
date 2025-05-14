@@ -13,16 +13,14 @@ class AddSemesterColumnOnProfileTable extends Migration {
 	 */
 	public function up()
 	{
-		if (Schema::hasTable('profiles')) {
-			Schema::table('profiles', function(Blueprint $table)
-			{
-				$table->integer('semester_id')->unsigned()->nullable()->after('session');
-				$table->foreign('semester_id')
-					->references('semester_id')->on('semesters')
-					->onDelete('cascade')
-					->onUpdate('cascade');
-			});
-		}
+		Schema::table('profiles', function(Blueprint $table)
+		{
+			$table->integer('semester_id')->unsigned()->nullable()->after('session');
+			$table->foreign('semester_id')
+				->references('semester_id')->on('semesters')
+				->onDelete('cascade')
+				->onUpdate('cascade');
+		});
 	}
 
 	/**
@@ -34,6 +32,7 @@ class AddSemesterColumnOnProfileTable extends Migration {
 	{
 		Schema::table('profiles', function(Blueprint $table)
 		{
+			$table->dropForeign('semesters_created_by_foreign');
             $table->dropColumn('semester_id');
 		});
 	}

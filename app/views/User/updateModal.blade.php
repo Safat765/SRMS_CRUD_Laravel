@@ -39,11 +39,11 @@
                             {{ Form::select('userType',
                                 [
                                     '' => 'Select user type',
-                                    $data['info']['Admin'] => 'Admin', 
-                                    $data['info']['Instructor'] => 'Instructor', 
-                                    $data['info']['Student']=> 'Student'
+                                    $info['Admin'] => 'Admin', 
+                                    $info['Instructor'] => 'Instructor', 
+                                    $info['Student']=> 'Student'
                                 ], 
-                                isset($data['user']->user_type) ? $data['user']->user_type : null, [
+                                isset($user->user_type) ? $user->user_type : null, [
                                     'class' => 'form-control shadow-lg userType',
                                     'required' => true
                                 ],
@@ -55,8 +55,8 @@
                         <div class="col-md-4" id="userDepartmentDiv" style="display: none;">
                             {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('departmentId', 
-                                ['' => 'Select Department'] + $data['list']['department'],
-                                isset($data['user']->department_id) ? $data['user']->department_id : null, [
+                                ['' => 'Select Department'] + $list['department'],
+                                isset($user->department_id) ? $user->department_id : null, [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'userDepartmentId',
                                     'required' => true
@@ -69,8 +69,8 @@
                         <div class="col-md-4" id="userSemesterName" style="display: none;">
                             {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('semesterId', 
-                                ['' => 'Select Semester'] + $data['list']['semester'],
-                                isset($data['user']->semester_id) ? $data['user']->semester_id : null, [
+                                ['' => 'Select Semester'] + $list['semester'],
+                                isset($user->semester_id) ? $user->semester_id : null, [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'userSemesterId',
                                     'required' => true

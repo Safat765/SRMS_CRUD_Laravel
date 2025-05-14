@@ -71,7 +71,7 @@ class MarkService
         return $this->markRepository->existOrNot($data['studentId'], $data['examId']);
     }
     
-    public function createMark(array $data)
+    public function create(array $data)
     {        
         $totalMarks = $data['totalMarks'];
         $givenMarks = $data['givenMark'];
@@ -88,7 +88,7 @@ class MarkService
         elseif ($percentage >= 50) $gpa = 2.25;
         else $gpa = 0.00;
         
-        return $this->markRepository->createMarks([
+        return $this->markRepository->create([
             'student_id' => $data['studentId'],
             'exam_id' => $data['examId'],
             'course_id' => $data['courseId'],

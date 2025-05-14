@@ -17,7 +17,7 @@
             </tr>
         </thead>
         <tbody>
-        @foreach ($data['groupedResults'] as $courseName => $students)
+        @foreach ($groupedResults as $courseName => $students)
             <tr>
                 <th colspan="5" class="bg-light text-danger fs-4">{{ $courseName }}</th>
             </tr>

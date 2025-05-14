@@ -22,7 +22,7 @@
             {{ Form::open([URL::route('admin.semesters.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
-                    {{ Form::text('search', $data['search'], [
+                    {{ Form::text('search', $search, [
                     'class' => 'form-control',
                     'placeholder' => 'Search by Semester name',
                     'required' => true
@@ -41,7 +41,7 @@
         @include('semester.slideCreate')
     </div>
     <div class="bg-warning  text-black text-center mx-5">
-        <h5>Total Semester : {{ $data['totalSemester'] }}</h5>
+        <h5>Total Semester : {{ $totalSemester }}</h5>
     </div>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
@@ -51,7 +51,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($data['semester'] as $semesters)
+            @foreach ($semester as $semesters)
             <tr>
                 <td scope="row" class="p-3">{{$semesters->name}}</td>
                 <td class="d-flex justify-content-center gap-2 p-3">
@@ -83,7 +83,7 @@
         </tbody>
     </table>
     <div class="text-center">
-        {{ $data['semester']->links() }}
+        {{ $semester->links() }}
     </div>
     @include('semester.updateModal')
 </div>

@@ -18,7 +18,7 @@ class ProfileController extends BaseController
 	
 	public function create()
 	{
-		return View::make("profile/changePassword", ['data' => $this->profileService->create()]);
+		return View::make("profile/changePassword", $this->profileService->create());
 	}
 	
 	public function store()
@@ -28,10 +28,8 @@ class ProfileController extends BaseController
 		if ($data->fails()) {			
 			return Redirect::back()->withErrors($data);
 		}
-
-		$currentPassword = Session::get("password");
 		
-		if ($this->profileService->checkPassword(Input::get("oldPassword"), $currentPassword)) {
+		if ($this->profileService->checkPassword(Input::get("oldPassword"), Session::get("password"))) {
 			
 			if ($this->profileService->matchPassword(Input::get("newPassword"), Input::get("oldPassword"))) {
 				Session::flash("message", "Previous password and New Password can not be same");

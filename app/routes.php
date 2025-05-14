@@ -45,7 +45,7 @@ Route::group(['before'=> 'onlyInstructor'], function() {
             Route::get('/students/{courseId}/{semesterId}', 'MarkController@students');
             Route::get('/all/students', 'MarkController@studentList');
             Route::get('/assigned/courses', 'MarkController@courseView');
-            Route::post('/go', 'MarkController@createMark');
+            Route::post('/go', 'MarkController@create');
         });
     });
 });

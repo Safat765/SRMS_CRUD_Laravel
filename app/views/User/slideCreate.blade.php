@@ -62,9 +62,9 @@
                             {{ Form::select('userType', 
                                 [
                                     '' => 'Select user type',
-                                    $data['info']['Admin'] => 'Admin', 
-                                    $data['info']['Instructor'] => 'Instructor', 
-                                    $data['info']['Student']=> 'Student'
+                                    $info['Admin'] => 'Admin', 
+                                    $info['Instructor'] => 'Instructor', 
+                                    $info['Student']=> 'Student'
                                 ], 
                                 Input::old('userType'), [
                                     'class' => 'form-control shadow-lg',
@@ -90,7 +90,7 @@
                         <div class="col-md-4" id="semesterName" style="display: none;">
                             {{ Form::label('semesterId', 'Semester ', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('semesterId', 
-                                ['' => 'Select Semester'] + $data['list']['semester'],
+                                ['' => 'Select Semester'] + $list['semester'],
                                 Input::old('semesterId', ''), [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'semesterId',
@@ -126,7 +126,7 @@
                         <div class="col-md-4" id="departmentDiv" style="display: none;">
                             {{ Form::label('departmentId', 'Department Name', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
                             {{ Form::select('departmentId', 
-                                ['' => 'Select Department'] + $data['list']['department'],
+                                ['' => 'Select Department'] + $list['department'],
                                 Input::old('departmentId', ''), [
                                     'class' => 'form-control shadow-lg',
                                     'id' => 'departmentId',

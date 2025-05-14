@@ -18,7 +18,7 @@ class UserController extends \BaseController
 
 	public function index()
 	{
-		return View::make('user.index', ['data' => $this->userService->getAll(Input::get('search'))]);
+		return View::make('user.index', $this->userService->getAll(Input::get('search')));
 	}
 	
 	public function store()
@@ -28,9 +28,7 @@ class UserController extends \BaseController
 		if ($validator->fails()) {
 
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-		
-		if ($this->userService->store(Input::all())) {
+		} elseif ($this->userService->store(Input::all())) {
 			
 			if (!$this->userService->create(Input::all())) {
 				return Response::json(['status' => 'fail', 'message' => 'Failed to create profile'], 500);

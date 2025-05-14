@@ -10,22 +10,13 @@
                 <th scope="col">Middel Name</th>
                 <th scope="col">Last Name</th>
                 <th scope="col">Registration Number</th>
-                <?php
-                    use Illuminate\Support\Facades\Session;
-                    
-                    $value = Session::get('user_type');
-                    if ($value == 3) {
-                ?>
-                        <th scope="col">Session</th>
-                        <th scope="col">Semester</th>
-                <?php
-                    }
-                    if ($value == 2 || $value == 3) {
-                ?>
-                        <th scope="col">Department</th>
-                <?php
-                    }
-                ?>
+                @if (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
+                    <th scope="col">Session</th>
+                    <th scope="col">Semester</th>
+                @endif
+                @if (in_array(Illuminate\Support\Facades\Session::get('user_type'), [App\Models\User::USER_TYPE_INSTRUCTOR, App\Models\User::USER_TYPE_STUDENT]))
+                    <th scope="col">Department</th>
+                @endif
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -51,22 +42,15 @@
                     <td scope="row">{{$user->middle_name}}</td>
                     <td scope="row">{{$user->last_name}}</td>
                     <td scope="row">{{$user->registration_number}}</td>
-                    <?php                    
-                        $value = Session::get('user_type');
-                        if ($value == 3) {
-                    ?>
-                            <td scope="row">{{ $user->session }}</td>
-                            <td scope="row">{{$user->semester_name}}</td>
-                    <?php
-                        }
-                    ?>
-                    <?php
-                        if ($value == 2 || $value == 3) {
-                    ?>
-                            <td scope="row">{{$user->department_name}}</td>
-                    <?php
-                        }
-                    ?>
+
+                   @if (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
+                        <td scope="row">{{ $user->session }}</td>
+                        <td scope="row">{{ $user->semester_name }}</td>
+                    @endif
+
+                    @if (in_array(Illuminate\Support\Facades\Session::get('user_type'), [App\Models\User::USER_TYPE_INSTRUCTOR, App\Models\User::USER_TYPE_STUDENT]))
+                        <td scope="row">{{ $user->department_name }}</td>
+                    @endif
                     <td>
                         <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
                             <div class="text-center">

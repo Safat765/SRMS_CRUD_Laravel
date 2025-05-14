@@ -49,7 +49,7 @@ class DepartmentController extends BaseController
 		
 		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
-		} elseif ($this->departmentService->checkByName($record['name'])) {			
+		} elseif ($this->departmentService->checkByName($record['name'])) {
 			return Response::json(['errors' => 'Department already exist'], 409);
 		} else {
 			if ($this->departmentService->update($record, $id)) {			
@@ -66,7 +66,7 @@ class DepartmentController extends BaseController
 			return Response::json(['status' => 'error', 'message' => 'Department not found'], 404);
 		} else {		
 			if (!$this->departmentService->destroy($id)) {			
-				return Response::json(['status' => 'error', 'message' => 'Department delete failed'], 404);
+				return Response::json(['status' => 'error', 'message' => 'Department delete failed'], 500);
 			} else{			
 				return Response::json(['status' => 'success', 'message' => 'Department deleted successfully'], 200);
 			}

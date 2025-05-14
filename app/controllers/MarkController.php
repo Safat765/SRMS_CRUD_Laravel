@@ -18,15 +18,15 @@ class MarkController extends BaseController
 	
 	public function index()
 	{			
-		return View::make("mark.addMarks", ['data' => $this->markService->getAll()]);
+		return View::make("mark.addMarks", $this->markService->getAll());
 	}
 
 	public function courseView()
 	{
-		return View::make("mark.courseList", ['data' => $this->markService->getAll()]);
+		return View::make("mark.courseList", $this->markService->getAll());
 	}
 				
-	public function createMark()
+	public function create()
 	{
 		$data = Input::all();
 		$totalMarks = isset($data['totalMarks']) ? $data['totalMarks'] : null;
@@ -45,13 +45,13 @@ class MarkController extends BaseController
 			} else {
 				if ($this->markService->checkMarks($data)) {
 					return Response::json(['status' => 'error', 'message' => 'Marks already assigned for this student.'], 400);
-				}
-
-				if ($this->markService->createMark($data)) {
-					$this->addResult($data['studentId']);
-					return Response::json(['status' => 'success', 'message' => 'Marks added successfully for student - "'. $username .'" for the course of "'. $courseName .'" and result also added'], 200);
 				} else {
-					return Response::json(['status' => 'error', 'message' => 'Marks not added'], 500);
+					if ($this->markService->create($data)) {
+						$this->addResult($data['studentId']);
+						return Response::json(['status' => 'success', 'message' => 'Marks added successfully for student - "'. $username .'" for the course of "'. $courseName .'" and result also added'], 200);
+					} else {
+						return Response::json(['status' => 'error', 'message' => 'Marks not added'], 500);
+					}
 				}
 			}
 		}
@@ -76,7 +76,7 @@ class MarkController extends BaseController
 				
 	public function students($courseId, $semesterId)
 	{			
-		return View::make("mark.studentList", ['data' => $this->markService->students($courseId, $semesterId)]);
+		return View::make("mark.studentList",  $this->markService->students($courseId, $semesterId));
 	}
 				
 	public function edit($studentId)
@@ -86,13 +86,14 @@ class MarkController extends BaseController
         
         if (empty($examId)) {
             return Response::json(['status' => 'error', 'message' => 'Exam ID is required'], 400);
-        }
-		$records = $this->markService->edit($records, $studentId);
+        } else {
+			$records = $this->markService->edit($records, $studentId);
 
-		if ($records) {
-			return Response::json(['status' => 'success','records' => $records], 200); 
-		} else {
-			return Response::json(['status' => 'error','message' => 'Student not found'], 404);
+			if ($records) {
+				return Response::json(['status' => 'success','records' => $records], 200); 
+			} else {
+				return Response::json(['status' => 'error','message' => 'Student not found'], 404);
+			}
 		}
 	}
 				
@@ -110,16 +111,16 @@ class MarkController extends BaseController
 			return Response::json(['status' => 'error', 'message' => "Total marks must me within the range of 0 to $totalMarks"], 400);
 		} elseif (empty($givenMarks)) {
 			return Response::json(['status' => 'error', 'message' => "Enter the Marks first"], 400);
-		}
-
-		if (!$this->markService->checkExist($id)) {
-			return Response::json(['status' => 'error', 'message' => 'Marks not assigned for this student. Assign the marks first'], 400);
-		}
-
-		if ($this->markService->update($records, $id)) {
-			return Response::json(['status' => 'success', 'message' => 'Marks Updated successfully for - "'. $username."\" for the course of \"". $courseName."\""], 200);
 		} else {
-			return Response::json(['status' => 'error', 'message' => 'Failes to update marks for - "'. $username."\" for the course of \"". $courseName."\""], 500);
+			if (!$this->markService->checkExist($id)) {
+				return Response::json(['status' => 'error', 'message' => 'Marks not assigned for this student. Assign the marks first'], 400);
+			} else {
+				if ($this->markService->update($records, $id)) {
+					return Response::json(['status' => 'success', 'message' => 'Marks Updated successfully for - "'. $username."\" for the course of \"". $courseName."\""], 200);
+				} else {
+					return Response::json(['status' => 'error', 'message' => 'Failes to update marks for - "'. $username."\" for the course of \"". $courseName."\""], 500);
+				}
+			}
 		}
 	}
 				
@@ -147,6 +148,6 @@ class MarkController extends BaseController
 
 	public function studentList()
 	{
-		return View::make('mark/courseWiseStudent', ['data' => $this->markService->studentList()]);
+		return View::make('mark/courseWiseStudent', $this->markService->studentList());
 	}
 }

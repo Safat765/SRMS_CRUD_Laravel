@@ -52,9 +52,9 @@ class ProfileService
 		]);
     }
 
-    public function checkPassword($oldPassword, $newPassword)
+    public function checkPassword($newPassword, $oldPassword)
     {
-        if (password_verify($oldPassword, $newPassword)) {
+        if (password_verify($newPassword, $oldPassword)) {
             return true;
         }
         return false;
