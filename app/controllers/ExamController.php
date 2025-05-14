@@ -24,9 +24,7 @@ class ExamController extends \BaseController
 	{
 		$record = Input::all();
 		
-		return View::make('exam.index', [
-			'data' => $this->examService->getAll(isset($record['search']) ? $record['search'] : '')
-		]);
+		return View::make('exam.index', $this->examService->getAll(isset($record['search']) ? $record['search'] : ''));
 	}
 	
 	/**
@@ -36,20 +34,15 @@ class ExamController extends \BaseController
 	*/
 	public function store()
 	{
-		$validator = $this->examService->checkValidation(Input::all());
+		$data = Input::all();
+		$validator = $this->examService->checkValidation($data);
 		
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-		$data = Input::all();
-		$exist = $this->examService->searchExamByName($data);
-
-		if ($exist) {
+		} elseif ($this->examService->searchExamByName($data)) {
 			return Response::json(['status' => 'error', 'message' => 'Exam already exists'], 403);
 		} else {
-			$create = $this->examService->store($data, Session::get('user_id'));
-			
-			if ($create) {
+			if ($this->examService->store($data, Session::get('user_id'))) {
 				return Response::json(['status' => 'success', 'message' => 'Exam created successfully'], 200);
 			} else {
 				return Response::json(['status' => 'error', 'message' => 'Failed to create exam'], 409);
@@ -65,19 +58,20 @@ class ExamController extends \BaseController
 	*/
 	public function update($id)
 	{
+		$data = Input::all();
 		if (!$this->examService->find($id)) {
 			return Response::json(['status' => 'error', 'message' => 'Exam not found'], 404);
 		}
-		$validator = $this->examService->updateValidation(Input::all());
+		$validator = $this->examService->updateValidation($data);
 
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-
-		if ($this->examService->update(Input::all(), $id)) {
-			return Response::json(['status' => 'success', 'message' => 'Exam updated successfully'], 200);
 		} else {
-			return Response::json(['status' => 'error', 'message' => 'Failed to update exam'], 500);
+			if ($this->examService->update($data, $id)) {
+				return Response::json(['status' => 'success', 'message' => 'Exam updated successfully'], 200);
+			} else {
+				return Response::json(['status' => 'error', 'message' => 'Failed to update exam'], 500);
+			}
 		}
 	}	
 	
@@ -91,12 +85,12 @@ class ExamController extends \BaseController
 	{
 		if (!$this->examService->find($id)) {
 			return Response::json(['status' => 'error', 'message' => 'Exam not found'], 404);
-		}
-		
-		if (!$this->examService->destroy($id)) {
-			return Response::json(['status' => 'error', 'message' => 'Failed to delete exam'], 400);
-		} else{
-			return Response::json(['status' => 'success', 'message' => 'Exam deleted successfully'], 200);
+		} else {		
+			if (!$this->examService->destroy($id)) {
+				return Response::json(['status' => 'error', 'message' => 'Failed to delete exam'], 400);
+			} else{
+				return Response::json(['status' => 'success', 'message' => 'Exam deleted successfully'], 200);
+			}
 		}
 	}
 }

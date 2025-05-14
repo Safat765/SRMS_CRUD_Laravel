@@ -44,7 +44,7 @@ class User extends Eloquent
         'department_id'
 	];
 
-    public static function getStatusConstants()
+    public static function getStatus()
     {
         return [
             'ACTIVE' => self::STATUS_ACTIVE,

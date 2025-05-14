@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use App\Services\LoginService;
 use App\Services\MarkService;
+use App\Models\User;
 
 class LoginController extends BaseController
 {
@@ -45,22 +46,23 @@ class LoginController extends BaseController
 				
 	public function store()
 	{
-		$validator = $this->loginService->loginValidation(Input::all());
+		$data = Input::all();
+		$validator = $this->loginService->loginValidation($data);
 		
 		if ($validator->fails()) {
 			return Redirect::back()->withErrors($validator)->withInput(Input::except('password'));
 		}
 		
-		$username = Input::get('username');
-		$password = Input::get('password');
+		$username = isset($data['username']) ? $data['username'] : null;
+		$password = isset($data['password']) ? $data['password'] : null;
 		$loginPassword = $this->loginService->loginPassword($username, $password);
 		if (!$loginPassword) {
 			Session::flash('message', 'Incorrect Password');
 			return Redirect::to('login/create');
 		}
 
-		$password = $loginPassword['password'];
-		$userDetails = $loginPassword['user'];
+		$password = isset($loginPassword['password']) ? $loginPassword['password'] : null;
+		$userDetails = isset($loginPassword['user']) ? $loginPassword['user'] : null;
 		$userExists = $this->loginService->loginUser($username, $password, $userDetails);
 		
 		if ($userExists) {
@@ -68,9 +70,9 @@ class LoginController extends BaseController
 			if ($loginPassword) {
 				Session::flash('success', 'Login Successful');
 
-				if ($loginPassword['user']->user_type == 1) {
+				if ($loginPassword['user']->user_type == User::USER_TYPE_ADMIN) {
 					return Redirect::to('/admin/dashboard');
-				} elseif ($loginPassword['user']->user_type == 2) {
+				} elseif ($loginPassword['user']->user_type == User::USER_TYPE_INSTRUCTOR) {
 					return Redirect::to('/instructor/dashboard');
 				} else {
 					return Redirect::to('/students/dashboard');

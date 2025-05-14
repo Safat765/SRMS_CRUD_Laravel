@@ -29,7 +29,7 @@ class Course extends Eloquent
 		'updated_at'
 	];
 
-    public static function getStatusConstants()
+    public static function getStatus()
     {
         return [
             'ACTIVE' => self::STATUS_ACTIVE,

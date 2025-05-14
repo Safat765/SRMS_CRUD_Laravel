@@ -19,7 +19,7 @@ class UserService
 
     public function getAll($search)
     {
-        $statusConstants = User::getStatusConstants();
+        $statusConstants = User::getStatus();
 		
 		if ($search != '') {
 			$data = $this->userRepository->filter($search);
@@ -75,7 +75,7 @@ class UserService
         if ($this->userRepository->searchName($data['username'])) {
             return false;
         } else {
-            $statusConstants = User::getStatusConstants();
+            $statusConstants = User::getStatus();
 
             return $this->userRepository->create([
                 'username' => $data['username'],
@@ -204,7 +204,7 @@ class UserService
 
     public function statusUpdate($id)
     {
-        $statusConstants = User::getStatusConstants();
+        $statusConstants = User::getStatus();
         $ACTIVE = $statusConstants['ACTIVE'];
         $exist = $this->userRepository->find($id);
 

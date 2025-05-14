@@ -32,12 +32,13 @@ class CourseController extends \BaseController
 	 */
 	public function store()
 	{
-		$validator = $this->courseService->checkValidation(Input::all());
+		$data = Input::all();
+		$validator = $this->courseService->checkValidation($data);
 
 		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
 		} else {		
-			if ($this->courseService->store(Input::all())) {			
+			if ($this->courseService->store($data)) {			
 				return Response::json(['status' => 'success', 'message' => 'Course created successfully'], 200);
 			} else {			
 				return Response::json(['status' => 'error', 'message' => 'Course not created'], 409);

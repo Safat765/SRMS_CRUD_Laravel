@@ -36,23 +36,24 @@ class MarkController extends BaseController
 
 		if (empty($givenMarks)) {
 			return Response::json(['status' => 'error', 'message' => 'Enter the Marks first'], 400);
-		}
-
-		if ($totalMarks < $givenMarks) {
-			return Response::json(['status' => 'error', 'message' => "Total marks must be within the range of 0 to $totalMarks"], 400);
-		} elseif ($givenMarks < 0) {
-			return Response::json(['status' => 'error', 'message' => "Marks cannot be negative"], 400);
-		}
-
-		if ($this->markService->checkMarks($data)) {
-			return Response::json(['status' => 'error', 'message' => 'Marks already assigned for this student.'], 400);
-		}
-
-		if ($this->markService->createMark($data)) {
-			$this->addResult($data['studentId']);
-			return Response::json(['status' => 'success', 'message' => 'Marks added successfully for student - "'. $username .'" for the course of "'. $courseName .'" and result also added'], 200);
 		} else {
-			return Response::json(['status' => 'error', 'message' => 'Marks not added'], 500);
+
+			if ($totalMarks < $givenMarks) {
+				return Response::json(['status' => 'error', 'message' => "Total marks must be within the range of 0 to $totalMarks"], 400);
+			} elseif ($givenMarks < 0) {
+				return Response::json(['status' => 'error', 'message' => "Marks cannot be negative"], 400);
+			} else {
+				if ($this->markService->checkMarks($data)) {
+					return Response::json(['status' => 'error', 'message' => 'Marks already assigned for this student.'], 400);
+				}
+
+				if ($this->markService->createMark($data)) {
+					$this->addResult($data['studentId']);
+					return Response::json(['status' => 'success', 'message' => 'Marks added successfully for student - "'. $username .'" for the course of "'. $courseName .'" and result also added'], 200);
+				} else {
+					return Response::json(['status' => 'error', 'message' => 'Marks not added'], 500);
+				}
+			}
 		}
 	}
 

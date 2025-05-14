@@ -22,7 +22,7 @@
             {{ Form::open([URL::route('admin.departments.index'), 'method' => 'get']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
-                    {{ Form::text('search', $data['search'], [
+                    {{ Form::text('search', $search, [
                     'class' => 'form-control',
                     'placeholder' => 'Search by Department name',
                     'required' => true
@@ -41,7 +41,7 @@
         @include('department.slideDepCreate')
     </div>
     <div class="bg-warning  text-black text-center mx-5">
-        <h5>Total Department : {{ $data['totalDepartment'] }}</h5>
+        <h5>Total Department : {{ $totalDepartment }}</h5>
     </div>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>
@@ -51,7 +51,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($data['department'] as $departments)
+            @foreach ($department as $departments)
             <tr>
                 <td scope="row" class="p-3">{{$departments->name}}</td>
                 <td class="d-flex justify-content-center gap-2 p-3">
@@ -83,7 +83,7 @@
         </tbody>
     </table>
     <div class="text-center">
-        {{ $data['department']->links() }}
+        {{ $department->links() }}
     </div>
     @include('department.updateModal')
 </div>
@@ -121,7 +121,7 @@
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Error deleting user. Please try again."
+                            text: "Error deleting department. Please try again."
                         });
                         $('.departmentUpdate').load(location.href + ' .departmentUpdate')
                     }

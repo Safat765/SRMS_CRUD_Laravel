@@ -26,7 +26,11 @@ class DepartmentService
         $totalDepartment = $result['departmentCount']->count();
         $department = $result['departmentPaginate'];
 
-        return ['department' => $department, 'totalDepartment' => $totalDepartment, 'search' => $search];
+        return [
+            'department' => $department,
+            'totalDepartment' => $totalDepartment,
+            'search' => $search,
+        ];
     }
 
     public function checkValidation(array $data)

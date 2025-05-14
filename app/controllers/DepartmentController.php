@@ -18,24 +18,22 @@ class DepartmentController extends BaseController
 	{
 		$record = Input::all();
 		
-		return View::make('department.index', ['data' => $this->departmentService->getAll(isset($record['search']) ? $record['search'] : '')]);
+		return View::make('department.index', $this->departmentService->getAll(isset($record['search']) ? $record['search'] : ''));
 	}
 	
 	public function store()
 	{
-		$validator = $this->departmentService->checkValidation(Input::all());
+		$record = Input::all();
+		$validator = $this->departmentService->checkValidation($record);
 		
-		if ($validator->fails()) {
-			
+		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-		
-		if ($this->departmentService->store(Input::all())) {
-			
-			return Response::json(['status' => 'success'], 200);
-		} else {
-			
-			return Response::json(['status' => 'error'], 409);
+		} else {		
+			if ($this->departmentService->store($record)) {				
+				return Response::json(['status' => 'success'], 200);
+			} else {				
+				return Response::json(['status' => 'error'], 409);
+			}
 		}
 	}
 	
@@ -46,40 +44,32 @@ class DepartmentController extends BaseController
 			return Response::json(['errors' => 'department not found'], 404);
 		}
 		
-		$validator = $this->departmentService->updateValidation(Input::all(), $id);
+		$record = Input::all();
+		$validator = $this->departmentService->updateValidation($record, $id);
 		
-		if ($validator->fails()) {
-			
+		if ($validator->fails()) {			
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-		
-		if ($this->departmentService->checkByName(Input::get('name'))) {
-			
+		} elseif ($this->departmentService->checkByName($record['name'])) {			
 			return Response::json(['errors' => 'Department already exist'], 409);
-		}
-		
-		if ($this->departmentService->update(Input::all(), $id)) {
-			
-			return Response::json(['status' => 'success'], 200);
 		} else {
-			
-			return Response::json(['errors' => 'error'], 409);
+			if ($this->departmentService->update($record, $id)) {			
+				return Response::json(['status' => 'success', 'message' => 'Department updated successfully'], 200);
+			} else {			
+				return Response::json(['errors' => 'error', 'message' => 'Department update failed'], 409);
+			}
 		}
 	}
 	
 	public function destroy($id)
 	{
-		if (!$this->departmentService->checkById($id)) {
-			
-			return Response::json(['status' => 'error'], 404);
-		}
-		
-		if (!$this->departmentService->destroy($id)) {
-			
-			return Response::json(['status' => 'error'], 404);
-		} else{
-			
-			return Response::json(['status' => 'success'], 200);
+		if (!$this->departmentService->checkById($id)) {			
+			return Response::json(['status' => 'error', 'message' => 'Department not found'], 404);
+		} else {		
+			if (!$this->departmentService->destroy($id)) {			
+				return Response::json(['status' => 'error', 'message' => 'Department delete failed'], 404);
+			} else{			
+				return Response::json(['status' => 'success', 'message' => 'Department deleted successfully'], 200);
+			}
 		}
 	}
 }

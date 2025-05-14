@@ -69,7 +69,7 @@ class UserController extends \BaseController
 		}
 		
 		if (!$this->userService->destroy($id)) {
-			return Response::json(['status' => 'error', 'message' => 'User delete failed'], 404);
+			return Response::json(['status' => 'error', 'message' => 'User delete failed'], 500);
 		} else{
 			return Response::json(['status' => 'success', 'message' => 'User deleted successfully'], 200);
 		}		

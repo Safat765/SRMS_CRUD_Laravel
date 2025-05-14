@@ -19,7 +19,7 @@ class CourseService
     
     public function getAll($search)
     {
-        $statusConstants = Course::getStatusConstants();
+        $statusConstants = Course::getStatus();
 
         if ($search != '') {
             $result = $this->courseRepository->filter($search);
@@ -108,7 +108,7 @@ class CourseService
 
     public function status($id)
     {
-        $statusConstants = Course::getStatusConstants();
+        $statusConstants = Course::getStatus();
         $ACTIVE = $statusConstants['ACTIVE'];
         $exist = $this->courseRepository->find($id);
 
