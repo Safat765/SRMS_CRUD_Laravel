@@ -3,7 +3,7 @@
         <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
             <thead>
                 <tr>
-                    <th colspan="2">Assign Course ({{ $data['totalCourse'] }})</th>
+                    <th colspan="2">Assign Course ({{ $totalCourse }})</th>
                 </tr>
                 <tr>
                     <th scope="col">Course</th>
@@ -11,7 +11,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data['results'] as $result)
+                @foreach ($results as $result)
                     <tr>
                         <td scope="row">{{$result->course_name}}</td>
                         <td scope="row">{{$result->department_name}}</td>
@@ -34,7 +34,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($data['marksResults'] as $result)
+                @foreach ($marksResults as $result)
                     @if ($result->obtained_marks)
                         <tr>
                             <td scope="row" class="p-2">{{$result->username}}</td>

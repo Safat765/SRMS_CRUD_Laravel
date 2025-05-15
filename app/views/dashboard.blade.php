@@ -3,7 +3,7 @@
     <title>Dashboard</title>
 @endpush
 @section('main')
-    @if (Session::get('user_type') == App\Models\User::USER_TYPE_ADMIN)
+    @if (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_ADMIN)
         <div class="container-fluid" style="background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20230612/pngtree-cartoon-students-celebrating-graduation-image_2900390.jpg'); text-shadow: 2px 2px 4px hsla(0, 9.70%, 93.90%, 0.98); height: 350px;"></div>
             <div>
                 <br>
@@ -59,7 +59,7 @@
                     </div>
                 </div>  
             </div>
-        @elseif (Session::get('user_type') == App\Models\User::USER_TYPE_INSTRUCTOR)
+        @elseif (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_INSTRUCTOR)
             <div class="container-fluid" style="background-image: url('https://static.vecteezy.com/system/resources/thumbnails/022/093/495/small_2x/teacher-and-students-teaching-in-the-classroom-vector.jpg');
                                      background-size: contain;
                                      background-repeat: no-repeat;
@@ -68,7 +68,7 @@
                                      height: 350px;">
             </div>  
             <br>
-            @include('dashboard.instructor', ['results' => $data['results'], 'totalCourse' => $data['totalCourse'], 'marksResults' => $data['marksResults']])
+            @include('dashboard.instructor', ['results' => $results, 'totalCourse' => $totalCourse, 'marksResults' => $marksResults])
         @else
             <div class="container-fluid" style="background-image: url('https://tspu.ru/images2/eng/Student_life/SL.jpg');
                                      background-size: contain;
@@ -77,7 +77,7 @@
                                      text-shadow: 2px 2px 4px hsla(0, 9.70%, 93.90%, 0.98);
                                      height: 350px;">
             </div>  
-            @include('dashboard.student', ['totalEnrollCourse' => $data['totalEnrollCourse'], 'courses' => $data['courses']])
+            @include('dashboard.student', ['totalEnrollCourse' => $totalEnrollCourse, 'courses' => $courses])
         @endif
     </div>
 

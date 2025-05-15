@@ -29,14 +29,14 @@ class LoginController extends BaseController
 		$courses = $this->loginService->dashboard();
 		$totalEnrollCourse = count($courses);
 
-		return View::make("dashboard", ['data' => [
+		return View::make("dashboard", [
 				'results' => $results,
 				'totalCourse' => $totalCourse,
 				'marksResults' => $marksResults,
 				'courses' => $courses,
 				'totalEnrollCourse' => $totalEnrollCourse
 			]
-		]);
+		);
 	}
 				
 	public function create()
