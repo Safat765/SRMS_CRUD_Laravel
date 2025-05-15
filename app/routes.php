@@ -69,10 +69,6 @@ foreach (['admin', 'instructor', 'students'] as $role) {
         });
     });
 }
-Route::get('/session', function(){
-    $all = Session::all();
-    p($all);
-});
 
 Route::get('/logout', function(){
     Session::flush();
