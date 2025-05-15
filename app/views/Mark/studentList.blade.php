@@ -132,8 +132,8 @@
 <script>
     $(document).ready(function() {
         $(document).on('click', '#marksUpdate', function() {
-            let userId = $(this).data('studentid');
-            let examId = $(this).data('examid');
+            var userId = $(this).data('studentid');
+            var examId = $(this).data('examid');
             
             $.ajax({
                 url : `/instructor/marks/${userId}/edit`,
@@ -142,7 +142,7 @@
                 success:function(response)
                 {
                     if (response.status == 'success') {
-                        let data = response.records[0];
+                        var data = response.records[0];
                         
                         $('#updateTotalMarks').val(data.total_marks);
                         $('#updateUsername').val(data.username);

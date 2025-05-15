@@ -51,7 +51,7 @@
         });
         $(document).on('click', '.addDepartment', function(e) {
             e.preventDefault();
-            let name = $('.name').val();
+            var name = $('.name').val();
 
             if (!name) {
                 Swal.fire({
@@ -81,7 +81,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

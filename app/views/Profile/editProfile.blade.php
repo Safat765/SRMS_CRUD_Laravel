@@ -92,12 +92,12 @@
         });
         $(document).on('click', '#editProfile', function(e) {
             e.preventDefault();
-            let profileId = $(this).data('user_id');
-            let userType = $(this).data('user_type');
-            let admin = $(this).data('admin_user_type');
-            let instructor = $(this).data('instructor_user_type');
-            let student = $(this).data('student_user_type');
-            let addURL = null;
+            var profileId = $(this).data('user_id');
+            var userType = $(this).data('user_type');
+            var admin = $(this).data('admin_user_type');
+            var instructor = $(this).data('instructor_user_type');
+            var student = $(this).data('student_user_type');
+            var addURL = null;
             
             if (userType == admin) {
                 addURL = 'admin';
@@ -112,7 +112,7 @@
                 type: 'get',
                 success: function(response) {
                     if (response.status === 'success') {
-                        let data = response.records;
+                        var data = response.records;
                         $('#updateFirstName').val(data.first_name);
                         $('#updateMiddleName').val(data.middle_name);
                         $('#updateLastName').val(data.last_name);
@@ -131,12 +131,12 @@
         
         $(document).on('click', '#addProfile', function(e) {
             e.preventDefault();
-            let userId = $(this).data('id');
-            let userType = $(this).data('user_type');
-            let admin = $(this).data('admin_user_type');
-            let instructor = $(this).data('instructor_user_type');
-            let student = $(this).data('student_user_type');
-            let addURL = null;
+            var userId = $(this).data('id');
+            var userType = $(this).data('user_type');
+            var admin = $(this).data('admin_user_type');
+            var instructor = $(this).data('instructor_user_type');
+            var student = $(this).data('student_user_type');
+            var addURL = null;
             
             if (userType == admin) {
                 addURL = 'admin';

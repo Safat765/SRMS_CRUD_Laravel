@@ -51,8 +51,8 @@
         });
         $(document).on('click', '.addCourse', function(e) {
             e.preventDefault();
-            let name = $('.name').val();
-            let credit = $('.credit').val();
+            var name = $('.name').val();
+            var credit = $('.credit').val();
 
             if (!name && !credit) {
                 Swal.fire({
@@ -83,7 +83,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

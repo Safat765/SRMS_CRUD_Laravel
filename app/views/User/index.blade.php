@@ -128,9 +128,9 @@
     $(document).ready(function() {
         $(document).on("click", "#deleteBtn", function(e) {
             e.preventDefault();
-            let userId = $(this).data('id');
-            let username = $(this).data('username');
-            let row = $(this).closest("tr");
+            var userId = $(this).data('id');
+            var username = $(this).data('username');
+            var row = $(this).closest("tr");
                 
             if (confirm("Are you sure you want to delete '" + username + "' ?")) {
                 $.ajax({
@@ -169,8 +169,8 @@
         });
         $(document).on('click', '#userStatusBtn', function(e) {
             e.preventDefault();
-            let userId = $(this).data('id');
-            let status = $("#userStatusBtn").text().trim();
+            var userId = $(this).data('id');
+            var status = $("#userStatusBtn").text().trim();
             $.ajax({
                 url : `/admin/users/status/${userId}`,
                 type : 'GET',

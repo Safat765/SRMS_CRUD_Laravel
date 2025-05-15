@@ -68,9 +68,9 @@
     $(document).ready(function() {
         $(document).on('click', '#courseWiseResult', function(e) {
             e.preventDefault();
-            let semesterId = $(this).data('id');
-            let studentId = $(this).data('studentid');
-            let semesterName = $(this).data('name');
+            var semesterId = $(this).data('id');
+            var studentId = $(this).data('studentid');
+            var semesterName = $(this).data('name');
             const $tbody = $(this).find('tbody');
 
             $.ajax({
@@ -82,8 +82,8 @@
                     const records = response.records;
                     const $tbody = $('#modalTableBody');                    
                     $tbody.empty();
-                    let text = 'Course wise Result for -- ';
-                    let newText = text + semesterName +'"';
+                    var text = 'Course wise Result for -- ';
+                    var newText = text + semesterName +'"';
                     $('#updateModalLabel').text(newText);
 
                     records.forEach(record => {

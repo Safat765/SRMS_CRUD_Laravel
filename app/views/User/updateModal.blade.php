@@ -139,18 +139,18 @@
         $('#userSessionName').hide();
 
         $(document).on('click', '.btnEdit', function() {
-            let userId = $(this).data('id');
-            let username = $(this).data('username');
-            let email = $(this).data('email');
-            let userType = $(this).data('user_type');
-            let registrationNumber = $(this).data('registration_number');
-            let phoneNumber = $(this).data('phone_number');
-            let session = $(this).data('session');
-            let semesterId = $(this).data('semester_id');
-            let departmentId = $(this).data('department_id');
-            let admin = $(this).data('admin_user_type');
-            let instructor = $(this).data('instructor_user_type');
-            let student = $(this).data('student_user_type');
+            var userId = $(this).data('id');
+            var username = $(this).data('username');
+            var email = $(this).data('email');
+            var userType = $(this).data('user_type');
+            var registrationNumber = $(this).data('registration_number');
+            var phoneNumber = $(this).data('phone_number');
+            var session = $(this).data('session');
+            var semesterId = $(this).data('semester_id');
+            var departmentId = $(this).data('department_id');
+            var admin = $(this).data('admin_user_type');
+            var instructor = $(this).data('instructor_user_type');
+            var student = $(this).data('student_user_type');
 
             if (userType == student) {
                 $('#userDepartmentDiv').show();
@@ -173,18 +173,18 @@
 
         $(document).on('click', '.updateUser', function(e) {
             e.preventDefault();
-            let userId = $('.userId').val();
-            let username = $('.username').val();
-            let email = $('.email').val();
-            let userType = $('.userType').val();
-            let registrationNumber = $('.registrationNumber').val();
-            let phoneNumber = $('.phoneNumber').val();
-            let session = $('#userSession').val();
-            let semesterId = $('#userSemesterId').val();
-            let departmentId = $('#userDepartmentId').val();
-            let admin = $('#userUpdateAdminUserType').val();
-            let instructor = $('#userUpdateInstructorUserType').val();
-            let student = $('#userUpdateStudentUserType').val();
+            var userId = $('.userId').val();
+            var username = $('.username').val();
+            var email = $('.email').val();
+            var userType = $('.userType').val();
+            var registrationNumber = $('.registrationNumber').val();
+            var phoneNumber = $('.phoneNumber').val();
+            var session = $('#userSession').val();
+            var semesterId = $('#userSemesterId').val();
+            var departmentId = $('#userDepartmentId').val();
+            var admin = $('#userUpdateAdminUserType').val();
+            var instructor = $('#userUpdateInstructorUserType').val();
+            var student = $('#userUpdateStudentUserType').val();
 
             if (userType == admin) {
                 if (!username && !email && !userType && !registrationNumber && !phoneNumber) {
@@ -236,7 +236,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

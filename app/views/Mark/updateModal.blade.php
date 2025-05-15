@@ -84,12 +84,12 @@
     $(document).ready(function() {
         $(document).on('click', '#updataMarks', function(e) {
             e.preventDefault();
-            let totalMarks = $('#updateTotalMarks').val();
-            let givenMark = $('#updateGivenMark').val();
-            let marksId = $('#updateMarksId').val();
-            let username = $('#updateUsername').val();
-            let courseName = $('#updateCourseName').val();
-            let examId = $('#updateExamId').val();
+            var totalMarks = $('#updateTotalMarks').val();
+            var givenMark = $('#updateGivenMark').val();
+            var marksId = $('#updateMarksId').val();
+            var username = $('#updateUsername').val();
+            var courseName = $('#updateCourseName').val();
+            var examId = $('#updateExamId').val();
 
             if (!totalMarks && !courseName && !givenMark && !examId && !marksId && !username) {
                 Swal.fire({

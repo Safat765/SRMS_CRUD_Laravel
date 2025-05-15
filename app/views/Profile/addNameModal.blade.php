@@ -72,15 +72,15 @@
         });
         $(document).on('click', '#createProfile', function(e) {
             e.preventDefault();
-            let firstName = $('#firstName').val();
-            let middleName = $('#middleName').val();
-            let lastName = $('#lastName').val();
-            let userId = $('#profileUserId').val();
-            let userType = $('#profileUserType').val();
-            let addURL = '';
-            let admin = $('#adminUserType').val();
-            let instructor = $('#instructorUserType').val();
-            let student = $('#studentUserType').val();
+            var firstName = $('#firstName').val();
+            var middleName = $('#middleName').val();
+            var lastName = $('#lastName').val();
+            var userId = $('#profileUserId').val();
+            var userType = $('#profileUserType').val();
+            var addURL = '';
+            var admin = $('#adminUserType').val();
+            var instructor = $('#instructorUserType').val();
+            var student = $('#studentUserType').val();
 
             if (!firstName && !middleName && !lastName) {
                 Swal.fire({
@@ -121,7 +121,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

@@ -53,9 +53,9 @@
             }
         });
         $(document).on('click', '.btnEdit', function() {
-            let courseId = $(this).data('id');
-            let name1 = $(this).data('name');
-            let credit1 = $(this).data('credit');
+            var courseId = $(this).data('id');
+            var name1 = $(this).data('name');
+            var credit1 = $(this).data('credit');
 
             $('.courseId').val(courseId);
             $('.name').val(name1);
@@ -64,9 +64,9 @@
 
         $(document).on('click', '.updateCourse', function(e) {
             e.preventDefault();
-            let id = $('#courseId').val();
-            let name1 = $('#name1').val();
-            let credit1 = $('#credit1').val();
+            var id = $('#courseId').val();
+            var name1 = $('#name1').val();
+            var credit1 = $('#credit1').val();
 
             if (!id && !name1 && !credit1) {
                 Swal.fire({
@@ -102,7 +102,7 @@
                         title: "Oops...",
                         text: err.responseJSON.message
                     });
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

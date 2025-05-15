@@ -40,8 +40,8 @@
             }
         });
         $(document).on('click', '.btnEdit', function() {
-            let semesterId = $(this).data('id');
-            let semesterName = $(this).data('name');
+            var semesterId = $(this).data('id');
+            var semesterName = $(this).data('name');
 
             $('.semesterId').val(semesterId);
             $('.semesterName').val(semesterName);
@@ -49,8 +49,8 @@
 
         $(document).on('click', '.updateSemester', function(e) {
             e.preventDefault();
-            let semesterId = $('.semesterId').val();
-            let semesterName = $('.semesterName').val();
+            var semesterId = $('.semesterId').val();
+            var semesterName = $('.semesterName').val();
             $.ajax({
                 url : `/admin/semesters/${semesterId}`,
                 type : 'PUT',
@@ -70,7 +70,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

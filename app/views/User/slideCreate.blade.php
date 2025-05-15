@@ -186,12 +186,12 @@
         $('#departmentDiv').hide();
 
         $('#userType').click(function() {            
-            let userType = $('#userType').val();
-            let semesterId = $('#semesterId').val();
-            let session = $('#session').val();
-            let admin = $('#userAdminUserType').val();
-            let instructor = $('#userInstructorUserType').val();
-            let student = $('#userStudentUserType').val();
+            var userType = $('#userType').val();
+            var semesterId = $('#semesterId').val();
+            var session = $('#session').val();
+            var admin = $('#userAdminUserType').val();
+            var instructor = $('#userInstructorUserType').val();
+            var student = $('#userStudentUserType').val();
 
             if (userType == student) {
                 if (session == "" && semesterId == "") {
@@ -285,7 +285,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

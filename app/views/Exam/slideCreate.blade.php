@@ -141,14 +141,14 @@
         });
         $(document).on('click', '.addExam', function(e) {
             e.preventDefault();
-            let courseId = $('.courseId').val();
-            let examTitle = $('.examTitle').val();
-            let departmentId = $('.departmentId').val();
-            let semesterId = $('.semesterId').val();
-            let credit = $('.credit').val();
-            let examType = $('.examType').val();
-            let marks = $('.marks').val();
-            let instructorId = $('.instructorId').val();
+            var courseId = $('.courseId').val();
+            var examTitle = $('.examTitle').val();
+            var departmentId = $('.departmentId').val();
+            var semesterId = $('.semesterId').val();
+            var credit = $('.credit').val();
+            var examType = $('.examType').val();
+            var marks = $('.marks').val();
+            var instructorId = $('.instructorId').val();
 
             if (!courseId && !examTitle && !departmentId && !semesterId && !credit && !examType && !marks && !instructorId) {
                 Swal.fire({
@@ -179,7 +179,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

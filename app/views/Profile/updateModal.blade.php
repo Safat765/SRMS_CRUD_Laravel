@@ -72,15 +72,15 @@
         });
         $(document).on('click', '#updateProfile', function(e) {
             e.preventDefault();
-            let firstName = $('#updateFirstName').val();
-            let middleName = $('#updateMiddleName').val();
-            let lastName = $('#updateLastName').val();
-            let userId = $('#updateUserId').val();
-            let userType = $('#updateUserType').val();
-            let addURL = '';
-            let admin = $('#updateAdminUserType').val();
-            let instructor = $('#updateInstructorUserType').val();
-            let student = $('#updateStudentUserType').val();
+            var firstName = $('#updateFirstName').val();
+            var middleName = $('#updateMiddleName').val();
+            var lastName = $('#updateLastName').val();
+            var userId = $('#updateUserId').val();
+            var userType = $('#updateUserType').val();
+            var addURL = '';
+            var admin = $('#updateAdminUserType').val();
+            var instructor = $('#updateInstructorUserType').val();
+            var student = $('#updateStudentUserType').val();
 
             if (!firstName && !middleName && !lastName) {
                 Swal.fire({
@@ -119,7 +119,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

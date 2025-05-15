@@ -44,8 +44,8 @@
             }
         });
         $(document).on('click', '.btnEdit', function() {
-            let courseId = $(this).data('id');
-            let depName = $(this).data('name');
+            var courseId = $(this).data('id');
+            var depName = $(this).data('name');
 
             $('.departmentId').val(courseId);
             $('.depName').val(depName);
@@ -53,8 +53,8 @@
 
         $(document).on('click', '.updateDepartment', function(e) {
             e.preventDefault();
-            let departmentId = $('#departmentId').val();
-            let depName = $('#depName').val();
+            var departmentId = $('#departmentId').val();
+            var depName = $('#depName').val();
 
             if (!depName) {
                 Swal.fire({
@@ -85,7 +85,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

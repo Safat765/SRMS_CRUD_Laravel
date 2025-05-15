@@ -147,15 +147,15 @@
             }
         });
         $(document).on('click', '.btnEdit', function() {
-            let examId = $(this).data('id');
-            let courseId = $(this).data('course_id');
-            let examTitle = $(this).data('exam_title');
-            let departmentId = $(this).data('department_id');
-            let semesterId = $(this).data('semester_id');
-            let credit = $(this).data('credit');
-            let examType = $(this).data('exam_type');
-            let marks = $(this).data('marks');
-            let instructorId = $(this).data('instructor_id');
+            var examId = $(this).data('id');
+            var courseId = $(this).data('course_id');
+            var examTitle = $(this).data('exam_title');
+            var departmentId = $(this).data('department_id');
+            var semesterId = $(this).data('semester_id');
+            var credit = $(this).data('credit');
+            var examType = $(this).data('exam_type');
+            var marks = $(this).data('marks');
+            var instructorId = $(this).data('instructor_id');
 
             $('#examId').val(examId);
             $('#courseId1').val(courseId);
@@ -170,15 +170,15 @@
 
         $(document).on('click', '#updateExam', function(e) {
             e.preventDefault();
-            let examId = $('#examId').val();
-            let courseId = $('.courseId1').val();
-            let examTitle = $('.examTitle1').val();
-            let departmentId = $('.departmentId1').val();
-            let semesterId = $('.semesterId1').val();
-            let credit = $('.credit1').val();
-            let examType = $('.examType1').val();
-            let marks = $('.marks1').val();
-            let instructorId = $('.instructorId1').val();
+            var examId = $('#examId').val();
+            var courseId = $('.courseId1').val();
+            var examTitle = $('.examTitle1').val();
+            var departmentId = $('.departmentId1').val();
+            var semesterId = $('.semesterId1').val();
+            var credit = $('.credit1').val();
+            var examType = $('.examType1').val();
+            var marks = $('.marks1').val();
+            var instructorId = $('.instructorId1').val();
 
             if (!examId && !courseId && !examTitle && !departmentId && !semesterId && !credit && !examType && !marks && !instructorId) {
                 
@@ -210,7 +210,7 @@
                 },
                 error :function (err)
                 {
-                    let error = err.responseJSON;
+                    var error = err.responseJSON;
                     $.each(error.errors, function(index, value) {
                         $('.errorMsgContainer').append('<span class="text-danger">'+value+'</span>'+'<br>')
                     });

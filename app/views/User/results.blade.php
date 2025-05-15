@@ -53,8 +53,8 @@
     $(document).ready(function() {
         $(document).on('click', '#resultBtnView', function(e) {
             e.preventDefault();
-            let userId = $(this).data('id');
-            let name = $(this).data('name');
+            var userId = $(this).data('id');
+            var name = $(this).data('name');
 
             $.ajax({
                 url: `/admin/results/semester/${userId}`,

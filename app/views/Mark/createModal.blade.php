@@ -87,15 +87,15 @@
             }
         });
         $(document).on('click', '#marksCreate', function() {
-            let totalMarks = $(this).data('marks');
-            let username = $(this).data('username');
-            let courseName = $(this).data('cname');
-            let semesterName = $(this).data('semname');
-            let examTitle = $(this).data('etitle');
-            let studentId = $(this).data('studentid');
-            let examId = $(this).data('examid');
-            let semesterId = $(this).data('semesterid');
-            let courseId = $(this).data('courseid');
+            var totalMarks = $(this).data('marks');
+            var username = $(this).data('username');
+            var courseName = $(this).data('cname');
+            var semesterName = $(this).data('semname');
+            var examTitle = $(this).data('etitle');
+            var studentId = $(this).data('studentid');
+            var examId = $(this).data('examid');
+            var semesterId = $(this).data('semesterid');
+            var courseId = $(this).data('courseid');
 
             $('#totalMarks').val(totalMarks);
             $('#username').val(username);
@@ -111,16 +111,16 @@
 
         $(document).on('click', '#updateMarks', function(e) {
             e.preventDefault();
-            let totalMarks = $('#totalMarks').val();
-            let username = $('#username').val();
-            let courseName = $('#courseName').val();
-            let semesterName = $('#semesterName').val();
-            let examTitle = $('#examTitle').val();
-            let givenMark = $('#givenMark').val();
-            let studentId = $('#studentId').val();
-            let examId = $('#examId').val();
-            let semesterId = $('#semesterId').val();
-            let courseId = $('#courseId').val();
+            var totalMarks = $('#totalMarks').val();
+            var username = $('#username').val();
+            var courseName = $('#courseName').val();
+            var semesterName = $('#semesterName').val();
+            var examTitle = $('#examTitle').val();
+            var givenMark = $('#givenMark').val();
+            var studentId = $('#studentId').val();
+            var examId = $('#examId').val();
+            var semesterId = $('#semesterId').val();
+            var courseId = $('#courseId').val();
 
             if (!totalMarks && !username && !courseName && !semesterName && !examTitle && !givenMark && !studentId && !examId && !semesterId && !courseId) {
                 Swal.fire({

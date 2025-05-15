@@ -95,8 +95,8 @@
     $(document).ready(function() {
         $(document).on("click", "#semesterDeleteBtn", function(e) {
             e.preventDefault();
-            let id = $(this).data('id');
-            let name = $(this).data('name');
+            var id = $(this).data('id');
+            var name = $(this).data('name');
 
             if (confirm("Are you sure you want to delete '" + name + "' ?")) {
                 $.ajax({

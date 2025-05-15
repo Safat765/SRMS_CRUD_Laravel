@@ -126,7 +126,7 @@
     $(document).ready(function() {
         $(document).on("click", "#deleteBtn", function(e) {
             e.preventDefault();
-            let id = $(this).data('id');
+            var id = $(this).data('id');
 
             if (confirm("Are you sure you want to delete?")) {
                 $.ajax({

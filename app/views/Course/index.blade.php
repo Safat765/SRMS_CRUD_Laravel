@@ -111,7 +111,7 @@
             }
         });
         $(document).on('click', '#courseDelete', function() {
-            let courseId = $(this).data('id');
+            var courseId = $(this).data('id');
             $.ajax({
                 url : `/admin/courses/${courseId}`,
                 type : 'DELETE',
@@ -139,9 +139,9 @@
         });
         $(document).on('click', '#statusBtn', function(e) {
             e.preventDefault();
-            let courseId = $(this).data('id');
+            var courseId = $(this).data('id');
 
-            let status = $("#statusBtn").text().trim();
+            var status = $("#statusBtn").text().trim();
             $.ajax({
                 url : `/admin/courses/status/${courseId}`,
                 type : 'GET',
