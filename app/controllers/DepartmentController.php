@@ -42,8 +42,7 @@ class DepartmentController extends BaseController
 		if (!$this->departmentService->checkById($id)) {
 			
 			return Response::json(['errors' => 'department not found'], 404);
-		}
-		
+		}		
 		$record = Input::all();
 		$validator = $this->departmentService->updateValidation($record, $id);
 		
