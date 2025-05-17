@@ -38,6 +38,7 @@ Route::group(['prefix' => 'admin'], function() {
         Route::get('/status/{id}', ['as' => 'courseStatus', 'uses' => 'CourseController@status']);
     });
 });
+
 Route::group(['before'=> 'onlyInstructor'], function() {
     Route::group(['prefix' => 'instructor'], function() {
         Route::resource('marks', 'MarkController');
@@ -49,6 +50,7 @@ Route::group(['before'=> 'onlyInstructor'], function() {
         });
     });
 });
+
 Route::group(['before'=> 'onlyStudents'], function() {
     Route::group(['prefix'=> 'students'], function() {
         Route::resource('results', 'ResultController', ['only' => ['index']]);

@@ -51,12 +51,12 @@ class UserController extends \BaseController
 		
 		if ($validator->fails()) {
 			return Response::json(['errors' => $validator->errors()], 422);
-		}
-
-		if ($this->userService->update(Input::all(), $id) || $this->userService->updateProfileDuringUserUpdate(Input::all())) {			
-			return Response::json(['status' => 'success', 'message' => 'User updated successfully'], 200);
-		} else {			
-			return Response::json(['status' => 'error', 'message' => 'User update failed'], 400);
+		} else {
+			if ($this->userService->update(Input::all(), $id) && $this->userService->updateProfileDuringUserUpdate(Input::all())) {			
+				return Response::json(['status' => 'success', 'message' => 'User updated successfully'], 200);
+			} else {			
+				return Response::json(['status' => 'error', 'message' => 'User update failed'], 400);
+			}
 		}
 	}
 	
@@ -64,25 +64,25 @@ class UserController extends \BaseController
 	{
 		if (!$this->userService->find($id)) {			
 			return Response::json(['status' => 'error', 'message' => 'User not found'], 404);
+		} else {		
+			if (!$this->userService->destroy($id)) {
+				return Response::json(['status' => 'error', 'message' => 'User delete failed'], 500);
+			} else{
+				return Response::json(['status' => 'success', 'message' => 'User deleted successfully'], 200);
+			}
 		}
-		
-		if (!$this->userService->destroy($id)) {
-			return Response::json(['status' => 'error', 'message' => 'User delete failed'], 500);
-		} else{
-			return Response::json(['status' => 'success', 'message' => 'User deleted successfully'], 200);
-		}		
 	}
 	
 	public function status($id)
 	{
 		if (!$this->userService->find($id)) {			
 			return Response::json(['status' => 'error', 'message' => 'User not found'], 404);
-		}
-		
-		if (!$this->userService->statusUpdate($id)) {
-			return Response::json(['status' => 'error', 'message' => 'User status update failed'], 404);
 		} else {
-			return Response::json(['status' => 'success', 'message' => 'User status updated successfully'], 200);
+			if (!$this->userService->statusUpdate($id)) {
+				return Response::json(['status' => 'error', 'message' => 'User status update failed'], 404);
+			} else {
+				return Response::json(['status' => 'success', 'message' => 'User status updated successfully'], 200);
+			}
 		}
 	}
 	
@@ -90,7 +90,7 @@ class UserController extends \BaseController
 	{
 		$result = $this->userService->allStudents();
 		
-		return View::make('user.results')->with(['getResults' => $result['getResults'], 'totalStudents' => $result['totalStudents']]);
+		return View::make('user.results', ['getResults' => $result['getResults'], 'totalStudents' => $result['totalStudents']]);
 	}
 	
 	public function semesterWise($id)

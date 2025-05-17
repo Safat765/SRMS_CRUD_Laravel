@@ -10,11 +10,11 @@
                 <th scope="col">Middel Name</th>
                 <th scope="col">Last Name</th>
                 <th scope="col">Registration Number</th>
-                @if (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
+                @if (Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
                     <th scope="col">Session</th>
                     <th scope="col">Semester</th>
                 @endif
-                @if (in_array(Illuminate\Support\Facades\Session::get('user_type'), [App\Models\User::USER_TYPE_INSTRUCTOR, App\Models\User::USER_TYPE_STUDENT]))
+                @if (in_array(Session::get('user_type'), [App\Models\User::USER_TYPE_INSTRUCTOR, App\Models\User::USER_TYPE_STUDENT]))
                     <th scope="col">Department</th>
                 @endif
                 <th scope="col">Action</th>
@@ -29,8 +29,8 @@
                     {{ Form::button('Add Profile', [
                         'class' => 'btn btn-success btn-sm',
                         'id' => 'addProfile',
-                        'data-id' => Illuminate\Support\Facades\Session::get('user_id'),
-                        'data-user_type' => Illuminate\Support\Facades\Session::get('user_type'),
+                        'data-id' => Session::get('user_id'),
+                        'data-user_type' => Session::get('user_type'),
                         'data-admin_user_type' => App\Models\User::USER_TYPE_ADMIN,
                         'data-instructor_user_type' => App\Models\User::USER_TYPE_INSTRUCTOR,
                         'data-student_user_type' => App\Models\User::USER_TYPE_STUDENT,
@@ -46,12 +46,12 @@
                     <td scope="row">{{$user->last_name}}</td>
                     <td scope="row">{{$user->registration_number}}</td>
 
-                   @if (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
+                   @if (Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
                         <td scope="row">{{ $user->session }}</td>
                         <td scope="row">{{ $user->semester_name }}</td>
                     @endif
 
-                    @if (in_array(Illuminate\Support\Facades\Session::get('user_type'), [App\Models\User::USER_TYPE_INSTRUCTOR, App\Models\User::USER_TYPE_STUDENT]))
+                    @if (in_array(Session::get('user_type'), [App\Models\User::USER_TYPE_INSTRUCTOR, App\Models\User::USER_TYPE_STUDENT]))
                         <td scope="row">{{ $user->department_name }}</td>
                     @endif
                     <td>
@@ -61,7 +61,7 @@
                                     'class' => 'btn btn-success btn-sm',
                                     'id' => 'editProfile',
                                     'data-user_id' => $user->user_id,
-                                    'data-user_type' => Illuminate\Support\Facades\Session::get('user_type'),
+                                    'data-user_type' => Session::get('user_type'),
                                     'data-admin_user_type' => App\Models\User::USER_TYPE_ADMIN,
                                     'data-instructor_user_type' => App\Models\User::USER_TYPE_INSTRUCTOR,
                                     'data-student_user_type' => App\Models\User::USER_TYPE_STUDENT,

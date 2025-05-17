@@ -36,7 +36,7 @@
                             </div>
                             <div class="col-md-3">
                                 {{ Form::label('password', 'Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
-                                {{ Form::password('password', null,
+                                {{ Form::password('password',
                                     [
                                     'class' => 'form-control shadow-lg',
                                     'placeholder' => 'Enter password',
@@ -47,9 +47,8 @@
                             </div>
                             <div class="col-md-3">
                                 <span id="matchPassword"></span>
-                                {{ Form::label('confirmPassword', 'Confirm Password', ['class' => 'form-label']) }}
-                                    <span style="color: red; font-weight: bold;"> *</span>
-                                {{ Form::password('confirmPassword', null,
+                                {{ Form::label('confirmPassword', 'Confirm Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
+                                {{ Form::password('confirmPassword',
                                     [
                                     'class' => 'form-control shadow-lg',
                                     'placeholder' => 'Enter Confirm Password',
@@ -81,7 +80,7 @@
                             </div>
                             <div class="col-md-4" id = 'sessionName' style="display: none;">
                                 {{ Form::label('session', 'Session', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> (Only for students)</span>
-                                {{ Form::text('session', Input::old('session'), 
+                                {{ Form::text('session', null, 
                                     [
                                     'class' => 'form-control shadow-lg',
                                     'placeholder' => 'Enter Session',
@@ -264,7 +263,7 @@
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url: "{{ route('admin.users.store') }}",
+                url: `/admin/users`,
                 type: 'POST',
                 data: $('#userCreateForm').serialize(),
                 dataType: 'json',

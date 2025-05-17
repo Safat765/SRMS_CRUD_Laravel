@@ -48,6 +48,7 @@
                                 ], 
                                 isset($user->user_type) ? $user->user_type : null, [
                                     'class' => 'form-control shadow-lg userType',
+                                    'id' => 'userTypeUpdate',
                                     'required' => true
                                 ],
                                 [
@@ -118,7 +119,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary close" id="close" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary updateUser">Update</button>
+                    <button type="button" class="btn btn-primary updateUser" id="updateUser">Update</button>
                 </div>
             </div>
         </div>
@@ -152,6 +153,8 @@
             var instructor = $(this).data('instructor_user_type');
             var student = $(this).data('student_user_type');
 
+            console.log(userType);
+
             if (userType == student) {
                 $('#userDepartmentDiv').show();
                 $('#userSemesterName').show();
@@ -171,7 +174,30 @@
             $('#userDepartmentId').val(departmentId);
         });
 
-        $(document).on('click', '.updateUser', function(e) {
+        $(document).on('change', '#userTypeUpdate', function() {            
+            var userType = $('#userTypeUpdate').val();
+            var semesterId = $('#userSemesterId').val();
+            var session = $('#userSession').val();
+            var admin = $('#userUpdateAdminUserType').val();
+            var instructor = $('#userUpdateInstructorUserType').val();
+            var student = $('#userUpdateStudentUserType').val();
+
+            if (userType == student) {
+                if (session == "" && semesterId == "") {
+                    $('#userDepartmentDiv').show();
+                    $('#userSemesterName').show();
+                    $('#userSessionName').show();
+                }
+            } else if (userType == instructor) {
+                $('#userDepartmentDiv').show();
+            } else {
+                $('#userDepartmentDiv').hide();
+                $('#userSemesterName').hide();
+                $('#userSessionName').hide();
+            }
+        });
+
+        $(document).on('click', '#updateUser', function(e) {
             e.preventDefault();
             var userId = $('.userId').val();
             var username = $('.username').val();

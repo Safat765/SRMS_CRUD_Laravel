@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="flex-grow-1" style="min-width: 250px; max-width: 500px;">
-            {{ Form::open([URL::route('admin.exams.index'), 'method' => 'GET']) }}
+            {{ Form::open(['url' => '/admin/exams', 'method' => 'GET']) }}
             <div class="form-group d-flex">
                 <div class="form-group p-1 col-10">
                     {{ Form::text('search', $search, [

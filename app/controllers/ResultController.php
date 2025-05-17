@@ -32,6 +32,7 @@ class ResultController extends BaseController
 	
 	public function enrolledCourse()
 	{
-		return View::make('result/enrollCourse', $this->resultService->enrolledCourse());
+		$groupedResults = $this->resultService->enrolledCourse();
+		return View::make('result/enrollCourse', ['groupedResults' => $groupedResults]);
 	}
 }

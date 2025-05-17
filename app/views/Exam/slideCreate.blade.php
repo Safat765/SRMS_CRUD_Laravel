@@ -161,7 +161,7 @@
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url : "{{ URL::route('admin.exams.store') }}",
+                url : `/admin/exams`,
                 type : 'POST',
                 data : {courseId : courseId, examTitle : examTitle, departmentId : departmentId, semesterId : semesterId, credit : credit, examType: examType, marks : marks, instructorId : instructorId},
                 success : function (response)

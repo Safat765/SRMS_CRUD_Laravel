@@ -63,7 +63,7 @@
             $('.errorMsgContainer').html("");
 
             $.ajax({
-                url : "{{ URL::route('admin.semesters.store') }}",
+                url : `{{ url('admin/semesters') }}`,
                 type : 'POST',
                 data : {name : name},
                 success : function (response)

@@ -36,5 +36,4 @@ class AddSemesterColumnOnProfileTable extends Migration {
             $table->dropColumn('semester_id');
 		});
 	}
-
 }

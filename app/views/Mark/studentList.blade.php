@@ -8,7 +8,7 @@
     <div class="bg-warning text-black text-center mx-5">
         <h5>Total Students : {{ $totalStudent }}</h5>
     </div>
-    <a href="{{ URL::route('instructor.marks.index') }}" class="col-md-1 btn btn-danger">Back</a>
+    <a href="{{ url('instructor/marks') }}" class="col-md-1 btn btn-primary">Back</a>
     <hr>
     <table class="table table-striped table-bordered table-hover text-center" style="font-size: 15px;">
         <thead>

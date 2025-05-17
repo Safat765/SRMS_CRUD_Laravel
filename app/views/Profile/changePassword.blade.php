@@ -22,11 +22,6 @@
                                 'required' => true
                                 ]
                             )}}
-                            @if($errors->has('oldPassword'))
-                            <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('oldPassword') }}
-                            </span>
-                            @endif
                         </div>
                         <div class="col-md-6">
                             {{ Form::label('newPassword', 'New Password', ['class' => 'form-label']) }}<span style="color: red; font-weight: bold;"> *</span>
@@ -37,11 +32,6 @@
                                 'required' => true
                                 ]
                             )}}
-                            @if($errors->has('newPassword'))
-                            <span class="text-danger small d-block mt-1">
-                                {{ $errors->first('newPassword') }}
-                            </span>
-                            @endif
                         </div>
                     </div>
                     <div class="d-grid gap-2">
