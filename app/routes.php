@@ -55,7 +55,7 @@ Route::group(['before'=> 'onlyStudents'], function() {
     Route::group(['prefix'=> 'students'], function() {
         Route::resource('results', 'ResultController', ['only' => ['index']]);
         Route::get('/results/semester/{id}', 'ResultController@semeterWise');
-        Route::get('/results/ecrolled', 'ResultController@enrolledCourse');
+        Route::get('/results/enrolled', 'ResultController@enrolledCourse');
         
     });
 });

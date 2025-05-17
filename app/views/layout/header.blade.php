@@ -124,7 +124,7 @@
                 <a href="{{ URL::route('students.results.index') }}" class="btn btn-outline-secondary fs-6 mb-3">View</a>
                 <hr>
             </div>
-            <a href="{{url('/students/results/ecrolled')}}" class="btn btn-outline-secondary fs-6 mb-3"><i class="las la-school fs-4"></i>  Enroll Courses</a>
+            <a href="{{url('/students/results/enrolled')}}" class="btn btn-outline-secondary fs-6 mb-3"><i class="las la-school fs-4"></i>  Enroll Courses</a>
           @endif
       </div>
     @endif
