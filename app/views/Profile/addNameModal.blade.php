@@ -11,8 +11,8 @@
 
                     </div>
                     <div class="row mb-3">
-                            {{ Form::hidden('userId', Illuminate\Support\Facades\Session::get('user_id'), ['id' => 'profileUserId']) }}
-                            {{ Form::hidden('userType', Illuminate\Support\Facades\Session::get('user_type'), ['id' => 'profileUserType']) }}
+                            {{ Form::hidden('userId', Session::get('user_id'), ['id' => 'profileUserId']) }}
+                            {{ Form::hidden('userType', Session::get('user_type'), ['id' => 'profileUserType']) }}
                             {{ Form::hidden('adminUserType', App\Models\User::USER_TYPE_ADMIN, ['id' => 'adminUserType']) }}
                             {{ Form::hidden('instructorUserType', App\Models\User::USER_TYPE_INSTRUCTOR, ['id' => 'instructorUserType']) }}
                             {{ Form::hidden('studentUserType', App\Models\User::USER_TYPE_STUDENT, ['id' => 'studentUserType']) }}

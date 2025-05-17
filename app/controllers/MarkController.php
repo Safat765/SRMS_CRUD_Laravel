@@ -67,10 +67,9 @@ class MarkController extends BaseController
 		$records = $this->markService->show(Input::all(), $id);
 
 		if ($records) {
-			return View::make('mark/View', ['records' => $records, 'pageName' => "View Marks"]);
+			return Response::json(['status' => 'success', 'message' => 'Student found', 'records' => $records], 200);
 		} else {
-			Session::flash('message', 'Student not added');
-			return Redirect::to('instructor/marks');
+			return Response::json(['status' => 'error', 'message' => 'Student not found'], 404);
 		}
 	}
 				

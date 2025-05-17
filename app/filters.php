@@ -107,12 +107,45 @@ Route::filter('csrf', function()
 Route::filter('onlyInstructor', function()
 {
     if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_INSTRUCTOR) {
-        return Redirect::to('/instructor/dashboard')->with('message', "Only instructors can access this section <br> You are not allow to access this page");
+        $addURL = getRole();
+        return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Only instructors can access this section <br> You are not allow to access this page");
     }
 });
 Route::filter('onlyStudents', function()
 {
     if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_STUDENT) {
-        return Redirect::to('/students/dashboard')->with('message', "Only students can access this section <br> You are not allow to access this page");
+        $addURL = getRole();
+        return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Only students can access this section <br> You are not allow to access this page");
     }
+});
+
+Route::filter('onlyAdmin', function() {
+    if (!Session::has('user_type') || Session::get('user_type') !== User::USER_TYPE_ADMIN) {
+        $addURL = getRole();
+		// App::abort(404, 'Page not found or invalid URL.');
+		return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Only admin can access this section <br> You are not allow to access this page");
+    }
+});
+
+App::missing(function()
+{
+	$addURL = getRole();
+	// App::abort(404, 'Page not found or invalid URL.');
+    return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Invalid URL.");
+});
+
+Route::filter('role', function()
+{
+	if (!Session::has('user_type') && !Session::get('user_type'))
+	{
+		return Redirect::to('/logout')->with('message', "Login first to access this page");
+	}
+	$userType = Session::get('user_type');
+	if ($userType == User::USER_TYPE_ADMIN) {
+	  $addURL = 'admin';
+	} elseif ($userType == User::USER_TYPE_INSTRUCTOR) {
+	  $addURL = 'instructor';
+	} elseif ($userType == User::USER_TYPE_STUDENT) {
+	  $addURL = 'students';
+	}
 });

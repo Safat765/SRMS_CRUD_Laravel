@@ -146,7 +146,8 @@ class UserRepository
 				'courses.name as course_name',
 				'marks.marks',
 				'marks.gpa',
-				'semesters.name as semester_name'
+				'semesters.name as semester_name',
+				'courses.credit'
 			])
 			->where('marks.student_id', $id)
 			->get();

@@ -41,12 +41,16 @@
                     <td>
                         <div class="d-flex justify-content-center gap-2" style="display: inline-block;">
                             @if (!empty($marks[$result->user_id]))
-                                {{ Form::open(['url' => '/instructor/marks/'.$result->user_id, 'method' => 'get']) }}
-                                {{ Form::hidden('examId', $result->exam_id) }}
                                     <div class="text-center">
                                         {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
                                             'class' => 'btn btn-info btn-sm',
-                                            'type' => 'submit'
+                                            'id' => 'viewMarks',
+                                            'type' => 'submit',
+                                            'data-bs-toggle' => 'modal',
+                                            'data-bs-target' => '#viewMarksModal',
+                                            'data-studentid' => $result->user_id,
+                                            'data-examid' => $result->exam_id,
+                                            'data-username' => $result->username
                                         ])}}
                                     </div>
                                 {{ Form::close() }}
@@ -125,10 +129,12 @@
 <br><hr><hr><br><br>
 @include('mark.createModal')
 @include('mark.updateModal')
+@include('mark.view')
 @endsection
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(document).ready(function() {
         $(document).on('click', '#marksUpdate', function() {
@@ -157,11 +163,6 @@
                         $('#updateMarksId').val(data.mark_id);
 
                         $('#updateMarksModal').modal('show');
-                        Swal.fire({
-                            title: "Good job!",
-                            text: "Marks updated successfully!",
-                            icon: "success"
-                        });
                     }
                 },
                 error:function(xhr)
@@ -170,6 +171,38 @@
                         icon: "error",
                         title: "Oops...",
                         text: "Something went wrong while fetching student marks!"
+                    });
+                }
+            });
+        });
+        $(document).on('click', '#viewMarks', function() {
+            var userId = $(this).data('studentid');
+            var examId = $(this).data('examid');
+            var username = $(this).data('username');
+
+            $.ajax({
+                url : `/instructor/marks/${userId}`,
+                method: 'GET',
+                data: {examId : examId},
+                success:function(response)
+                {
+                    if (response.status == 'success') {
+                        var data = response.records[0];
+                        $('#viewGivenMark').val(data.given_marks);
+                        $('#viewCourseName').val(data.course_name);
+                        $('#viewSemesterName').val(data.semester_name);
+                        $('#viewExamTitle').val(data.exam_title);
+                        $('#viewMarksModalLabel').text('Marks of -- "' + username + '"');
+
+                        $('#viewMarksModal').modal('show');
+                    }
+                },
+                error:function(xhr)
+                {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: response.message
                     });
                 }
             });

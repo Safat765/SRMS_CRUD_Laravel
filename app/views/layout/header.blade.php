@@ -103,7 +103,7 @@
             </div>
             <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#examMenu"><i class="las la-clipboard-list fs-4"></i> Exam</button>
             <div class="collapse ps-4 w-100" id="examMenu">
-                <a href="{{ URL::route('admin.exams.index') }}" class="btn btn-outline-secondary fs-6">View</a>
+                <a href="{{ url('admin/exams') }}" class="btn btn-outline-secondary fs-6">View</a>
                 <hr>
             </div>
             <a href="{{url('/admin/results/all')}}" class="btn btn-outline-secondary fs-6 mb-3"><i class="las la-poll fs-4"></i>  Results</a>
@@ -113,7 +113,7 @@
             <div>
                 <a href="{{ url('/instructor/marks/assigned/courses') }}" class="btn btn-outline-secondary fs-6 mb-3">Assigned Course</a>
                 <hr>
-                <a href="{{ URL::route('instructor.marks.index') }}" class="btn btn-outline-secondary fs-6 mb-3">Add marks</a>
+                <a href="{{ url('/instructor/marks') }}" class="btn btn-outline-secondary fs-6 mb-3">Add marks</a>
                 <hr>
                 <a href="{{url('/instructor/marks/all/students')}}" class="btn btn-outline-secondary fs-6 mb-3">View marks</a>
             </div>
@@ -121,7 +121,7 @@
           @if (Illuminate\Support\Facades\Session::get('user_type') == App\Models\User::USER_TYPE_STUDENT)
             <button class="btn btn-dark mb-3" data-bs-toggle="collapse" data-bs-target="#resultMenu"><i class="las la-poll fs-4"></i> Result</button>
             <div class="collapse ps-4 w-100" id="resultMenu">
-                <a href="{{ URL::route('students.results.index') }}" class="btn btn-outline-secondary fs-6 mb-3">View</a>
+                <a href="{{ url('/students/results/'.Session::get('user_id')) }}" class="btn btn-outline-secondary fs-6 mb-3">View</a>
                 <hr>
             </div>
             <a href="{{url('/students/results/enrolled')}}" class="btn btn-outline-secondary fs-6 mb-3"><i class="las la-school fs-4"></i>  Enroll Courses</a>

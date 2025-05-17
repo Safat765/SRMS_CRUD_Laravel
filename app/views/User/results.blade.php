@@ -65,6 +65,9 @@
                     $tbody.empty();
                     $('#updateModalLabel').text('Result of -- ' + name);
 
+                    var totalCredit = 0;
+                    var totalGPA = 0;
+
                     $.each(records, function(semesterName, students) {
                         $tbody.append(`
                             <tr>
@@ -73,6 +76,8 @@
                         `);
                         
                         $.each(students, function(index, result) {
+                            totalCredit += result.credit;
+                            totalGPA += parseFloat(result.gpa) * result.credit;
                             $tbody.append(`
                                 <tr>
                                     <td>${result.course_name}</td>
@@ -81,6 +86,17 @@
                                 </tr>
                             `);
                         });
+                        console.log('totalCredit: ' + totalCredit, 'totalGPA: ' + totalGPA);
+                        var semesterGPA = (totalGPA / totalCredit).toFixed(2);
+
+                        $tbody.append(`
+                            <tr class="table-info fw-bold">
+                                <td colspan="2" class="text-end">Total GPA:</td>
+                                <td>${semesterGPA}</td>
+                            </tr>
+                        `);
+                        totalCredit = 0;
+                        totalGPA = 0;
                     });
                     $('#resultUserModal').modal('show');
                 },

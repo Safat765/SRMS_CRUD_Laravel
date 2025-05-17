@@ -31,7 +31,7 @@
                             <td scope="row">{{$result->semester_name}}</td>
                             <td>
                                 <div class="d-flex justify-content-center" style="display: inline-block;">
-                                    {{ Form::open(['url' => URL::to('/instructor/marks/students/' . $result->course_id . '/' . $result->semester_id), 'method' => 'get']) }}
+                                    {{ Form::open(['url' => URL::to('/instructor/course/' . $result->course_id . '/semester/' . $result->semester_id), 'method' => 'get']) }}
                                         <div class="text-center">
                                             {{ Form::button(HTML::decode('<i class="las la-eye"></i>'), [
                                                 'class' => 'btn btn-info btn-sm',

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use App\Services\ResultService;
 
 class ResultController extends BaseController
@@ -14,12 +16,7 @@ class ResultController extends BaseController
 		$this->resultService = $resultService;
 	}
 
-	public function index()
-	{
-		return View::make('result/index', $this->resultService->getAll());
-	}
-
-	public function semeterWise($semesterId)
+	public function semesterWise($semesterId)
 	{
 		$data = $this->resultService->getSemesterWiseResult(Input::get('studentId'), $semesterId);
 
@@ -34,5 +31,17 @@ class ResultController extends BaseController
 	{
 		$groupedResults = $this->resultService->enrolledCourse();
 		return View::make('result/enrollCourse', ['groupedResults' => $groupedResults]);
+	}
+
+	public function show($id)
+	{
+		$data = $this->resultService->getAll($id);
+
+		if ($data) {
+			return View::make('result/index', $data);
+		} else {
+			Session::flash('message', 'You are not authorized to access this page');
+			return Redirect::to('/students/dashboard');
+		}
 	}
 }

@@ -158,9 +158,8 @@ class ProfileService
 
     public function exist($userID)
     {
-        $exist = $this->profileRepository->exist($userID);
-        if ($exist) {
-            return $exist;
+        if ($userID == Session::get('user_id')) {
+            return $this->profileRepository->exist($userID);
         } else {
             return false;
         }
