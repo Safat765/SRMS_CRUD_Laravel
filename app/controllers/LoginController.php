@@ -38,12 +38,12 @@ class LoginController extends BaseController
 			]
 		);
 	}
-				
+
 	public function create()
 	{
 		return View::make('login');
 	}
-				
+
 	public function store()
 	{
 		$data = Input::all();
@@ -66,7 +66,6 @@ class LoginController extends BaseController
 		$userExists = $this->loginService->loginUser($username, $password, $userDetails);
 		
 		if ($userExists) {
-
 			if ($loginPassword) {
 				Session::flash('success', 'Login Successful');
 
@@ -87,5 +86,12 @@ class LoginController extends BaseController
 			return Redirect::to('login/create');
 			die();
 		}
+	}
+
+	public function logout()
+	{
+		Session::flush();
+		Session::flash('success', 'Logout Successful');
+		return Redirect::to('login/create');
 	}
 }

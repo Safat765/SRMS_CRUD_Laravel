@@ -53,4 +53,13 @@ class User extends Eloquent
             'STUDENT' => self::USER_TYPE_STUDENT
         ];
     }
+
+	public static function getRole()
+	{
+		return [
+			'admin' => self::USER_TYPE_ADMIN,
+			'instructor' => self::USER_TYPE_INSTRUCTOR,
+			'student' => self::USER_TYPE_STUDENT
+		];
+	}
 }

@@ -19,7 +19,7 @@ Route::get('/', 'LoginController@create');
 Route::resource('/login', 'LoginController');
 
 
-Route::group(['before'=> 'onlyAdmin'], function() {
+Route::group(['before'=> 'admin'], function() {
     Route::group(['prefix' => 'admin'], function() {
         Route::get('/results/all', 'UserController@allStudents');
         Route::get('/results/semester/{id}', 'UserController@semesterWise');
@@ -43,9 +43,10 @@ Route::group(['before'=> 'onlyAdmin'], function() {
     });
 });
 
-Route::group(['before'=> 'onlyInstructor'], function() {
+Route::group(['before'=> 'instructor'], function() {
     Route::group(['prefix' => 'instructor'], function() {
         Route::get('/course/{courseId}/semester/{semesterId}', 'MarkController@students');
+
         Route::resource('marks', 'MarkController');
         Route::group(['prefix'=> 'marks'], function() {
             Route::get('/all/students', 'MarkController@studentList');
@@ -55,7 +56,7 @@ Route::group(['before'=> 'onlyInstructor'], function() {
     });
 });
 
-Route::group(['before'=> 'onlyStudents'], function() {
+Route::group(['before'=> 'students'], function() {
     Route::group(['prefix'=> 'students'], function() {
         Route::resource('results', 'ResultController', ['only' => ['show']]);
         Route::get('/results/semester/{id}', 'ResultController@semesterWise');
@@ -64,20 +65,20 @@ Route::group(['before'=> 'onlyStudents'], function() {
     });
 });
 
-// Route::group(['before' => 'role'], function () {
-
-//     Route::get('{role}/dashboard', ['uses' => 'LoginController@index']); 
-// });
-
 foreach (['admin', 'instructor', 'students'] as $role) {
-    Route::group(['prefix' => $role], function() use ($role) {
+    Route::group([
+        'prefix' => $role,
+        'before' => $role
+    ], function() use ($role) { 
         Route::get('/dashboard', ['uses' => 'LoginController@index']);
-        
+ 
         Route::resource('profiles', 'ProfileController');
+ 
         Route::group(['prefix' => 'profiles'], function() {
-            Route::get('/search/{id}', 'ProfileController@search');
-            Route::get('/add/{id}', 'ProfileController@addName');
+            Route::get('/search/{id}', ['uses' => 'ProfileController@search']);
+            Route::get('/add/{id}', ['uses' => 'ProfileController@addName']);
         });
+ 
     });
 }
 
@@ -86,8 +87,5 @@ Route::get('/session', function(){
     p($all);
 });
 
-Route::get('/logout', function(){
-    Session::flush();
-	Session::flash('success', 'Logout Successful');
-    return Redirect::to('login/create');
-});
+
+Route::get('/logout', ['uses' => 'LoginController@logout']);

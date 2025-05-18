@@ -39,9 +39,12 @@ class ResultController extends BaseController
 
 		if ($data) {
 			return View::make('result/index', $data);
-		} else {
-			Session::flash('message', 'You are not authorized to access this page');
-			return Redirect::to('/students/dashboard');
-		}
+		} 
+		
+		return Response::make('Access Denied', 403);
+		// else {
+		// 	Session::flash('message', 'You are not authorized to access this page');
+		// 	return Redirect::to('/students/dashboard');
+		// }
 	}
 }
