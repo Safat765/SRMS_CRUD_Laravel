@@ -60,12 +60,6 @@ class ProfileController extends BaseController
 		if ($user) {
 			return View::make("profile/editProfile", ['user' => $user]);
 		}
-		return Response::make('Access Denied', 403);
-		//  else {
-		// 	Session::flash('message', 'You are not authorized to access this page');
-		// 	$url = $this->profileService->getURL();
-		// 	return Redirect::to('/'.$url.'/dashboard');
-		// }
 	}
 	
 	public function edit($userID)

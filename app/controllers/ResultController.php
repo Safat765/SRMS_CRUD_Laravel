@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use App\Services\ResultService;
 
 class ResultController extends BaseController
@@ -39,12 +37,6 @@ class ResultController extends BaseController
 
 		if ($data) {
 			return View::make('result/index', $data);
-		} 
-		
-		return Response::make('Access Denied', 403);
-		// else {
-		// 	Session::flash('message', 'You are not authorized to access this page');
-		// 	return Redirect::to('/students/dashboard');
-		// }
+		}
 	}
 }

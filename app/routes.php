@@ -58,7 +58,9 @@ Route::group(['before'=> 'instructor'], function() {
 
 Route::group(['before'=> 'students'], function() {
     Route::group(['prefix'=> 'students'], function() {
-        Route::resource('results', 'ResultController', ['only' => ['show']]);
+        Route::get('/results/{id}', ['before' => 'result', 'uses' => 'ResultController@show']);
+        // Route::resource('results', 'ResultController', ['only' => ['show'], 'before' => 'result']);
+
         Route::get('/results/semester/{id}', 'ResultController@semesterWise');
         Route::get('/results/enrolled', 'ResultController@enrolledCourse');
         
@@ -71,8 +73,9 @@ foreach (['admin', 'instructor', 'students'] as $role) {
         'before' => $role
     ], function() use ($role) { 
         Route::get('/dashboard', ['uses' => 'LoginController@index']);
- 
-        Route::resource('profiles', 'ProfileController');
+
+        Route::get('/profiles/{id}', ['before' => 'profile', 'uses' => 'ProfileController@show']);
+        Route::resource('profiles', 'ProfileController', ['except' => ['show']]);
  
         Route::group(['prefix' => 'profiles'], function() {
             Route::get('/search/{id}', ['uses' => 'ProfileController@search']);

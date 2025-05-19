@@ -109,45 +109,74 @@ Route::filter('csrf', function()
 Route::filter('instructor', function()
 {
     if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_INSTRUCTOR) {
-        $addURL = getRole();
-		return Response::make('Access Denied', 403);
-		// App::abort(403);
-		// return View::make('errors.403');
-        // return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Only instructors can access this section <br> You are not allow to access this page");
+		return Response::make( warningMessage(). '    
+			<p>Only <strong>instructors</strong> can access this section.</p>
+			<p>You are not allowed to access this page.</p>
+		</div>
+		', 403);
     }
 });
 Route::filter('students', function()
 {
     if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_STUDENT) {
-        $addURL = getRole();
-		return Response::make('Access Denied', 403);
-		// App::abort(403);
-		// return View::make('errors.403');
-        // return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Only students can access this section <br> You are not allow to access this page");
+		return Response::make( warningMessage(). '    
+			<p>Only <strong>students</strong> can access this section.</p>
+			<p>You are not allowed to access this page.</p>
+		</div>
+		', 403);
     }
 });
 
 Route::filter('admin', function() {
     if (!Session::has('user_type') || Session::get('user_type') != User::USER_TYPE_ADMIN) {
-        $addURL = getRole();
-		return Response::make('Access Denied', 403);
-		// App::abort(403);
-		// return View::make('errors.403');
-		// return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Only admin can access this section <br> You are not allow to access this page");
+		return Response::make( warningMessage(). '    
+			<p>Only <strong>admin</strong> can access this section.</p>
+			<p>You are not allowed to access this page.</p>
+		</div>
+		', 403);
     }
 });
 
 App::missing(function()
 {
-	// return Response::view('errors.missing', array(), 404);
 	$addURL = getRole();
     return Redirect::to('/' . $addURL . '/dashboard')->with('message', "Invalid URL.");
 });
 
 Route::filter('profile', function() {
+	$url = Request::fullUrl();
+	$seperateURL = explode('/', $url);
+	$getIdFromUrl = $seperateURL[count($seperateURL) - 1];
+	$getIdFromUrl = (int) $getIdFromUrl;
+	$userId = Session::get('user_id');
+
 	if (!Session::has('user_id')) {
 		return Redirect::to('/logout')->with('message', "You need to log in first.");
 	} else {
+		if ($getIdFromUrl != $userId) {
+			return Response::make( warningMessage(). '    
+				<p>You are not allowed to access this page.</p>
+			</div>
+			', 403);
+		}
+	}
+});
 
+Route::filter('result', function() {
+	$url = Request::fullUrl();
+	$seperateURL = explode('/', $url);
+	$getIdFromUrl = $seperateURL[count($seperateURL) - 1];
+	$getIdFromUrl = (int) $getIdFromUrl;
+	$userId = Session::get('user_id');
+
+	if (!Session::has('user_id')) {
+		return Redirect::to('/logout')->with('message', "You need to log in first.");
+	} else {
+		if ($getIdFromUrl != $userId) {
+			return Response::make( warningMessage(). '    
+				<p>You are not allowed to access this page.</p>
+			</div>
+			', 403);
+		}
 	}
 });
