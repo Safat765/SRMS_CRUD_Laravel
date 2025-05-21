@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -59,7 +58,6 @@ Route::group(['before'=> 'instructor'], function() {
 Route::group(['before'=> 'students'], function() {
     Route::group(['prefix'=> 'students'], function() {
         Route::get('/results/{id}', ['before' => 'result', 'uses' => 'ResultController@show']);
-        // Route::resource('results', 'ResultController', ['only' => ['show'], 'before' => 'result']);
 
         Route::get('/results/semester/{id}', 'ResultController@semesterWise');
         Route::get('/results/enrolled', 'ResultController@enrolledCourse');
