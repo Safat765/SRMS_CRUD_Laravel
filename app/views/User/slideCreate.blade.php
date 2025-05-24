@@ -162,7 +162,7 @@
     $(document).ready(function() {
         $.ajaxSetup({
             headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
         $(document).on('keyup', '#password, #confirmPassword', function() {
