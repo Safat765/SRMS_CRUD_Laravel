@@ -86,7 +86,6 @@
                                 </tr>
                             `);
                         });
-                        console.log('totalCredit: ' + totalCredit, 'totalGPA: ' + totalGPA);
                         var semesterGPA = (totalGPA / totalCredit).toFixed(2);
 
                         $tbody.append(`
